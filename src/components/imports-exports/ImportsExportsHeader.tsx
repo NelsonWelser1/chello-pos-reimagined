@@ -1,14 +1,11 @@
-
 import { Database, FileUp, FileDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
 export function ImportsExportsHeader() {
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Database className="w-8 h-8 text-blue-600" />
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Data Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Import/Export History - Data Management</h1>
           <p className="text-gray-600">Import and export your restaurant data securely</p>
         </div>
       </div>
@@ -50,6 +47,5 @@ export function ImportsExportsHeader() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 }
