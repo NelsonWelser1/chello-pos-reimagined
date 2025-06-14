@@ -43,7 +43,7 @@ export function SidebarMenuSection({
               <SidebarMenuButton asChild className={`text-white ${hoverGradient} hover:text-white border-2 border-transparent hover:border-blue-300/50 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm`}>
                 <Link to={item.url} className="flex items-center gap-4 p-5">
                   <item.icon className={`w-6 h-6 ${iconColor}`} />
-                  <span className="font-black text-slate-950 text-base">{item.title}</span>
+                  <span className="font-bold text-white text-base drop-shadow-sm">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

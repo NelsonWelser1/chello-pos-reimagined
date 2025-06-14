@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -8,6 +7,10 @@ import LowStockAlerts from "@/components/stock-alert/LowStockAlerts";
 import ExpiryAlerts from "@/components/stock-alert/ExpiryAlerts";
 import AlertSettings from "@/components/stock-alert/AlertSettings";
 import StockPredictions from "@/components/stock-alert/StockPredictions";
+import StockAlertNotifications from "@/components/stock-alert/StockAlertNotifications";
+import AutomatedReorderSystem from "@/components/stock-alert/AutomatedReorderSystem";
+import SupplierIntegration from "@/components/stock-alert/SupplierIntegration";
+import SystemIntegrationHub from "@/components/stock-alert/SystemIntegrationHub";
 
 // Mock data for demonstration
 const mockIngredients = [
@@ -145,6 +148,11 @@ export default function StockAlert() {
     }).filter(item => item.daysUntilStockout <= 14);
   }, []);
 
+  const handleNotificationAction = (notificationId: string, action: string) => {
+    console.log(`Notification ${notificationId} action: ${action}`);
+    // Here you would integrate with other systems based on the action
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -152,20 +160,28 @@ export default function StockAlert() {
         <SidebarInset className="flex-1">
           <div className="p-8 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 min-h-screen">
             <div className="mb-8">
-              <h1 className="text-5xl font-black bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent flex items-center gap-4">
-                🚨 Smart Stock Alert System
-              </h1>
-              <p className="text-xl text-gray-600 mt-4 font-medium">
-                AI-powered inventory monitoring and predictive analytics
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-5xl font-black bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent flex items-center gap-4">
+                    🚨 Smart Stock Alert System
+                  </h1>
+                  <p className="text-xl text-gray-600 mt-4 font-medium">
+                    AI-powered inventory monitoring and predictive analytics with full system integration
+                  </p>
+                </div>
+                <StockAlertNotifications onNotificationAction={handleNotificationAction} />
+              </div>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5 lg:w-2/3">
+              <TabsList className="grid w-full grid-cols-8 lg:w-4/5">
                 <TabsTrigger value="dashboard" className="font-bold">Dashboard</TabsTrigger>
                 <TabsTrigger value="low-stock" className="font-bold">Low Stock</TabsTrigger>
                 <TabsTrigger value="expiry" className="font-bold">Expiry</TabsTrigger>
                 <TabsTrigger value="predictions" className="font-bold">Predictions</TabsTrigger>
+                <TabsTrigger value="automation" className="font-bold">Automation</TabsTrigger>
+                <TabsTrigger value="suppliers" className="font-bold">Suppliers</TabsTrigger>
+                <TabsTrigger value="integration" className="font-bold">Integration</TabsTrigger>
                 <TabsTrigger value="settings" className="font-bold">Settings</TabsTrigger>
               </TabsList>
 
@@ -197,6 +213,18 @@ export default function StockAlert() {
                   predictions={stockoutPredictions}
                   ingredients={mockIngredients}
                 />
+              </TabsContent>
+
+              <TabsContent value="automation">
+                <AutomatedReorderSystem />
+              </TabsContent>
+
+              <TabsContent value="suppliers">
+                <SupplierIntegration />
+              </TabsContent>
+
+              <TabsContent value="integration">
+                <SystemIntegrationHub />
               </TabsContent>
 
               <TabsContent value="settings">
