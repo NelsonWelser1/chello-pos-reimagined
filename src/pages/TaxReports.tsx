@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { FileText, Calculator, Shield, History, DollarSign } from "lucide-react";
+import { FileText, Calculator, Shield, History, DollarSign, Receipt } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TaxReportsOverview from "@/components/tax-reports/TaxReportsOverview";
@@ -33,6 +33,9 @@ export default function TaxReports() {
     navigate(`/tax-reports?tab=${value}`, { replace: true });
   };
 
+  // Determine if we're showing expense report or tax reports
+  const isExpenseReport = activeTab === "expense-report";
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -41,12 +44,25 @@ export default function TaxReports() {
           <div className="container mx-auto p-6 space-y-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  🧾 Tax Reports & Compliance
-                </h1>
-                <p className="text-muted-foreground mt-2">
-                  Comprehensive tax reporting, compliance monitoring, and expense analytics
-                </p>
+                {isExpenseReport ? (
+                  <>
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      💰 Expense Analytics Dashboard
+                    </h1>
+                    <p className="text-muted-foreground mt-2">
+                      Comprehensive expense tracking, analytics, and cost optimization insights
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                      🧾 Tax Reports & Compliance
+                    </h1>
+                    <p className="text-muted-foreground mt-2">
+                      Comprehensive tax reporting, compliance monitoring, and regulatory analytics
+                    </p>
+                  </>
+                )}
               </div>
               <SidebarTrigger />
             </div>
@@ -55,53 +71,57 @@ export default function TaxReports() {
               <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="overview" className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Overview
+                  {isExpenseReport ? "Analytics" : "Overview"}
                 </TabsTrigger>
                 <TabsTrigger value="filings" className="flex items-center gap-2">
                   <Calculator className="w-4 h-4" />
-                  Tax Filings
+                  {isExpenseReport ? "Categories" : "Tax Filings"}
                 </TabsTrigger>
                 <TabsTrigger value="deductions" className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
-                  Deductions
+                  {isExpenseReport ? "Budgets" : "Deductions"}
                 </TabsTrigger>
                 <TabsTrigger value="compliance" className="flex items-center gap-2">
                   <Shield className="w-4 h-4" />
-                  Compliance
+                  {isExpenseReport ? "Vendors" : "Compliance"}
                 </TabsTrigger>
                 <TabsTrigger value="audit" className="flex items-center gap-2">
                   <History className="w-4 h-4" />
-                  Audit Trail
+                  {isExpenseReport ? "Forecasting" : "Audit Trail"}
                 </TabsTrigger>
                 <TabsTrigger value="expense-report" className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
+                  <Receipt className="w-4 h-4" />
                   Expense Report
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="overview">
-                <TaxReportsOverview selectedPeriod={selectedPeriod} selectedTaxType={selectedTaxType} />
-              </TabsContent>
+              {isExpenseReport ? (
+                <TabsContent value="expense-report">
+                  <ExpenseReport />
+                </TabsContent>
+              ) : (
+                <>
+                  <TabsContent value="overview">
+                    <TaxReportsOverview selectedPeriod={selectedPeriod} selectedTaxType={selectedTaxType} />
+                  </TabsContent>
 
-              <TabsContent value="filings">
-                <TaxReportsFilings selectedPeriod={selectedPeriod} />
-              </TabsContent>
+                  <TabsContent value="filings">
+                    <TaxReportsFilings selectedPeriod={selectedPeriod} />
+                  </TabsContent>
 
-              <TabsContent value="deductions">
-                <TaxReportsDeductions selectedPeriod={selectedPeriod} />
-              </TabsContent>
+                  <TabsContent value="deductions">
+                    <TaxReportsDeductions selectedPeriod={selectedPeriod} />
+                  </TabsContent>
 
-              <TabsContent value="compliance">
-                <TaxReportsCompliance selectedPeriod={selectedPeriod} />
-              </TabsContent>
+                  <TabsContent value="compliance">
+                    <TaxReportsCompliance selectedPeriod={selectedPeriod} />
+                  </TabsContent>
 
-              <TabsContent value="audit">
-                <TaxReportsAudit selectedPeriod={selectedPeriod} />
-              </TabsContent>
-
-              <TabsContent value="expense-report">
-                <ExpenseReport />
-              </TabsContent>
+                  <TabsContent value="audit">
+                    <TaxReportsAudit selectedPeriod={selectedPeriod} />
+                  </TabsContent>
+                </>
+              )}
             </Tabs>
           </div>
         </main>
