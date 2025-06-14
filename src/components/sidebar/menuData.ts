@@ -58,7 +58,7 @@ export const foodsItems = [
   {
     title: "Modifiers",
     icon: Settings,
-    url: "#modifiers"
+    url: "/modifiers"
   },
   {
     title: "Ingredients",

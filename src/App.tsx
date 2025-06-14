@@ -10,6 +10,7 @@ import POS from "./pages/POS";
 import Kitchen from "./pages/Kitchen";
 import Categories from "./pages/Categories";
 import Items from "./pages/Items";
+import Modifiers from "./pages/Modifiers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/kitchen" element={<Kitchen />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/items" element={<Items />} />
+          <Route path="/modifiers" element={<Modifiers />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
