@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingUp, 
   DollarSign, 
@@ -13,246 +14,177 @@ import {
   Coffee,
   UtensilsCrossed,
   Pizza,
-  Cake
+  Cake,
+  Star,
+  ArrowUp,
+  ArrowDown,
+  Activity,
+  Calendar,
+  Target,
+  Zap
 } from "lucide-react";
+import { SalesChart } from "./dashboard/SalesChart";
+import { OrdersChart } from "./dashboard/OrdersChart";
+import { RevenueMetrics } from "./dashboard/RevenueMetrics";
+import { LiveOrders } from "./dashboard/LiveOrders";
+import { TopItems } from "./dashboard/TopItems";
+import { QuickActions } from "./dashboard/QuickActions";
+import { StaffPerformance } from "./dashboard/StaffPerformance";
 
 export function Dashboard() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-1">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">🏠</span>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Activity className="w-7 h-7 text-white" />
             </div>
-            Welcome to Chello Restaurant POS
+            Restaurant Analytics Dashboard
           </h1>
-          <p className="text-slate-600 mt-2">Manage your restaurant operations efficiently</p>
+          <p className="text-slate-600 mt-2 text-lg">Real-time insights and performance metrics</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm">
-            <Clock className="w-4 h-4 mr-2" />
+          <Button variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm">
+            <Calendar className="w-4 h-4 mr-2" />
             Today
           </Button>
-          <Button size="sm">
+          <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
             <TrendingUp className="w-4 h-4 mr-2" />
             View Reports
           </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Key Performance Indicators */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
+        <Card className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium opacity-90">Today's Sales</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">$2,847</p>
-                <p className="text-xs opacity-80">+12% from yesterday</p>
-              </div>
-              <DollarSign className="w-8 h-8 opacity-80" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium opacity-90">Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">89</p>
-                <p className="text-xs opacity-80">23 pending</p>
-              </div>
-              <ShoppingCart className="w-8 h-8 opacity-80" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium opacity-90">Customers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">156</p>
-                <p className="text-xs opacity-80">+8 new today</p>
-              </div>
-              <Users className="w-8 h-8 opacity-80" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium opacity-90">Avg. Order Value</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">$32</p>
-                <p className="text-xs opacity-80">+5% this week</p>
-              </div>
-              <TrendingUp className="w-8 h-8 opacity-80" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Feature Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5" />
-              Quick Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Button className="h-20 flex-col bg-slate-800 hover:bg-slate-700">
-                <ShoppingCart className="w-6 h-6 mb-2" />
-                <span>New Order</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col">
-                <Coffee className="w-6 h-6 mb-2" />
-                <span>Add Item</span>
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-20 flex-col">
-                <Users className="w-6 h-6 mb-2" />
-                <span>Manage Staff</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col">
-                <TrendingUp className="w-6 h-6 mb-2" />
-                <span>View Reports</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Orders */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              Recent Orders
+            <CardTitle className="text-sm font-medium opacity-90 flex items-center justify-between">
+              Today's Revenue
+              <ArrowUp className="w-4 h-4" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <Pizza className="w-5 h-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Order #1234</p>
-                    <p className="text-sm text-slate-600">Table 8 • $45.99</p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                  Preparing
-                </Badge>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-3xl font-bold">$4,247</p>
+                <p className="text-xs opacity-80 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  +18% from yesterday
+                </p>
               </div>
+              <DollarSign className="w-10 h-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <Coffee className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Order #1235</p>
-                    <p className="text-sm text-slate-600">Table 3 • $28.50</p>
-                  </div>
-                </div>
-                <Badge className="bg-green-100 text-green-800">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  Ready
-                </Badge>
+        <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium opacity-90 flex items-center justify-between">
+              Orders Today
+              <Target className="w-4 h-4" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-3xl font-bold">156</p>
+                <p className="text-xs opacity-80">34 pending • 122 completed</p>
               </div>
+              <ShoppingCart className="w-10 h-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Cake className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Order #1236</p>
-                    <p className="text-sm text-slate-600">Table 12 • $67.25</p>
-                  </div>
-                </div>
-                <Badge variant="outline">
-                  <Clock className="w-3 h-3 mr-1" />
-                  Pending
-                </Badge>
+        <Card className="bg-gradient-to-br from-purple-500 to-pink-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium opacity-90 flex items-center justify-between">
+              Active Customers
+              <Zap className="w-4 h-4" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-3xl font-bold">89</p>
+                <p className="text-xs opacity-80">+12 new customers</p>
               </div>
+              <Users className="w-10 h-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-orange-500 to-red-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium opacity-90 flex items-center justify-between">
+              Avg. Order Value
+              <Star className="w-4 h-4" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-3xl font-bold">$42</p>
+                <p className="text-xs opacity-80 flex items-center gap-1">
+                  <ArrowUp className="w-3 h-3" />
+                  +8% this week
+                </p>
+              </div>
+              <TrendingUp className="w-10 h-10 opacity-80" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <ShoppingCart className="w-6 h-6 text-blue-600" />
-            </div>
-            <CardTitle className="text-lg">Point of Sale</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600 mb-4">
-              Streamlined ordering system with intuitive interface for quick and accurate order processing.
-            </p>
-            <Button variant="outline" size="sm">
-              Access POS
-            </Button>
-          </CardContent>
-        </Card>
+      {/* Main Dashboard Tabs */}
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4 bg-white/60 backdrop-blur-sm border shadow-lg">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-teal-600 data-[state=active]:text-white">
+            Analytics
+          </TabsTrigger>
+          <TabsTrigger value="orders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-600 data-[state=active]:text-white">
+            Live Orders
+          </TabsTrigger>
+          <TabsTrigger value="performance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
+            Performance
+          </TabsTrigger>
+        </TabsList>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <UtensilsCrossed className="w-6 h-6 text-green-600" />
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <QuickActions />
+            <LiveOrders />
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <RevenueMetrics />
             </div>
-            <CardTitle className="text-lg">Kitchen Management</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600 mb-4">
-              Real-time order tracking and kitchen display system to optimize food preparation workflow.
-            </p>
-            <Button variant="outline" size="sm">
-              View Kitchen
-            </Button>
-          </CardContent>
-        </Card>
+            <TopItems />
+          </div>
+        </TabsContent>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <TrendingUp className="w-6 h-6 text-purple-600" />
-            </div>
-            <CardTitle className="text-lg">Analytics & Reports</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600 mb-4">
-              Comprehensive reporting and analytics to track sales, inventory, and business performance.
-            </p>
-            <Button variant="outline" size="sm">
-              View Reports
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="analytics" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SalesChart />
+            <OrdersChart />
+          </div>
+          <RevenueMetrics />
+        </TabsContent>
+
+        <TabsContent value="orders" className="space-y-6">
+          <LiveOrders />
+        </TabsContent>
+
+        <TabsContent value="performance" className="space-y-6">
+          <StaffPerformance />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
