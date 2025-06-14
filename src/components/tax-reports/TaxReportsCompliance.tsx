@@ -85,6 +85,19 @@ export default function TaxReportsCompliance({ selectedPeriod }: TaxReportsCompl
   const complianceScore = 82;
   const riskLevel: "Low" | "Medium" | "High" = "Medium";
 
+  const getRiskLevelBadgeVariant = (risk: "Low" | "Medium" | "High") => {
+    switch (risk) {
+      case "Low":
+        return "default";
+      case "Medium":
+        return "secondary";
+      case "High":
+        return "destructive";
+      default:
+        return "secondary";
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "compliant":
@@ -146,7 +159,7 @@ export default function TaxReportsCompliance({ selectedPeriod }: TaxReportsCompl
               <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Target className="w-6 h-6 text-white" />
               </div>
-              <Badge variant={riskLevel === "Low" ? "default" : riskLevel === "Medium" ? "secondary" : "destructive"} className="font-bold">
+              <Badge variant={getRiskLevelBadgeVariant(riskLevel)} className="font-bold">
                 {riskLevel}
               </Badge>
             </div>
