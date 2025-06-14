@@ -31,7 +31,7 @@ export function SidebarMenuSection({
   return (
     <SidebarGroup>
       {title && (
-        <SidebarGroupLabel className={`${textColor} text-sm font-black px-3 py-3 rounded-lg border ${labelBorderColor} ${labelBgColor}`}>
+        <SidebarGroupLabel className={`${textColor} text-base font-black px-4 py-4 rounded-lg border ${labelBorderColor} ${labelBgColor}`}>
           {emoji} {title}
         </SidebarGroupLabel>
       )}
@@ -40,9 +40,9 @@ export function SidebarMenuSection({
           {items.map(item => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild className={`text-white ${hoverGradient} hover:text-white border-2 border-transparent hover:border-blue-300/50 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm`}>
-                <a href={item.url} className="flex items-center gap-3 p-4">
-                  <item.icon className={`w-5 h-5 ${iconColor}`} />
-                  <span className="font-black text-slate-950">{item.title}</span>
+                <a href={item.url} className="flex items-center gap-4 p-5">
+                  <item.icon className={`w-6 h-6 ${iconColor}`} />
+                  <span className="font-black text-slate-950 text-base">{item.title}</span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
