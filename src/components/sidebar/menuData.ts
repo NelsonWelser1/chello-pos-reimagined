@@ -1,4 +1,3 @@
-
 import { 
   LayoutDashboard, 
   DollarSign, 
@@ -23,12 +22,12 @@ export const menuItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    url: "#dashboard"
+    url: "/"
   },
   {
     title: "Sales",
     icon: DollarSign,
-    url: "#sales"
+    url: "/sales"
   }
 ];
 
