@@ -71,6 +71,12 @@ const COLORS = ['#10B981', '#3B82F6', '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899'
 export default function ExpenseReport() {
   const { summary, categoryBreakdown, monthlyTrends, vendorAnalysis, taxAnalysis, costOptimization } = mockExpenseData;
 
+  // Transform monthly trends data for variance chart with proper colors
+  const varianceData = monthlyTrends.map(item => ({
+    ...item,
+    varianceColor: item.variance > 0 ? '#EF4444' : '#10B981'
+  }));
+
   return (
     <div className="space-y-6">
       {/* Header with Quick Actions */}
@@ -262,12 +268,12 @@ export default function ExpenseReport() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={monthlyTrends}>
+                <BarChart data={varianceData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Variance']} />
-                  <Bar dataKey="variance" fill={(data) => data.variance > 0 ? '#EF4444' : '#10B981'} name="Budget Variance" />
+                  <Bar dataKey="variance" fill="#3B82F6" name="Budget Variance" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

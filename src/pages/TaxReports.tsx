@@ -11,6 +11,10 @@ import TaxReportsAudit from "@/components/tax-reports/TaxReportsAudit";
 import ExpenseReport from "@/components/tax-reports/ExpenseReport";
 
 export default function TaxReports() {
+  // Default props for the tax report components
+  const selectedPeriod = "2024-Q2";
+  const selectedTaxType = "sales-tax";
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -58,23 +62,23 @@ export default function TaxReports() {
               </TabsList>
 
               <TabsContent value="overview">
-                <TaxReportsOverview />
+                <TaxReportsOverview selectedPeriod={selectedPeriod} selectedTaxType={selectedTaxType} />
               </TabsContent>
 
               <TabsContent value="filings">
-                <TaxReportsFilings />
+                <TaxReportsFilings selectedPeriod={selectedPeriod} />
               </TabsContent>
 
               <TabsContent value="deductions">
-                <TaxReportsDeductions />
+                <TaxReportsDeductions selectedPeriod={selectedPeriod} />
               </TabsContent>
 
               <TabsContent value="compliance">
-                <TaxReportsCompliance />
+                <TaxReportsCompliance selectedPeriod={selectedPeriod} />
               </TabsContent>
 
               <TabsContent value="audit">
-                <TaxReportsAudit />
+                <TaxReportsAudit selectedPeriod={selectedPeriod} />
               </TabsContent>
 
               <TabsContent value="expense-report">
