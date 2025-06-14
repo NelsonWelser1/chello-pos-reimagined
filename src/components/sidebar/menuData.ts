@@ -125,7 +125,7 @@ export const advanceItems = [
   {
     title: "Service Tables",
     icon: Star,
-    url: "#service-tables"
+    url: "/service-tables"
   },
   {
     title: "Payment Methods",

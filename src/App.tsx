@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/sonner";
 import Index from './pages/Index';
@@ -16,6 +15,7 @@ import Kitchen from './pages/Kitchen';
 import StockAlert from './pages/StockAlert';
 import ImportsExports from './pages/ImportsExports';
 import NotFound from './pages/NotFound';
+import ServiceTables from './pages/ServiceTables';
 import './App.css';
 
 function App() {
@@ -37,6 +37,7 @@ function App() {
           <Route path="/kitchen" element={<Kitchen />} />
           <Route path="/stock-alert" element={<StockAlert />} />
           <Route path="/imports-exports" element={<ImportsExports />} />
+          <Route path="/service-tables" element={<ServiceTables />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
