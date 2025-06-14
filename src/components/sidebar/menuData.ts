@@ -1,4 +1,3 @@
-
 import { 
   LayoutDashboard, 
   DollarSign, 
@@ -113,7 +112,7 @@ export const reportsItems = [
   {
     title: "Stock Alert",
     icon: AlertTriangle,
-    url: "#stock-alert"
+    url: "/stock-alert"
   }
 ];
 

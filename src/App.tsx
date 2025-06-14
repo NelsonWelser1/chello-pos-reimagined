@@ -1,49 +1,46 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Sales from "./pages/Sales";
-import POS from "./pages/POS";
-import Kitchen from "./pages/Kitchen";
-import Categories from "./pages/Categories";
-import Items from "./pages/Items";
-import Modifiers from "./pages/Modifiers";
-import NotFound from "./pages/NotFound";
-import Ingredients from "./pages/Ingredients";
-import Expenses from "./pages/Expenses";
-import ExpenseTypes from "./pages/ExpenseTypes";
-import OverallReports from "./pages/OverallReports";
-import TaxReports from "./pages/TaxReports";
 
-const queryClient = new QueryClient();
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from "@/components/ui/sonner";
+import Index from './pages/Index';
+import Sales from './pages/Sales';
+import Items from './pages/Items';
+import Ingredients from './pages/Ingredients';
+import Categories from './pages/Categories';
+import Modifiers from './pages/Modifiers';
+import ExpenseTypes from './pages/ExpenseTypes';
+import Expenses from './pages/Expenses';
+import TaxReports from './pages/TaxReports';
+import OverallReports from './pages/OverallReports';
+import POS from './pages/POS';
+import Kitchen from './pages/Kitchen';
+import StockAlert from './pages/StockAlert';
+import NotFound from './pages/NotFound';
+import './App.css';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+function App() {
+  return (
+    <Router>
+      <div className="App">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/items" element={<Items />} />
+          <Route path="/ingredients" element={<Ingredients />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/modifiers" element={<Modifiers />} />
+          <Route path="/expense-types" element={<ExpenseTypes />} />
+          <Route path="/expenses" element={<Expenses />} />
+          <Route path="/tax-reports" element={<TaxReports />} />
+          <Route path="/overall-reports" element={<OverallReports />} />
           <Route path="/pos" element={<POS />} />
           <Route path="/kitchen" element={<Kitchen />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/items" element={<Items />} />
-          <Route path="/modifiers" element={<Modifiers />} />
-          <Route path="/ingredients" element={<Ingredients />} />
-          <Route path="/expenses" element={<Expenses />} />
-          <Route path="/expense-types" element={<ExpenseTypes />} />
-          <Route path="/overall-reports" element={<OverallReports />} />
-          <Route path="/tax-reports" element={<TaxReports />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/stock-alert" element={<StockAlert />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        <Toaster />
+      </div>
+    </Router>
+  );
+}
 
 export default App;
