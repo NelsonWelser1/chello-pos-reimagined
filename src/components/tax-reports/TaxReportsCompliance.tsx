@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -84,7 +83,7 @@ export default function TaxReportsCompliance({ selectedPeriod }: TaxReportsCompl
   ];
 
   const complianceScore = 82;
-  const riskLevel = "Medium";
+  const riskLevel: "Low" | "Medium" | "High" = "Medium";
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -147,7 +146,7 @@ export default function TaxReportsCompliance({ selectedPeriod }: TaxReportsCompl
               <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Target className="w-6 h-6 text-white" />
               </div>
-              <Badge variant={riskLevel === "Low" ? "default" : "destructive"} className="font-bold">
+              <Badge variant={riskLevel === "Low" ? "default" : riskLevel === "Medium" ? "secondary" : "destructive"} className="font-bold">
                 {riskLevel}
               </Badge>
             </div>
@@ -201,7 +200,7 @@ export default function TaxReportsCompliance({ selectedPeriod }: TaxReportsCompl
                       <div className="flex items-center gap-3 mb-2">
                         <h4 className="font-medium">{item.requirement}</h4>
                         {getStatusBadge(item.status)}
-                        <Badge variant={item.risk === "high" ? "destructive" : "secondary"}>
+                        <Badge variant={item.risk === "high" ? "destructive" : item.risk === "medium" ? "secondary" : "default"}>
                           {item.risk} risk
                         </Badge>
                       </div>
