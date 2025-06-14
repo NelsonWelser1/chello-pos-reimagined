@@ -63,7 +63,7 @@ export const foodsItems = [
   {
     title: "Ingredients",
     icon: Layers,
-    url: "#ingredients"
+    url: "/ingredients"
   }
 ];
 
