@@ -2,27 +2,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { CategoryBreakdown, VendorAnalysis, TaxAnalysis, CostOptimization, COLORS } from "./ExpenseReportTypes";
+import { CategoryBreakdown, VendorAnalysis, TaxAnalysis, CostOptimization, RecentExpense, COLORS } from "./ExpenseReportTypes";
 
 interface ExpenseAnalyticsTabsProps {
   filteredData: CategoryBreakdown[];
   vendorAnalysis: VendorAnalysis[];
   taxAnalysis: TaxAnalysis;
   costOptimization: CostOptimization[];
+  recentExpenses: RecentExpense[];
 }
 
 export default function ExpenseAnalyticsTabs({
   filteredData,
   vendorAnalysis,
   taxAnalysis,
-  costOptimization
+  costOptimization,
+  recentExpenses
 }: ExpenseAnalyticsTabsProps) {
   return (
     <Tabs defaultValue="performance" className="space-y-6">
       <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="performance">Performance</TabsTrigger>
-        <TabsTrigger value="vendors">Vendors</TabsTrigger>
+        <TabsTrigger value="transactions">Transactions</TabsTrigger>
         <TabsTrigger value="tax">Tax Analysis</TabsTrigger>
         <TabsTrigger value="optimization">Optimization</TabsTrigger>
       </TabsList>
@@ -61,37 +62,41 @@ export default function ExpenseAnalyticsTabs({
         </Card>
       </TabsContent>
 
-      <TabsContent value="vendors" className="space-y-6">
+      <TabsContent value="transactions" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Vendor Performance Analytics</CardTitle>
+            <CardTitle>Recent Expense Transactions</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {vendorAnalysis.map((vendor, index) => (
-                <div key={vendor.vendor} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h4 className="font-medium">{vendor.vendor}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {vendor.category} • {vendor.transactions} transactions • {vendor.paymentTerms}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Avg Delivery: {vendor.avgDeliveryTime}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold text-lg">${vendor.amount.toLocaleString()}</div>
-                    <Badge variant="outline" className="mb-1">
-                      {vendor.reliability}% reliable
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="text-left p-4 font-semibold text-slate-700">Description</th>
+                    <th className="text-left p-4 font-semibold text-slate-700">Category</th>
+                    <th className="text-left p-4 font-semibold text-slate-700">Amount</th>
+                    <th className="text-left p-4 font-semibold text-slate-700">Date</th>
+                    <th className="text-left p-4 font-semibold text-slate-700">Status</th>
+                    <th className="text-left p-4 font-semibold text-slate-700">Vendor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentExpenses.map((expense) => (
+                    <tr key={expense.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                      <td className="p-4 font-medium text-slate-800">{expense.description}</td>
+                      <td className="p-4 text-slate-600">{expense.category}</td>
+                      <td className="p-4 font-semibold text-slate-800">${expense.amount.toLocaleString()}</td>
+                      <td className="p-4 text-slate-600">{expense.date}</td>
+                      <td className="p-4">
+                        <Badge variant={expense.status === 'approved' ? 'default' : 'secondary'}>
+                          {expense.status}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-slate-600">{expense.vendor}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
@@ -127,18 +132,23 @@ export default function ExpenseAnalyticsTabs({
 
           <Card>
             <CardHeader>
-              <CardTitle>Tax Savings by Category</CardTitle>
+              <CardTitle>Top Vendors</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={taxAnalysis.categories}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" angle={-45} textAnchor="end" height={100} />
-                  <YAxis />
-                  <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Tax Savings']} />
-                  <Bar dataKey="taxSavings" fill="#10B981" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="space-y-3">
+                {vendorAnalysis.slice(0, 5).map((vendor, index) => (
+                  <div key={vendor.vendor} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium text-sm">{vendor.vendor}</h4>
+                      <p className="text-xs text-muted-foreground">{vendor.category}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-sm">${vendor.amount.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground">{vendor.transactions} transactions</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
