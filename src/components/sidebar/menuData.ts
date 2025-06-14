@@ -1,150 +1,61 @@
+
 import { 
-  LayoutDashboard, 
-  DollarSign, 
+  Home, 
   ShoppingCart, 
-  ChefHat, 
-  Grid3X3, 
   Package, 
-  Settings, 
-  Layers, 
-  Receipt, 
-  CreditCard, 
   Users, 
-  UserCog, 
+  Settings, 
+  BarChart3, 
+  Calculator, 
   FileText, 
-  AlertTriangle, 
-  Star, 
-  Database, 
-  Archive 
+  TrendingUp, 
+  CreditCard, 
+  ChefHat,
+  AlertTriangle,
+  Download,
+  Upload,
+  Table,
+  MapPin,
+  Database
 } from "lucide-react";
 
 export const menuItems = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    url: "/"
-  },
-  {
-    title: "Sales",
-    icon: DollarSign,
-    url: "/sales"
-  }
+  { icon: Home, label: "Dashboard", href: "/" },
+  { icon: Calculator, label: "POS", href: "/pos" },
+  { icon: ChefHat, label: "Kitchen", href: "/kitchen" },
 ];
 
 export const portalsItems = [
-  {
-    title: "POS",
-    icon: ShoppingCart,
-    url: "/pos"
-  },
-  {
-    title: "Kitchen",
-    icon: ChefHat,
-    url: "/kitchen"
-  }
+  { icon: ShoppingCart, label: "Sales", href: "/sales" },
+  { icon: Table, label: "Service Tables", href: "/service-tables" },
+  { icon: CreditCard, label: "Payment Methods", href: "/payment-methods" },
+  { icon: MapPin, label: "Pickup Points", href: "/pickup-points" },
 ];
 
 export const foodsItems = [
-  {
-    title: "Categories",
-    icon: Grid3X3,
-    url: "/categories"
-  },
-  {
-    title: "Items",
-    icon: Package,
-    url: "/items"
-  },
-  {
-    title: "Modifiers",
-    icon: Settings,
-    url: "/modifiers"
-  },
-  {
-    title: "Ingredients",
-    icon: Layers,
-    url: "/ingredients"
-  }
+  { icon: Package, label: "Items", href: "/items" },
+  { icon: Package, label: "Ingredients", href: "/ingredients" },
+  { icon: FileText, label: "Categories", href: "/categories" },
+  { icon: Settings, label: "Modifiers", href: "/modifiers" },
 ];
 
 export const expensesItems = [
-  {
-    title: "Expense Types",
-    icon: Receipt,
-    url: "/expense-types"
-  },
-  {
-    title: "Expenses", 
-    icon: CreditCard,
-    url: "/expenses"
-  }
+  { icon: FileText, label: "Expense Types", href: "/expense-types" },
+  { icon: CreditCard, label: "Expenses", href: "/expenses" },
 ];
 
 export const peopleItems = [
-  {
-    title: "Users",
-    icon: Users,
-    url: "#users"
-  },
-  {
-    title: "User Roles",
-    icon: UserCog,
-    url: "#user-roles"
-  }
+  { icon: Users, label: "Customers", href: "/customers" },
+  { icon: Users, label: "Staff", href: "/staff" },
 ];
 
 export const reportsItems = [
-  {
-    title: "Overall Report",
-    icon: FileText,
-    url: "/overall-reports"
-  },
-  {
-    title: "Tax Report",
-    icon: FileText,
-    url: "/tax-reports"
-  },
-  {
-    title: "Expense Report",
-    icon: FileText,
-    url: "/tax-reports?tab=expense-report"
-  },
-  {
-    title: "Stock Alert",
-    icon: AlertTriangle,
-    url: "/stock-alert"
-  }
+  { icon: FileText, label: "Tax Reports", href: "/tax-reports" },
+  { icon: BarChart3, label: "Overall Reports", href: "/overall-reports" },
 ];
 
 export const advanceItems = [
-  {
-    title: "Imports Exports",
-    icon: Database,
-    url: "/imports-exports"
-  },
-  {
-    title: "Service Tables",
-    icon: Star,
-    url: "/service-tables"
-  },
-  {
-    title: "Payment Methods",
-    icon: DollarSign,
-    url: "/payment-methods"
-  },
-  {
-    title: "Pickup Points",
-    icon: Package,
-    url: "/pickup-points"
-  },
-  {
-    title: "Backup",
-    icon: Archive,
-    url: "#backup"
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-    url: "#settings"
-  }
+  { icon: AlertTriangle, label: "Stock Alert", href: "/stock-alert" },
+  { icon: Upload, label: "Imports/Exports", href: "/imports-exports" },
+  { icon: Database, label: "Backup", href: "/backup" },
 ];

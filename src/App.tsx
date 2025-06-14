@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/sonner";
 import Index from './pages/Index';
@@ -18,6 +19,7 @@ import NotFound from './pages/NotFound';
 import ServiceTables from './pages/ServiceTables';
 import PaymentMethods from './pages/PaymentMethods';
 import PickupPoints from './pages/PickupPoints';
+import Backup from './pages/Backup';
 import './App.css';
 
 function App() {
@@ -42,6 +44,7 @@ function App() {
           <Route path="/service-tables" element={<ServiceTables />} />
           <Route path="/payment-methods" element={<PaymentMethods />} />
           <Route path="/pickup-points" element={<PickupPoints />} />
+          <Route path="/backup" element={<Backup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
