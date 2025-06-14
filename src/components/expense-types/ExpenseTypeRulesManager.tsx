@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -269,7 +268,7 @@ export default function ExpenseTypeRulesManager({ expenseTypes, rules, onRulesCh
           filteredRules
             .sort((a, b) => a.priority - b.priority)
             .map((rule) => {
-              const expenseType = expenseTypes.find(type => type.typeId === rule.typeId);
+              const expenseType = expenseTypes.find(type => type.id === rule.typeId);
               
               return (
                 <Card key={rule.id}>
