@@ -71,7 +71,7 @@ export const expensesItems = [
   {
     title: "Expense Types",
     icon: Receipt,
-    url: "/expenses"
+    url: "/expense-types"
   },
   {
     title: "Expenses", 

@@ -13,6 +13,7 @@ import Modifiers from "./pages/Modifiers";
 import NotFound from "./pages/NotFound";
 import Ingredients from "./pages/Ingredients";
 import Expenses from "./pages/Expenses";
+import ExpenseTypes from "./pages/ExpenseTypes";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/modifiers" element={<Modifiers />} />
           <Route path="/ingredients" element={<Ingredients />} />
           <Route path="/expenses" element={<Expenses />} />
+          <Route path="/expense-types" element={<ExpenseTypes />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
