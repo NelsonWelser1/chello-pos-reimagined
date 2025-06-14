@@ -97,12 +97,12 @@ export const reportsItems = [
   {
     title: "Overall Report",
     icon: FileText,
-    url: "#overall-report"
+    url: "/overall-reports"
   },
   {
     title: "Tax Report",
     icon: FileText,
-    url: "#tax-report"
+    url: "/tax-reports"
   },
   {
     title: "Expense Report",
