@@ -120,7 +120,7 @@ export const advanceItems = [
   {
     title: "Imports Exports",
     icon: Database,
-    url: "#imports-exports"
+    url: "/imports-exports"
   },
   {
     title: "Service Tables",

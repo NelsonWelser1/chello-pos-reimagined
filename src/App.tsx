@@ -14,6 +14,7 @@ import OverallReports from './pages/OverallReports';
 import POS from './pages/POS';
 import Kitchen from './pages/Kitchen';
 import StockAlert from './pages/StockAlert';
+import ImportsExports from './pages/ImportsExports';
 import NotFound from './pages/NotFound';
 import './App.css';
 
@@ -35,6 +36,7 @@ function App() {
           <Route path="/pos" element={<POS />} />
           <Route path="/kitchen" element={<Kitchen />} />
           <Route path="/stock-alert" element={<StockAlert />} />
+          <Route path="/imports-exports" element={<ImportsExports />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
