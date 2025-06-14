@@ -1,4 +1,3 @@
-
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarMenuSection } from "./sidebar/SidebarMenuSection";
@@ -22,6 +21,7 @@ export function AppSidebar() {
           items={menuItems}
           hoverGradient="hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-purple-500/30"
           iconColor="text-blue-200"
+          textColor="text-white"
         />
 
         <SidebarMenuSection
