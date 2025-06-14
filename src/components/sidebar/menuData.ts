@@ -53,7 +53,7 @@ export const foodsItems = [
   {
     title: "Items",
     icon: Package,
-    url: "#items"
+    url: "/items"
   },
   {
     title: "Modifiers",
