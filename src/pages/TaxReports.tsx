@@ -3,6 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { FileText, Calculator, Shield, History, DollarSign } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import TaxReportsOverview from "@/components/tax-reports/TaxReportsOverview";
 import TaxReportsFilings from "@/components/tax-reports/TaxReportsFilings";
 import TaxReportsDeductions from "@/components/tax-reports/TaxReportsDeductions";
@@ -11,9 +13,19 @@ import TaxReportsAudit from "@/components/tax-reports/TaxReportsAudit";
 import ExpenseReport from "@/components/tax-reports/ExpenseReport";
 
 export default function TaxReports() {
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState("overview");
+  
   // Default props for the tax report components
   const selectedPeriod = "2024-Q2";
   const selectedTaxType = "sales-tax";
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   return (
     <SidebarProvider>
@@ -33,7 +45,7 @@ export default function TaxReports() {
               <SidebarTrigger />
             </div>
 
-            <Tabs defaultValue="overview" className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="overview" className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
