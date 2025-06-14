@@ -48,7 +48,7 @@ export const foodsItems = [
   {
     title: "Categories",
     icon: Grid3X3,
-    url: "#categories"
+    url: "/categories"
   },
   {
     title: "Items",
