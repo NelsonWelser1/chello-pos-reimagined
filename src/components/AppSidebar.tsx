@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from "@/components/ui/sidebar";
-import { LayoutDashboard, DollarSign, ShoppingCart, ChefHat, Grid3X3, Package, Settings, Layers, Receipt, CreditCard, Users, UserCog } from "lucide-react";
+import { LayoutDashboard, DollarSign, ShoppingCart, ChefHat, Grid3X3, Package, Settings, Layers, Receipt, CreditCard, Users, UserCog, FileText, AlertTriangle, Star, Database, Backup } from "lucide-react";
 const menuItems = [{
   title: "Dashboard",
   icon: LayoutDashboard,
@@ -52,6 +52,48 @@ const peopleItems = [{
   title: "User Roles",
   icon: UserCog,
   url: "#user-roles"
+}];
+const reportsItems = [{
+  title: "Overall Report",
+  icon: FileText,
+  url: "#overall-report"
+}, {
+  title: "Tax Report",
+  icon: FileText,
+  url: "#tax-report"
+}, {
+  title: "Expense Report",
+  icon: FileText,
+  url: "#expense-report"
+}, {
+  title: "Stock Alert",
+  icon: AlertTriangle,
+  url: "#stock-alert"
+}];
+const advanceItems = [{
+  title: "Imports Exports",
+  icon: Database,
+  url: "#imports-exports"
+}, {
+  title: "Service Tables",
+  icon: Star,
+  url: "#service-tables"
+}, {
+  title: "Payment Methods",
+  icon: DollarSign,
+  url: "#payment-methods"
+}, {
+  title: "Pickup Points",
+  icon: Package,
+  url: "#pickup-points"
+}, {
+  title: "Backup",
+  icon: Backup,
+  url: "#backup"
+}, {
+  title: "Settings",
+  icon: Settings,
+  url: "#settings"
 }];
 export function AppSidebar() {
   return <Sidebar className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white border-r-0 shadow-2xl">
@@ -149,6 +191,42 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild className="text-white hover:bg-gradient-to-r hover:from-cyan-500/30 hover:to-blue-500/30 hover:text-white border-2 border-transparent hover:border-cyan-300/50 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm">
                     <a href={item.url} className="flex items-center gap-3 p-4">
                       <item.icon className="w-5 h-5 text-cyan-200" />
+                      <span className="font-medium text-slate-950">{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>)}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-blue-300 text-sm font-bold px-3 py-3 bg-blue-500/20 rounded-lg border border-blue-400/30">
+            📊 Reports
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {reportsItems.map(item => <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild className="text-white hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-indigo-500/30 hover:text-white border-2 border-transparent hover:border-blue-300/50 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm">
+                    <a href={item.url} className="flex items-center gap-3 p-4">
+                      <item.icon className="w-5 h-5 text-blue-200" />
+                      <span className="font-medium text-slate-950">{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>)}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-purple-300 text-sm font-bold px-3 py-3 bg-purple-500/20 rounded-lg border border-purple-400/30">
+            ⚡ Advance
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {advanceItems.map(item => <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild className="text-white hover:bg-gradient-to-r hover:from-purple-500/30 hover:to-violet-500/30 hover:text-white border-2 border-transparent hover:border-purple-300/50 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm">
+                    <a href={item.url} className="flex items-center gap-3 p-4">
+                      <item.icon className="w-5 h-5 text-purple-200" />
                       <span className="font-medium text-slate-950">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
