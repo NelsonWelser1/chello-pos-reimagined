@@ -40,7 +40,7 @@ export const portalsItems = [
   {
     title: "Kitchen",
     icon: ChefHat,
-    url: "#kitchen"
+    url: "/kitchen"
   }
 ];
 
