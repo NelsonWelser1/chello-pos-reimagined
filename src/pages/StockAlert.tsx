@@ -132,12 +132,15 @@ export default function StockAlert() {
       const stockoutDate = new Date();
       stockoutDate.setDate(stockoutDate.getDate() + daysUntilStockout);
       
+      const urgency: 'critical' | 'high' | 'medium' = 
+        daysUntilStockout <= item.leadTime ? 'critical' : 
+        daysUntilStockout <= item.leadTime + 2 ? 'high' : 'medium';
+      
       return {
         ...item,
         daysUntilStockout,
         stockoutDate: stockoutDate.toISOString(),
-        urgency: daysUntilStockout <= item.leadTime ? 'critical' : 
-                daysUntilStockout <= item.leadTime + 2 ? 'high' : 'medium'
+        urgency
       };
     }).filter(item => item.daysUntilStockout <= 14);
   }, []);

@@ -11,6 +11,7 @@ interface Ingredient {
   name: string;
   category: string;
   currentStock: number;
+  minimumStock: number;
   unit: string;
   costPerUnit: number;
   supplier: string;
