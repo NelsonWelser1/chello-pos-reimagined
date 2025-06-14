@@ -130,7 +130,7 @@ export const advanceItems = [
   {
     title: "Payment Methods",
     icon: DollarSign,
-    url: "#payment-methods"
+    url: "/payment-methods"
   },
   {
     title: "Pickup Points",

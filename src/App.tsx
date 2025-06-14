@@ -16,6 +16,7 @@ import StockAlert from './pages/StockAlert';
 import ImportsExports from './pages/ImportsExports';
 import NotFound from './pages/NotFound';
 import ServiceTables from './pages/ServiceTables';
+import PaymentMethods from './pages/PaymentMethods';
 import './App.css';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/stock-alert" element={<StockAlert />} />
           <Route path="/imports-exports" element={<ImportsExports />} />
           <Route path="/service-tables" element={<ServiceTables />} />
+          <Route path="/payment-methods" element={<PaymentMethods />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
