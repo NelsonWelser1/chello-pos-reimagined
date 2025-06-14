@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from "@/components/ui/sidebar";
-import { LayoutDashboard, DollarSign, ShoppingCart, ChefHat, Grid3X3, Package, Settings, Layers, Receipt, CreditCard, Users, UserCog, FileText, AlertTriangle, Star, Database, Backup } from "lucide-react";
+import { LayoutDashboard, DollarSign, ShoppingCart, ChefHat, Grid3X3, Package, Settings, Layers, Receipt, CreditCard, Users, UserCog, FileText, AlertTriangle, Star, Database, Archive } from "lucide-react";
 const menuItems = [{
   title: "Dashboard",
   icon: LayoutDashboard,
@@ -88,7 +88,7 @@ const advanceItems = [{
   url: "#pickup-points"
 }, {
   title: "Backup",
-  icon: Backup,
+  icon: Archive,
   url: "#backup"
 }, {
   title: "Settings",
