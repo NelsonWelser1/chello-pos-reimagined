@@ -135,7 +135,7 @@ export const advanceItems = [
   {
     title: "Pickup Points",
     icon: Package,
-    url: "#pickup-points"
+    url: "/pickup-points"
   },
   {
     title: "Backup",
