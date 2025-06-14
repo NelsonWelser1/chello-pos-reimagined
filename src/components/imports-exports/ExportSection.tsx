@@ -42,6 +42,10 @@ export function ExportSection() {
     }, 2000);
   };
 
+  const handleHeadersChange = (checked: boolean | "indeterminate") => {
+    setIncludeHeaders(checked === true);
+  };
+
   const exportTypes = [
     { value: "menu-items", label: "Menu Items" },
     { value: "categories", label: "Categories" },
@@ -137,7 +141,7 @@ export function ExportSection() {
             <Checkbox 
               id="headers" 
               checked={includeHeaders}
-              onCheckedChange={setIncludeHeaders}
+              onCheckedChange={handleHeadersChange}
             />
             <label htmlFor="headers" className="text-sm text-gray-700">
               Include column headers
