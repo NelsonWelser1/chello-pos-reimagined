@@ -1,9 +1,9 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Upload } from "lucide-react";
 
 interface Item {
   id: string;
@@ -62,6 +62,18 @@ export default function ItemForm({
   onSave, 
   categories 
 }: ItemFormProps) {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageUrl = event.target?.result as string;
+        setFormData(prev => ({ ...prev, image: imageUrl }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -126,14 +138,32 @@ export default function ItemForm({
             </div>
             
             <div>
-              <Label htmlFor="image" className="text-sm font-bold">Image URL</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                placeholder="https://..."
-                className="mt-1"
-              />
+              <Label htmlFor="image" className="text-sm font-bold">Item Image</Label>
+              <div className="mt-1">
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="image"
+                  className="flex items-center justify-center w-full h-10 px-3 rounded-md border border-input bg-background cursor-pointer hover:bg-accent"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {formData.image ? 'Change Image' : 'Upload Image'}
+                </label>
+                {formData.image && (
+                  <div className="mt-2">
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="w-16 h-16 object-cover rounded border"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
