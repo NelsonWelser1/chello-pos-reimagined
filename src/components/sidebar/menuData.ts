@@ -35,7 +35,7 @@ export const portalsItems = [
   {
     title: "POS",
     icon: ShoppingCart,
-    url: "#pos"
+    url: "/pos"
   },
   {
     title: "Kitchen",
