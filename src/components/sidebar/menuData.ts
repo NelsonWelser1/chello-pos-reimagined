@@ -1,3 +1,4 @@
+
 import { 
   LayoutDashboard, 
   DollarSign, 
@@ -107,7 +108,7 @@ export const reportsItems = [
   {
     title: "Expense Report",
     icon: FileText,
-    url: "#expense-report"
+    url: "/tax-reports?tab=expense-report"
   },
   {
     title: "Stock Alert",
