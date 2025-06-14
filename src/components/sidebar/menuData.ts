@@ -71,12 +71,12 @@ export const expensesItems = [
   {
     title: "Expense Types",
     icon: Receipt,
-    url: "#expense-types"
+    url: "/expenses"
   },
   {
-    title: "Expenses",
+    title: "Expenses", 
     icon: CreditCard,
-    url: "#expenses"
+    url: "/expenses"
   }
 ];
 
