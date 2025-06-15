@@ -1,60 +1,79 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingCart, Plus, Minus, CreditCard, DollarSign, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useMenuItems } from "@/hooks/useMenuItems";
+import { useCategories } from "@/hooks/useCategories";
 
-interface MenuItem {
+interface CartItem {
   id: string;
   name: string;
   price: number;
   category: string;
-  image?: string;
-  description?: string;
-}
-
-interface CartItem extends MenuItem {
   quantity: number;
+  image?: string;
 }
-
-const menuItems: MenuItem[] = [
-  { id: '1', name: 'Classic Burger', price: 12.99, category: 'Burgers', description: 'Beef patty with lettuce, tomato, onion' },
-  { id: '2', name: 'Chicken Caesar Salad', price: 10.99, category: 'Salads', description: 'Fresh romaine with grilled chicken' },
-  { id: '3', name: 'Margherita Pizza', price: 14.99, category: 'Pizza', description: 'Fresh mozzarella, basil, marinara' },
-  { id: '4', name: 'Fish & Chips', price: 15.99, category: 'Seafood', description: 'Beer battered cod with fries' },
-  { id: '5', name: 'Chocolate Cake', price: 6.99, category: 'Desserts', description: 'Rich chocolate layer cake' },
-  { id: '6', name: 'Coca Cola', price: 2.99, category: 'Beverages', description: 'Classic refreshing cola' },
-  { id: '7', name: 'BBQ Ribs', price: 18.99, category: 'Main Course', description: 'Slow cooked pork ribs with BBQ sauce' },
-  { id: '8', name: 'Greek Salad', price: 9.99, category: 'Salads', description: 'Feta, olives, cucumber, tomatoes' },
-];
-
-const categories = ['All', 'Burgers', 'Salads', 'Pizza', 'Seafood', 'Desserts', 'Beverages', 'Main Course'];
 
 export default function POS() {
+  const { items: menuItems, loading: menuLoading } = useMenuItems();
+  const { categories: categoryObjects, loading: categoriesLoading } = useCategories();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('card');
   const { toast } = useToast();
 
-  const filteredItems = selectedCategory === 'All' 
-    ? menuItems 
-    : menuItems.filter(item => item.category === selectedCategory);
+  // Get available menu items only
+  const availableItems = menuItems.filter(item => item.is_available && item.stock_count > 0);
 
-  const addToCart = (item: MenuItem) => {
+  // Create categories list from database + All option
+  const categories = ['All', ...categoryObjects.map(cat => cat.name).sort()];
+
+  const filteredItems = selectedCategory === 'All' 
+    ? availableItems 
+    : availableItems.filter(item => item.category === selectedCategory);
+
+  const addToCart = (item: typeof menuItems[0]) => {
+    // Check if item is still in stock
+    if (item.stock_count <= 0) {
+      toast({
+        title: "Out of Stock",
+        description: `${item.name} is currently out of stock.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     setCart(prev => {
       const existing = prev.find(cartItem => cartItem.id === item.id);
       if (existing) {
+        // Check if adding one more would exceed stock
+        if (existing.quantity >= item.stock_count) {
+          toast({
+            title: "Stock Limit Reached",
+            description: `Only ${item.stock_count} ${item.name}(s) available.`,
+            variant: "destructive"
+          });
+          return prev;
+        }
         return prev.map(cartItem =>
           cartItem.id === item.id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { 
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        category: item.category,
+        quantity: 1,
+        image: item.image
+      }];
     });
   };
 
@@ -84,7 +103,7 @@ export default function POS() {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const processPayment = () => {
+  const processPayment = async () => {
     if (cart.length === 0) {
       toast({
         title: "Empty Cart",
@@ -94,13 +113,78 @@ export default function POS() {
       return;
     }
 
-    toast({
-      title: "Payment Processed",
-      description: `Order #${Date.now()} processed successfully via ${paymentMethod}`,
-    });
-    
-    setCart([]);
+    try {
+      // Create order in database
+      const orderData = {
+        total_amount: getTotalAmount() * 1.085, // Including tax
+        subtotal: getTotalAmount(),
+        tax_amount: getTotalAmount() * 0.085,
+        payment_method: paymentMethod,
+        status: 'completed',
+        items: cart.map(item => ({
+          menu_item_id: item.id,
+          quantity: item.quantity,
+          unit_price: item.price,
+          total_price: item.price * item.quantity
+        }))
+      };
+
+      // Insert order (you'll need to create an orders table)
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([orderData])
+        .select()
+        .single();
+
+      if (orderError) {
+        console.error('Order creation error:', orderError);
+        toast({
+          title: "Order Failed",
+          description: "Failed to create order. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update stock counts for purchased items
+      for (const cartItem of cart) {
+        const menuItem = menuItems.find(item => item.id === cartItem.id);
+        if (menuItem) {
+          const newStockCount = menuItem.stock_count - cartItem.quantity;
+          await supabase
+            .from('menu_items')
+            .update({ stock_count: newStockCount })
+            .eq('id', cartItem.id);
+        }
+      }
+
+      toast({
+        title: "Payment Processed",
+        description: `Order #${order?.id?.slice(-8)} processed successfully via ${paymentMethod}`,
+      });
+      
+      setCart([]);
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      toast({
+        title: "Payment Failed",
+        description: "An error occurred while processing payment.",
+        variant: "destructive"
+      });
+    }
   };
+
+  if (menuLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-12">
+            <div className="text-xl text-slate-600">Loading menu items...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
@@ -144,6 +228,13 @@ export default function POS() {
                     <Card key={item.id} className="hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-200 bg-gradient-to-br from-white to-slate-50">
                       <CardContent className="p-4">
                         <div className="space-y-3">
+                          {item.image && (
+                            <img 
+                              src={item.image} 
+                              alt={item.name}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          )}
                           <div className="flex justify-between items-start">
                             <h3 className="font-bold text-lg text-slate-800">{item.name}</h3>
                             <Badge variant="secondary" className="bg-green-100 text-green-800 font-bold">
@@ -151,18 +242,29 @@ export default function POS() {
                             </Badge>
                           </div>
                           <p className="text-sm text-slate-600">{item.description}</p>
+                          <div className="flex justify-between items-center text-xs text-slate-500">
+                            <span>Stock: {item.stock_count}</span>
+                            <span>{item.preparation_time}min</span>
+                          </div>
                           <Button 
                             onClick={() => addToCart(item)}
-                            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold"
+                            disabled={item.stock_count <= 0}
+                            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold disabled:opacity-50"
                           >
                             <Plus className="w-4 h-4 mr-2" />
-                            Add to Cart
+                            {item.stock_count <= 0 ? 'Out of Stock' : 'Add to Cart'}
                           </Button>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
+
+                {filteredItems.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-slate-500 font-medium">No items available in this category</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -205,7 +307,10 @@ export default function POS() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => addToCart(item)}
+                            onClick={() => {
+                              const menuItem = menuItems.find(mi => mi.id === item.id);
+                              if (menuItem) addToCart(menuItem);
+                            }}
                             className="w-8 h-8 p-0"
                           >
                             <Plus className="w-4 h-4" />
