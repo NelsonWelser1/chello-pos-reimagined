@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Grid3X3, Plus, Search, Edit, Trash2, Eye, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,80 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-
-interface Category {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
-  itemCount: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const initialCategories: Category[] = [
-  {
-    id: '1',
-    name: 'Burgers',
-    description: 'Delicious beef, chicken, and veggie burgers with various toppings',
-    color: '#ef4444',
-    itemCount: 12,
-    isActive: true,
-    createdAt: '2024-01-15',
-    updatedAt: '2024-01-20'
-  },
-  {
-    id: '2',
-    name: 'Pizza',
-    description: 'Fresh baked pizzas with authentic Italian flavors',
-    color: '#f97316',
-    itemCount: 8,
-    isActive: true,
-    createdAt: '2024-01-16',
-    updatedAt: '2024-01-18'
-  },
-  {
-    id: '3',
-    name: 'Salads',
-    description: 'Fresh and healthy salad options with premium ingredients',
-    color: '#22c55e',
-    itemCount: 6,
-    isActive: true,
-    createdAt: '2024-01-17',
-    updatedAt: '2024-01-19'
-  },
-  {
-    id: '4',
-    name: 'Beverages',
-    description: 'Refreshing drinks, sodas, juices, and specialty beverages',
-    color: '#3b82f6',
-    itemCount: 15,
-    isActive: true,
-    createdAt: '2024-01-18',
-    updatedAt: '2024-01-21'
-  },
-  {
-    id: '5',
-    name: 'Desserts',
-    description: 'Sweet treats and desserts to end your meal perfectly',
-    color: '#a855f7',
-    itemCount: 7,
-    isActive: true,
-    createdAt: '2024-01-19',
-    updatedAt: '2024-01-22'
-  },
-  {
-    id: '6',
-    name: 'Seafood',
-    description: 'Fresh seafood dishes prepared with the finest ingredients',
-    color: '#06b6d4',
-    itemCount: 9,
-    isActive: false,
-    createdAt: '2024-01-20',
-    updatedAt: '2024-01-23'
-  }
-];
+import { useCategories } from "@/hooks/useCategories";
+import { type Category } from "@/types/category";
 
 const colorOptions = [
   '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
@@ -92,7 +19,7 @@ const colorOptions = [
 ];
 
 export default function Categories() {
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const { categories, loading, addCategory, updateCategory, deleteCategory, refetch } = useCategories();
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -105,10 +32,10 @@ export default function Categories() {
 
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.description.toLowerCase().includes(searchTerm.toLowerCase())
+    category.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name.trim()) {
       toast({
         title: "Validation Error",
@@ -119,32 +46,38 @@ export default function Categories() {
     }
 
     if (editingCategory) {
-      setCategories(prev => prev.map(cat => 
-        cat.id === editingCategory.id 
-          ? { ...cat, ...formData, updatedAt: new Date().toISOString().split('T')[0] }
-          : cat
-      ));
-      toast({
-        title: "Category Updated",
-        description: `${formData.name} has been updated successfully`
-      });
+      const res = await updateCategory(editingCategory.id, { ...formData, updated_at: new Date().toISOString().split('T')[0] });
+      if (res) {
+        toast({
+          title: "Category Updated",
+          description: `${formData.name} has been updated successfully`
+        });
+        handleCloseDialog();
+      } else {
+        toast({
+          title: "Error",
+          description: "Could not update category.",
+          variant: "destructive"
+        });
+      }
     } else {
-      const newCategory: Category = {
-        id: Date.now().toString(),
+      const res = await addCategory({
         ...formData,
-        itemCount: 0,
-        isActive: true,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0]
-      };
-      setCategories(prev => [...prev, newCategory]);
-      toast({
-        title: "Category Created",
-        description: `${formData.name} has been created successfully`
       });
+      if (res) {
+        toast({
+          title: "Category Created",
+          description: `${formData.name} has been created successfully`
+        });
+        handleCloseDialog();
+      } else {
+        toast({
+          title: "Error",
+          description: "Could not create category.",
+          variant: "destructive"
+        });
+      }
     }
-
-    handleCloseDialog();
   };
 
   const handleEdit = (category: Category) => {
@@ -157,28 +90,33 @@ export default function Categories() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    const category = categories.find(cat => cat.id === id);
-    if (category && category.itemCount > 0) {
+  const handleDelete = async (id: string) => {
+    const ok = await deleteCategory(id);
+    if (ok) {
       toast({
-        title: "Cannot Delete Category",
-        description: "This category contains items. Please remove all items first.",
+        title: "Category Deleted",
+        description: "Category has been deleted successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Could not delete category.",
         variant: "destructive"
       });
-      return;
     }
-
-    setCategories(prev => prev.filter(cat => cat.id !== id));
-    toast({
-      title: "Category Deleted",
-      description: "Category has been deleted successfully"
-    });
   };
 
-  const toggleStatus = (id: string) => {
-    setCategories(prev => prev.map(cat =>
-      cat.id === id ? { ...cat, isActive: !cat.isActive } : cat
-    ));
+  const toggleStatus = async (id: string) => {
+    const cat = categories.find((c) => c.id === id);
+    if (!cat) return;
+    const ok = await updateCategory(cat.id, { is_active: !cat.is_active });
+    if (!ok) {
+      toast({
+        title: "Error",
+        description: "Could not update status.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleCloseDialog = () => {
@@ -304,7 +242,7 @@ export default function Categories() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-green-100">Active Categories</p>
-                  <p className="text-3xl font-black">{categories.filter(c => c.isActive).length}</p>
+                  <p className="text-3xl font-black">{categories.filter(c => c.is_active).length}</p>
                 </div>
                 <Eye className="w-12 h-12 text-green-200" />
               </div>
@@ -316,7 +254,7 @@ export default function Categories() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-purple-100">Total Items</p>
-                  <p className="text-3xl font-black">{categories.reduce((sum, cat) => sum + cat.itemCount, 0)}</p>
+                  <p className="text-3xl font-black">0</p>
                 </div>
                 <Package className="w-12 h-12 text-purple-200" />
               </div>
@@ -328,9 +266,7 @@ export default function Categories() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-orange-100">Avg Items/Category</p>
-                  <p className="text-3xl font-black">
-                    {categories.length > 0 ? Math.round(categories.reduce((sum, cat) => sum + cat.itemCount, 0) / categories.length) : 0}
-                  </p>
+                  <p className="text-3xl font-black">0</p>
                 </div>
                 <Grid3X3 className="w-12 h-12 text-orange-200" />
               </div>
@@ -352,27 +288,26 @@ export default function Categories() {
                     <div>
                       <CardTitle className="text-xl font-bold text-slate-800">{category.name}</CardTitle>
                       <Badge 
-                        variant={category.isActive ? "default" : "secondary"}
-                        className={category.isActive ? "bg-green-500" : "bg-gray-400"}
+                        variant={category.is_active ? "default" : "secondary"}
+                        className={category.is_active ? "bg-green-500" : "bg-gray-400"}
                       >
-                        {category.isActive ? 'Active' : 'Inactive'}
+                        {category.is_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
                   </div>
                   <Badge variant="outline" className="font-bold">
-                    {category.itemCount} items
+                    {/* TODO: Connect item counts */}
+                    0 items
                   </Badge>
                 </div>
               </CardHeader>
               
               <CardContent className="space-y-4">
                 <p className="text-slate-600 text-sm">{category.description}</p>
-                
                 <div className="text-xs text-slate-500 space-y-1">
-                  <p>Created: {category.createdAt}</p>
-                  <p>Updated: {category.updatedAt}</p>
+                  <p>Created: {category.created_at}</p>
+                  <p>Updated: {category.updated_at}</p>
                 </div>
-                
                 <div className="flex gap-2">
                   <Button
                     size="sm"
@@ -383,22 +318,19 @@ export default function Categories() {
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
-                  
                   <Button
                     size="sm"
-                    variant={category.isActive ? "secondary" : "default"}
+                    variant={category.is_active ? "secondary" : "default"}
                     onClick={() => toggleStatus(category.id)}
                     className="flex-1"
                   >
                     <Eye className="w-4 h-4 mr-1" />
-                    {category.isActive ? 'Deactivate' : 'Activate'}
+                    {category.is_active ? 'Deactivate' : 'Activate'}
                   </Button>
-                  
                   <Button
                     size="sm"
                     variant="destructive"
                     onClick={() => handleDelete(category.id)}
-                    disabled={category.itemCount > 0}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
