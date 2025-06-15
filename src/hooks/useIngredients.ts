@@ -54,8 +54,8 @@ export interface IngredientFormData {
   };
 }
 
+// Utility: map db row to IngredientRecord, as before
 function mapDbToIngredient(i: any): IngredientRecord {
-  // Defensive fallback for nulls
   return {
     id: i.id,
     name: i.name,
@@ -67,8 +67,8 @@ function mapDbToIngredient(i: any): IngredientRecord {
     costPerUnit: Number(i.cost_per_unit ?? 0),
     supplier: i.supplier ?? "",
     supplierContact: i.supplier_contact ?? "",
-    expiryDate: i.expiry_date,
-    lastRestocked: i.last_restocked,
+    expiryDate: i.expiry_date ?? null,
+    lastRestocked: i.last_restocked ?? null,
     isPerishable: !!i.is_perishable,
     storageLocation: i.storage_location ?? "",
     allergens: Array.isArray(i.allergens) ? i.allergens : [],
@@ -92,6 +92,7 @@ export function useIngredients() {
   useEffect(() => {
     setLoading(true);
     supabase
+      // @ts-expect-error: 'ingredients' is not yet in generated types, use string table name
       .from("ingredients")
       .select("*")
       .order("created_at", { ascending: false })
@@ -112,7 +113,6 @@ export function useIngredients() {
 
   // ADD
   const addIngredient = async (form: IngredientFormData) => {
-    // Input validation: check required fields
     if (!form.name || !form.category || !form.unit) {
       toast({
         title: "Please complete all required fields",
@@ -121,8 +121,8 @@ export function useIngredients() {
       });
       return null;
     }
-
     setLoading(true);
+    // @ts-expect-error: 'ingredients' not in generated types yet
     const { error, data } = await supabase
       .from("ingredients")
       .insert({
@@ -159,7 +159,8 @@ export function useIngredients() {
       return null;
     }
 
-    // refetch all
+    // Refetch all
+    // @ts-expect-error: 'ingredients' is not yet in generated types
     const { data: allData } = await supabase
       .from("ingredients")
       .select("*")
@@ -176,8 +177,6 @@ export function useIngredients() {
     return data ? mapDbToIngredient(data) : null;
   };
 
-  // Optionally: Update, Delete (not in the original request, but could extend here)
-
+  // Optionally: Update, Delete (for later)
   return { ingredients, loading, addIngredient };
 }
-
