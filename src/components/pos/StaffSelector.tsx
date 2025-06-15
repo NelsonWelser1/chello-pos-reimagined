@@ -33,12 +33,12 @@ export default function StaffSelector({ selectedStaffId, onStaffSelect }: StaffS
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <Select value={selectedStaffId || ""} onValueChange={(value) => onStaffSelect(value || null)}>
+        <Select value={selectedStaffId || "none"} onValueChange={(value) => onStaffSelect(value === "none" ? null : value)}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select staff member" />
           </SelectTrigger>
           <SelectContent className="bg-white border shadow-lg z-50">
-            <SelectItem value="">No staff selected</SelectItem>
+            <SelectItem value="none">No staff selected</SelectItem>
             {activeStaff.map((member) => (
               <SelectItem key={member.id} value={member.id}>
                 <div className="flex items-center gap-2">
