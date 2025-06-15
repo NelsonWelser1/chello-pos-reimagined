@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { CreditCard, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -165,18 +164,18 @@ export default function POSPaymentHandler({
   const updateStockCounts = async () => {
     try {
       for (const item of cart) {
-        const { error } = await supabase
-          .from('menu_items')
-          .update({ 
-            stock_count: supabase.rpc('decrement_stock', { 
-              item_id: item.id, 
-              quantity: item.quantity 
-            })
-          })
-          .eq('id', item.id);
+        const menuItem = menuItems.find(m => m.id === item.id);
+        if (menuItem) {
+          const newStockCount = Math.max(0, menuItem.stock_count - item.quantity);
+          
+          const { error } = await supabase
+            .from('menu_items')
+            .update({ stock_count: newStockCount })
+            .eq('id', item.id);
 
-        if (error) {
-          console.error('Error updating stock:', error);
+          if (error) {
+            console.error('Error updating stock:', error);
+          }
         }
       }
     } catch (error) {
