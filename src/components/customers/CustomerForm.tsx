@@ -162,13 +162,13 @@ export default function CustomerForm({ customer, onSubmit, onCancel }: CustomerF
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="state">State/Province</Label>
+                  <Label htmlFor="state">District</Label>
                   <Input 
                     id="state" 
                     name="state" 
                     value={formData.address?.state || ""} 
                     onChange={handleAddressChange} 
-                    placeholder="NY"
+                    placeholder="e.g. Central"
                   />
                 </div>
               </div>
