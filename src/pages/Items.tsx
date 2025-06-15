@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { Package, Plus, Search, Archive } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import ItemStats from "@/components/items/ItemStats";
-import ItemCard from "@/components/items/ItemCard";
-import ItemTable from "@/components/items/ItemTable";
 import ItemForm from "@/components/items/ItemForm";
+import ItemsHeader from "@/components/items/ItemsHeader";
+import ItemsControls from "@/components/items/ItemsControls";
+import ItemsDisplay from "@/components/items/ItemsDisplay";
 
 interface Item {
   id: string;
@@ -626,110 +623,38 @@ export default function Items() {
     });
   };
 
+  const handleAddItem = () => {
+    setEditingItem(null);
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-black bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl">
-              <Package className="w-10 h-10 text-white" />
-            </div>
-            Metric Cafe Menu Management
-          </h1>
-          <p className="text-xl text-slate-600 mt-4 font-medium">Manage your authentic Metric Cafe menu items</p>
-        </div>
+        <ItemsHeader />
+        
+        <ItemsControls
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          categories={categories}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          onAddItem={handleAddItem}
+        />
 
-        {/* Controls */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <Input
-              placeholder="Search items..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 text-lg bg-white/90 backdrop-blur-sm border-2 focus:border-blue-400"
-            />
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {categories.map(category => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
-                className="h-12"
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'grid' ? "default" : "outline"}
-              onClick={() => setViewMode('grid')}
-              className="h-12 px-4"
-            >
-              <Package className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? "default" : "outline"}
-              onClick={() => setViewMode('table')}
-              className="h-12 px-4"
-            >
-              <Archive className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <Button 
-            className="h-12 px-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold text-lg"
-            onClick={() => {
-              setEditingItem(null);
-              setIsDialogOpen(true);
-            }}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Item
-          </Button>
-        </div>
-
-        {/* Statistics */}
         <ItemStats items={items} />
 
-        {/* Items Display */}
-        {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map(item => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onToggleAvailability={toggleAvailability}
-              />
-            ))}
-          </div>
-        ) : (
-          <ItemTable
-            items={filteredItems}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleAvailability={toggleAvailability}
-          />
-        )}
-
-        {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <Package className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-xl font-bold text-slate-600 mb-2">No items found</h3>
-            <p className="text-slate-500">
-              {searchTerm || selectedCategory !== 'All' 
-                ? 'Try adjusting your search or filter' 
-                : 'Create your first item to get started'}
-            </p>
-          </div>
-        )}
+        <ItemsDisplay
+          viewMode={viewMode}
+          filteredItems={filteredItems}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onToggleAvailability={toggleAvailability}
+          searchTerm={searchTerm}
+          selectedCategory={selectedCategory}
+        />
 
         <ItemForm
           isOpen={isDialogOpen}
