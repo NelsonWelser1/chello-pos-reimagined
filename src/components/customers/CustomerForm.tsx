@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { User, Mail, Phone, MapPin, Save, X } from "lucide-react";
 import type { Customer, NewCustomer } from "@/hooks/useCustomers";
 
 interface CustomerFormProps {
@@ -41,7 +45,7 @@ export default function CustomerForm({ customer, onSubmit, onCancel }: CustomerF
     }
   }, [customer]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -64,47 +68,145 @@ export default function CustomerForm({ customer, onSubmit, onCancel }: CustomerF
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{customer ? "Edit Customer" : "Add New Customer"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <User className="w-5 h-5" />
+            {customer ? "Edit Customer" : "Add New Customer"}
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">Name</Label>
-            <Input id="name" name="name" value={formData.name} onChange={handleChange} className="col-span-3" required />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">Email</Label>
-            <Input id="email" name="email" type="email" value={formData.email || ""} onChange={handleChange} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phone" className="text-right">Phone</Label>
-            <Input id="phone" name="phone" value={formData.phone || ""} onChange={handleChange} className="col-span-3" />
-          </div>
-          <h4 className="text-lg font-medium mt-4 border-t pt-4 col-span-4">Address</h4>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="street" className="text-right">Street</Label>
-            <Input id="street" name="street" value={formData.address?.street || ""} onChange={handleAddressChange} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="city" className="text-right">City</Label>
-            <Input id="city" name="city" value={formData.address?.city || ""} onChange={handleAddressChange} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="state" className="text-right">State</Label>
-            <Input id="state" name="state" value={formData.address?.state || ""} onChange={handleAddressChange} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="zip" className="text-right">Zip Code</Label>
-            <Input id="zip" name="zip" value={formData.address?.zip || ""} onChange={handleAddressChange} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="country" className="text-right">Country</Label>
-            <Input id="country" name="country" value={formData.address?.country || ""} onChange={handleAddressChange} className="col-span-3" />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button type="submit">Save Customer</Button>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Basic Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name *</Label>
+                  <Input 
+                    id="name" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleChange} 
+                    placeholder="Enter customer's full name"
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="flex items-center gap-1">
+                    <Mail className="w-3 h-3" />
+                    Email Address
+                  </Label>
+                  <Input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    value={formData.email || ""} 
+                    onChange={handleChange} 
+                    placeholder="customer@example.com"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="flex items-center gap-1">
+                  <Phone className="w-3 h-3" />
+                  Phone Number
+                </Label>
+                <Input 
+                  id="phone" 
+                  name="phone" 
+                  value={formData.phone || ""} 
+                  onChange={handleChange} 
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Address Information */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Address Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="street">Street Address</Label>
+                <Input 
+                  id="street" 
+                  name="street" 
+                  value={formData.address?.street || ""} 
+                  onChange={handleAddressChange} 
+                  placeholder="123 Main Street"
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input 
+                    id="city" 
+                    name="city" 
+                    value={formData.address?.city || ""} 
+                    onChange={handleAddressChange} 
+                    placeholder="New York"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="state">State/Province</Label>
+                  <Input 
+                    id="state" 
+                    name="state" 
+                    value={formData.address?.state || ""} 
+                    onChange={handleAddressChange} 
+                    placeholder="NY"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="zip">ZIP/Postal Code</Label>
+                  <Input 
+                    id="zip" 
+                    name="zip" 
+                    value={formData.address?.zip || ""} 
+                    onChange={handleAddressChange} 
+                    placeholder="10001"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="country">Country</Label>
+                  <Input 
+                    id="country" 
+                    name="country" 
+                    value={formData.address?.country || ""} 
+                    onChange={handleAddressChange} 
+                    placeholder="United States"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <DialogFooter className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} className="flex items-center gap-2">
+              <X className="w-4 h-4" />
+              Cancel
+            </Button>
+            <Button type="submit" className="flex items-center gap-2">
+              <Save className="w-4 h-4" />
+              {customer ? "Update Customer" : "Save Customer"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
