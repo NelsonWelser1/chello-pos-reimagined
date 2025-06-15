@@ -1,4 +1,5 @@
 
+
 import { supabase } from "@/integrations/supabase/client";
 import { KitchenOrder } from "@/types/kitchen";
 
@@ -54,8 +55,8 @@ export const fetchKitchenOrders = async (): Promise<KitchenOrder[]> => {
       id: order.id,
       order_id: order.order_id,
       order_number: `ORD-${order.orders.order_number.slice(-6)}`,
-      status: order.status,
-      priority: order.priority,
+      status: order.status as KitchenOrder['status'],
+      priority: order.priority as KitchenOrder['priority'],
       estimated_time: order.estimated_time,
       customer_name: order.orders.customer_name?.name || 'Walk-in Customer',
       table_number: order.orders.table_number,
@@ -67,7 +68,7 @@ export const fetchKitchenOrders = async (): Promise<KitchenOrder[]> => {
         quantity: item.order_items?.quantity || 1,
         special_instructions: item.special_instructions,
         prep_time: item.prep_time,
-        status: item.status
+        status: item.status as 'pending' | 'preparing' | 'ready'
       }))
     }));
 
@@ -199,3 +200,4 @@ export const createKitchenOrder = async (orderId: string, cart: CartItem[], menu
     throw error;
   }
 };
+
