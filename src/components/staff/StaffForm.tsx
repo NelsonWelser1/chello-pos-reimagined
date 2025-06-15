@@ -9,6 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Save, User, Mail, Phone, DollarSign, Shield, Key } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
+
+type StaffRole = Database["public"]["Enums"]["staff_role"];
+type StaffInsert = Database["public"]["Tables"]["staff"]["Insert"];
+type StaffUpdate = Database["public"]["Tables"]["staff"]["Update"];
 
 interface StaffFormProps {
   staff?: any;
@@ -20,7 +25,7 @@ export function StaffForm({ staff, onClose }: StaffFormProps) {
     name: '',
     email: '',
     phone: '',
-    role: 'Waiter',
+    role: 'Waiter' as StaffRole,
     hourly_rate: '',
     pin_code: '',
     is_active: true
@@ -50,7 +55,7 @@ export function StaffForm({ staff, onClose }: StaffFormProps) {
 
     setIsSubmitting(true);
     try {
-      const submitData = {
+      const submitData: StaffInsert = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone || null,
@@ -61,9 +66,13 @@ export function StaffForm({ staff, onClose }: StaffFormProps) {
       };
 
       if (staff) {
+        const updateData: StaffUpdate = {
+          ...submitData
+        };
+        
         const { error } = await supabase
           .from('staff')
-          .update(submitData)
+          .update(updateData)
           .eq('id', staff.id);
         
         if (error) throw error;
@@ -86,7 +95,7 @@ export function StaffForm({ staff, onClose }: StaffFormProps) {
     }
   };
 
-  const roles = ['Admin', 'Manager', 'Chef', 'Waiter', 'Cashier'];
+  const roles: StaffRole[] = ['Admin', 'Manager', 'Chef', 'Waiter', 'Cashier'];
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -163,7 +172,7 @@ export function StaffForm({ staff, onClose }: StaffFormProps) {
                   <Shield className="w-4 h-4" />
                   Role
                 </Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                <Select value={formData.role} onValueChange={(value: StaffRole) => setFormData({ ...formData, role: value })}>
                   <SelectTrigger className="border-slate-300 focus:border-blue-400">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
