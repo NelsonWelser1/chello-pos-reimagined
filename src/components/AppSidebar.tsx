@@ -2,15 +2,9 @@
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarMenuSection } from "./sidebar/SidebarMenuSection";
-import { menuItems, portalsItems, foodsItems, expensesItems, peopleItems as originalPeopleItems, reportsItems, advanceItems } from "./sidebar/menuData";
-import { UsersRound } from "lucide-react";
+import { menuItems, portalsItems, foodsItems, expensesItems, peopleItems, reportsItems, advanceItems } from "./sidebar/menuData";
 
 export function AppSidebar() {
-  const peopleItems = [
-    { title: "Customers", url: "/customers", icon: UsersRound, label: "New" },
-    ...originalPeopleItems,
-  ];
-
   return <Sidebar className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white border-r-0 shadow-2xl">
       <SidebarHeader />
       

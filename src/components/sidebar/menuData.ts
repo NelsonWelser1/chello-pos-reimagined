@@ -16,7 +16,8 @@ import {
   Upload,
   Table,
   MapPin,
-  Database
+  Database,
+  UsersRound
 } from "lucide-react";
 
 export const menuItems = [
@@ -45,7 +46,7 @@ export const expensesItems = [
 ];
 
 export const peopleItems = [
-  { icon: Users, title: "Customers", url: "/customers" },
+  { icon: UsersRound, title: "Customers", url: "/customers" },
   { icon: Users, title: "Staff", url: "/staff" },
 ];
 
