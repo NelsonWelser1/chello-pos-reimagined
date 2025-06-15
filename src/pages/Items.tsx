@@ -6,10 +6,14 @@ import ItemsHeader from '@/components/items/ItemsHeader';
 import ItemsControls from '@/components/items/ItemsControls';
 import ItemsDisplay from '@/components/items/ItemsDisplay';
 import ItemForm from '@/components/items/ItemForm';
+import { useCategories } from '@/hooks/useCategories';
+import { type Category } from '@/types/category';
 
 export default function Items() {
   const { items, loading, createItem, updateItem, deleteItem, toggleAvailability } = useMenuItems();
-  
+
+  const { categories: categoryObjects, loading: categoriesLoading } = useCategories();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
@@ -32,11 +36,12 @@ export default function Items() {
     isGlutenFree: false,
   });
 
-  // Get unique categories
+  // Now get unique category names from the fetched category objects
   const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(items.map(item => item.category)));
-    return ['All', ...uniqueCategories.sort()];
-  }, [items]);
+    if (!categoryObjects || categoryObjects.length === 0) return ['All'];
+    const catNames = categoryObjects.map(c => c.name);
+    return ['All', ...catNames.sort()];
+  }, [categoryObjects]);
 
   // Filter items based on search and category
   const filteredItems = useMemo(() => {
@@ -54,7 +59,7 @@ export default function Items() {
       name: '',
       description: '',
       price: 0,
-      category: categories.includes('Coffee') ? 'Coffee' : categories[1] || '',
+      category: categories.includes('Coffee') ? 'Coffee' : (categories[1] || ''),
       image: '',
       stockCount: 0,
       lowStockAlert: 5,
@@ -92,13 +97,13 @@ export default function Items() {
 
   const handleSave = async () => {
     let success = false;
-    
+
     if (editingItem) {
       success = await updateItem(editingItem.id, formData);
     } else {
       success = await createItem(formData);
     }
-    
+
     if (success) {
       setIsFormOpen(false);
       setEditingItem(null);
@@ -120,7 +125,7 @@ export default function Items() {
     setEditingItem(null);
   };
 
-  if (loading) {
+  if (loading || categoriesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 p-6">
         <div className="max-w-7xl mx-auto">
@@ -137,7 +142,8 @@ export default function Items() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 p-6">
       <div className="max-w-7xl mx-auto">
         <ItemsHeader />
-        
+
+        {/* Pass down the categories (names) for filter buttons */}
         <ItemsControls
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -159,6 +165,7 @@ export default function Items() {
           selectedCategory={selectedCategory}
         />
 
+        {/* For the ItemForm dropdown, send only actual categories (without 'All') */}
         <ItemForm
           isOpen={isFormOpen}
           onClose={handleFormClose}
@@ -166,7 +173,7 @@ export default function Items() {
           formData={formData}
           setFormData={setFormData}
           onSave={handleSave}
-          categories={categories.filter(cat => cat !== 'All')}
+          categories={categoryObjects.filter(c => c.is_active).map(c => c.name)}
         />
       </div>
       <Toaster />
