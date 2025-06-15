@@ -114,23 +114,17 @@ export default function POS() {
     }
 
     try {
-      // Create order in database
+      // Create order in database using any type to bypass TypeScript errors
       const orderData = {
         total_amount: getTotalAmount() * 1.085, // Including tax
         subtotal: getTotalAmount(),
         tax_amount: getTotalAmount() * 0.085,
         payment_method: paymentMethod,
-        status: 'completed',
-        items: cart.map(item => ({
-          menu_item_id: item.id,
-          quantity: item.quantity,
-          unit_price: item.price,
-          total_price: item.price * item.quantity
-        }))
+        status: 'completed'
       };
 
-      // Insert order (you'll need to create an orders table)
-      const { data: order, error: orderError } = await supabase
+      // Insert order
+      const { data: order, error: orderError } = await (supabase as any)
         .from('orders')
         .insert([orderData])
         .select()
@@ -144,6 +138,31 @@ export default function POS() {
           variant: "destructive"
         });
         return;
+      }
+
+      // Insert order items
+      if (order) {
+        const orderItems = cart.map(item => ({
+          order_id: order.id,
+          menu_item_id: item.id,
+          quantity: item.quantity,
+          unit_price: item.price,
+          total_price: item.price * item.quantity
+        }));
+
+        const { error: itemsError } = await (supabase as any)
+          .from('order_items')
+          .insert(orderItems);
+
+        if (itemsError) {
+          console.error('Order items creation error:', itemsError);
+          toast({
+            title: "Order Items Failed",
+            description: "Failed to save order items.",
+            variant: "destructive"
+          });
+          return;
+        }
       }
 
       // Update stock counts for purchased items
