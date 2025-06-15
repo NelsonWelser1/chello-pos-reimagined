@@ -2,32 +2,12 @@
 import { Package } from "lucide-react";
 import ItemCard from "@/components/items/ItemCard";
 import ItemTable from "@/components/items/ItemTable";
-
-interface Item {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  isAvailable: boolean;
-  stockCount: number;
-  lowStockAlert: number;
-  allergens: string[];
-  modifiers: string[];
-  preparationTime: number;
-  calories: number;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { type MenuItem } from '@/hooks/useMenuItems';
 
 interface ItemsDisplayProps {
   viewMode: 'grid' | 'table';
-  filteredItems: Item[];
-  onEdit: (item: Item) => void;
+  filteredItems: MenuItem[];
+  onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   onToggleAvailability: (id: string) => void;
   searchTerm: string;

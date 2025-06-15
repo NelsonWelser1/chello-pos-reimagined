@@ -9,7 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      menu_items: {
+        Row: {
+          allergens: string[] | null
+          calories: number | null
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image: string | null
+          is_available: boolean | null
+          is_gluten_free: boolean | null
+          is_vegan: boolean | null
+          is_vegetarian: boolean | null
+          low_stock_alert: number
+          modifiers: string[] | null
+          name: string
+          preparation_time: number
+          price: number
+          stock_count: number
+          updated_at: string
+        }
+        Insert: {
+          allergens?: string[] | null
+          calories?: number | null
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_available?: boolean | null
+          is_gluten_free?: boolean | null
+          is_vegan?: boolean | null
+          is_vegetarian?: boolean | null
+          low_stock_alert?: number
+          modifiers?: string[] | null
+          name: string
+          preparation_time?: number
+          price?: number
+          stock_count?: number
+          updated_at?: string
+        }
+        Update: {
+          allergens?: string[] | null
+          calories?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_available?: boolean | null
+          is_gluten_free?: boolean | null
+          is_vegan?: boolean | null
+          is_vegetarian?: boolean | null
+          low_stock_alert?: number
+          modifiers?: string[] | null
+          name?: string
+          preparation_time?: number
+          price?: number
+          stock_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

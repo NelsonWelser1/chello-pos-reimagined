@@ -5,51 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload } from "lucide-react";
-
-interface Item {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  isAvailable: boolean;
-  stockCount: number;
-  lowStockAlert: number;
-  allergens: string[];
-  modifiers: string[];
-  preparationTime: number;
-  calories: number;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface FormData {
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  stockCount: number;
-  lowStockAlert: number;
-  allergens: string[];
-  modifiers: string[];
-  preparationTime: number;
-  calories: number;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-}
+import { type MenuItem, type MenuItemFormData } from '@/hooks/useMenuItems';
 
 interface ItemFormProps {
   isOpen: boolean;
   onClose: () => void;
-  editingItem: Item | null;
-  formData: FormData;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  editingItem: MenuItem | null;
+  formData: MenuItemFormData;
+  setFormData: React.Dispatch<React.SetStateAction<MenuItemFormData>>;
   onSave: () => void;
   categories: string[];
 }
@@ -132,7 +95,7 @@ export default function ItemForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                 className="mt-1 w-full h-10 px-3 rounded-md border border-input bg-background"
               >
-                {categories.filter(cat => cat !== 'All').map(category => (
+                {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
