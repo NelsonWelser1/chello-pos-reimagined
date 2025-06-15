@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import StaffHeader from "@/components/staff/StaffHeader";
@@ -8,6 +7,7 @@ import StaffForm from "@/components/staff/StaffForm";
 import { useGetStaff, useAddStaff, useUpdateStaff, useDeleteStaff, type Staff, type NewStaff, type UpdateStaff } from "@/hooks/useStaff";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Staff() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -57,40 +57,41 @@ export default function Staff() {
     };
     
     return (
-        <div className="flex min-h-screen bg-gray-50/50">
-            <AppSidebar />
-            <main className="flex-1 p-6 md:p-8">
-                <StaffHeader onAdd={handleAdd} />
+        <SidebarProvider>
+            <div className="flex min-h-screen bg-gray-50/50">
+                <AppSidebar />
+                <main className="flex-1 p-6 md:p-8">
+                    <StaffHeader onAdd={handleAdd} />
 
-                {isLoading ? (
-                    <div className="space-y-6">
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                            <Skeleton className="h-28 rounded-lg" />
-                            <Skeleton className="h-28 rounded-lg" />
-                            <Skeleton className="h-28 rounded-lg" />
-                            <Skeleton className="h-28 rounded-lg" />
+                    {isLoading ? (
+                        <div className="space-y-6">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                <Skeleton className="h-28 rounded-lg" />
+                                <Skeleton className="h-28 rounded-lg" />
+                                <Skeleton className="h-28 rounded-lg" />
+                                <Skeleton className="h-28 rounded-lg" />
+                            </div>
+                            <Skeleton className="h-96 rounded-lg" />
                         </div>
-                        <Skeleton className="h-96 rounded-lg" />
-                    </div>
-                ) : (
-                    <div className="space-y-6">
-                        <StaffStats staff={staff} />
-                        <StaffTable staff={staff} onEdit={handleEdit} onDelete={handleDelete} />
-                    </div>
-                )}
-                
-                {isFormOpen && (
-                    <StaffForm 
-                        staffMember={selectedStaff}
-                        onSubmit={handleFormSubmit}
-                        onCancel={() => {
-                            setIsFormOpen(false);
-                            setSelectedStaff(null);
-                        }}
-                    />
-                )}
-            </main>
-        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <StaffStats staff={staff} />
+                            <StaffTable staff={staff} onEdit={handleEdit} onDelete={handleDelete} />
+                        </div>
+                    )}
+                    
+                    {isFormOpen && (
+                        <StaffForm 
+                            staffMember={selectedStaff}
+                            onSubmit={handleFormSubmit}
+                            onCancel={() => {
+                                setIsFormOpen(false);
+                                setSelectedStaff(null);
+                            }}
+                        />
+                    )}
+                </main>
+            </div>
+        </SidebarProvider>
     );
 }
-
