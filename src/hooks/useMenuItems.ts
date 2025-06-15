@@ -30,15 +30,15 @@ export interface MenuItemFormData {
   price: number;
   category: string;
   image: string;
-  stock_count: number;
-  low_stock_alert: number;
+  stockCount: number;
+  lowStockAlert: number;
   allergens: string[];
   modifiers: string[];
-  preparation_time: number;
+  preparationTime: number;
   calories: number;
-  is_vegetarian: boolean;
-  is_vegan: boolean;
-  is_gluten_free: boolean;
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isGlutenFree: boolean;
 }
 
 export function useMenuItems() {
@@ -108,9 +108,27 @@ export function useMenuItems() {
         return false;
       }
 
+      // Convert camelCase to snake_case for database
+      const dbData = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        category: formData.category,
+        image: formData.image,
+        stock_count: formData.stockCount,
+        low_stock_alert: formData.lowStockAlert,
+        allergens: formData.allergens,
+        modifiers: formData.modifiers,
+        preparation_time: formData.preparationTime,
+        calories: formData.calories,
+        is_vegetarian: formData.isVegetarian,
+        is_vegan: formData.isVegan,
+        is_gluten_free: formData.isGlutenFree,
+      };
+
       const { data, error } = await supabase
         .from('menu_items')
-        .insert([formData])
+        .insert([dbData])
         .select()
         .single();
 
@@ -176,9 +194,27 @@ export function useMenuItems() {
         return false;
       }
 
+      // Convert camelCase to snake_case for database
+      const dbData = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        category: formData.category,
+        image: formData.image,
+        stock_count: formData.stockCount,
+        low_stock_alert: formData.lowStockAlert,
+        allergens: formData.allergens,
+        modifiers: formData.modifiers,
+        preparation_time: formData.preparationTime,
+        calories: formData.calories,
+        is_vegetarian: formData.isVegetarian,
+        is_vegan: formData.isVegan,
+        is_gluten_free: formData.isGlutenFree,
+      };
+
       const { data, error } = await supabase
         .from('menu_items')
-        .update(formData)
+        .update(dbData)
         .eq('id', id)
         .select()
         .single();
