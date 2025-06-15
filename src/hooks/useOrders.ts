@@ -1,7 +1,6 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from 'react';
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Order {
   id: string;
@@ -19,7 +18,7 @@ export interface Order {
 }
 
 export interface OrderItem {
-  id?: string;
+  id: string;
   order_id: string;
   menu_item_id: string;
   quantity: number;
@@ -27,117 +26,87 @@ export interface OrderItem {
   total_price: number;
   modifiers?: any;
   special_instructions?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
+  const fetchOrders = async () => {
     try {
-      // Use raw SQL query to fetch orders since the types aren't updated yet
+      setLoading(true);
       const { data, error } = await supabase
-        .rpc('get_orders_with_items', {});
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching orders:', error);
-        // Fallback to basic query
-        const { data: basicOrders, error: basicError } = await supabase
-          .from('orders' as any)
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (basicError) {
-          toast({
-            title: 'Error fetching orders',
-            description: basicError.message,
-            variant: 'destructive',
-          });
-          setOrders([]);
-        } else {
-          setOrders(basicOrders || []);
-        }
-      } else {
-        setOrders(data || []);
+        return;
       }
+
+      setOrders(data || []);
     } catch (error) {
-      console.error('Error in fetchOrders:', error);
-      setOrders([]);
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [toast]);
+  };
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  const createOrder = async (orderData: {
-    total_amount: number;
-    subtotal: number;
-    tax_amount: number;
-    payment_method: string;
-    status: string;
-    items: Array<{
-      menu_item_id: string;
-      quantity: number;
-      unit_price: number;
-      total_price: number;
-    }>;
-  }) => {
+  const createOrder = async (orderData: Partial<Order>): Promise<Order | null> => {
     try {
-      // Insert order using any type to bypass TypeScript errors
-      const { data: order, error: orderError } = await (supabase as any)
+      const { data, error } = await supabase
         .from('orders')
-        .insert([{
-          total_amount: orderData.total_amount,
-          subtotal: orderData.subtotal,
-          tax_amount: orderData.tax_amount,
-          payment_method: orderData.payment_method,
-          status: orderData.status
-        }])
+        .insert([orderData])
         .select()
         .single();
 
-      if (orderError) throw orderError;
-
-      // Insert order items
-      if (order && orderData.items.length > 0) {
-        const orderItems = orderData.items.map(item => ({
-          order_id: order.id,
-          menu_item_id: item.menu_item_id,
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          total_price: item.total_price
-        }));
-
-        const { error: itemsError } = await (supabase as any)
-          .from('order_items')
-          .insert(orderItems);
-
-        if (itemsError) throw itemsError;
+      if (error) {
+        console.error('Error creating order:', error);
+        return null;
       }
 
-      await fetchOrders();
-      return order;
+      if (data) {
+        setOrders(prev => [data, ...prev]);
+        return data;
+      }
+
+      return null;
     } catch (error) {
       console.error('Error creating order:', error);
-      toast({
-        title: 'Error creating order',
-        description: 'Failed to create order. Please try again.',
-        variant: 'destructive',
-      });
       return null;
     }
   };
+
+  const createOrderItems = async (items: Partial<OrderItem>[]): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('order_items')
+        .insert(items);
+
+      if (error) {
+        console.error('Error creating order items:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error creating order items:', error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   return {
     orders,
     loading,
     createOrder,
+    createOrderItems,
     refetch: fetchOrders
   };
 }
