@@ -2,97 +2,23 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-export interface KitchenOrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  special_instructions?: string;
-  prep_time: number;
-  status: 'pending' | 'preparing' | 'ready';
-}
-
-export interface KitchenOrder {
-  id: string;
-  order_id: string;
-  order_number: string;
-  items: KitchenOrderItem[];
-  status: 'pending' | 'preparing' | 'ready' | 'served';
-  priority: 'low' | 'medium' | 'high';
-  estimated_time: number;
-  customer_name?: string;
-  table_number?: number;
-  created_at: string;
-  notes?: string;
-}
+import { KitchenOrder } from "@/types/kitchen";
+import { 
+  fetchKitchenOrders, 
+  updateKitchenOrderStatus, 
+  createKitchenOrderFromOrder 
+} from "@/services/kitchenOrderService";
 
 export function useKitchenOrders() {
   const [orders, setOrders] = useState<KitchenOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchKitchenOrders = async () => {
+  const loadKitchenOrders = async () => {
     try {
       setLoading(true);
-      
-      // Fetch kitchen orders with related order data
-      const { data: kitchenOrders, error: kitchenError } = await supabase
-        .from('kitchen_orders')
-        .select(`
-          *,
-          orders (
-            id,
-            table_number,
-            customer_id,
-            customers (
-              name
-            ),
-            order_items (
-              id,
-              quantity,
-              special_instructions,
-              menu_items (
-                name,
-                preparation_time
-              )
-            )
-          )
-        `)
-        .order('created_at', { ascending: true });
-
-      if (kitchenError) {
-        console.error('Error fetching kitchen orders:', kitchenError);
-        return;
-      }
-
-      // Transform data to match our interface
-      const transformedOrders: KitchenOrder[] = (kitchenOrders || []).map((kitchenOrder: any) => {
-        const order = kitchenOrder.orders;
-        const items: KitchenOrderItem[] = (order?.order_items || []).map((item: any) => ({
-          id: item.id,
-          name: item.menu_items?.name || 'Unknown Item',
-          quantity: item.quantity,
-          special_instructions: item.special_instructions,
-          prep_time: item.menu_items?.preparation_time || 5,
-          status: 'pending' as const
-        }));
-
-        return {
-          id: kitchenOrder.id,
-          order_id: kitchenOrder.order_id,
-          order_number: `ORD-${order?.id?.slice(-3) || '000'}`,
-          items,
-          status: kitchenOrder.status,
-          priority: kitchenOrder.priority,
-          estimated_time: kitchenOrder.estimated_time,
-          customer_name: order?.customers?.name || 'Walk-in Customer',
-          table_number: order?.table_number,
-          created_at: kitchenOrder.created_at,
-          notes: kitchenOrder.notes
-        };
-      });
-
-      setOrders(transformedOrders);
+      const kitchenOrders = await fetchKitchenOrders();
+      setOrders(kitchenOrders);
     } catch (error) {
       console.error('Error fetching kitchen orders:', error);
     } finally {
@@ -102,25 +28,9 @@ export function useKitchenOrders() {
 
   const updateOrderStatus = async (kitchenOrderId: string, newStatus: KitchenOrder['status']) => {
     try {
-      const updateData: any = { 
-        status: newStatus,
-        updated_at: new Date().toISOString()
-      };
-
-      // Add timestamps for status changes
-      if (newStatus === 'preparing') {
-        updateData.actual_start_time = new Date().toISOString();
-      } else if (newStatus === 'ready') {
-        updateData.actual_completion_time = new Date().toISOString();
-      }
-
-      const { error } = await supabase
-        .from('kitchen_orders')
-        .update(updateData)
-        .eq('id', kitchenOrderId);
-
-      if (error) {
-        console.error('Error updating order status:', error);
+      const success = await updateKitchenOrderStatus(kitchenOrderId, newStatus);
+      
+      if (!success) {
         toast({
           title: "Error",
           description: "Failed to update order status",
@@ -151,25 +61,15 @@ export function useKitchenOrders() {
     }
   };
 
-  const createKitchenOrderFromOrder = async (orderId: string, priority: 'low' | 'medium' | 'high' = 'medium') => {
+  const createKitchenOrder = async (orderId: string, priority: 'low' | 'medium' | 'high' = 'medium') => {
     try {
-      const { data, error } = await supabase
-        .from('kitchen_orders')
-        .insert([{
-          order_id: orderId,
-          priority,
-          status: 'pending'
-        }])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating kitchen order:', error);
-        return null;
+      const data = await createKitchenOrderFromOrder(orderId, priority);
+      
+      if (data) {
+        // Refresh orders to include the new one
+        await loadKitchenOrders();
       }
-
-      // Refresh orders to include the new one
-      await fetchKitchenOrders();
+      
       return data;
     } catch (error) {
       console.error('Error creating kitchen order:', error);
@@ -178,7 +78,7 @@ export function useKitchenOrders() {
   };
 
   useEffect(() => {
-    fetchKitchenOrders();
+    loadKitchenOrders();
 
     // Set up realtime subscription
     const channel = supabase
@@ -192,7 +92,7 @@ export function useKitchenOrders() {
         },
         () => {
           console.log('Kitchen orders updated, refreshing...');
-          fetchKitchenOrders();
+          loadKitchenOrders();
         }
       )
       .subscribe();
@@ -206,7 +106,10 @@ export function useKitchenOrders() {
     orders,
     loading,
     updateOrderStatus,
-    createKitchenOrderFromOrder,
-    refetch: fetchKitchenOrders
+    createKitchenOrderFromOrder: createKitchenOrder,
+    refetch: loadKitchenOrders
   };
 }
+
+// Export types for backward compatibility
+export type { KitchenOrder, KitchenOrderItem } from "@/types/kitchen";
