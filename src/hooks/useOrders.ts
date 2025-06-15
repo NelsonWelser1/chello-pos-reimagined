@@ -30,6 +30,17 @@ export interface OrderItem {
   updated_at: string;
 }
 
+// Type for creating order items that matches Supabase expectations
+export interface CreateOrderItem {
+  order_id: string;
+  menu_item_id: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  modifiers?: any;
+  special_instructions?: string;
+}
+
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +91,7 @@ export function useOrders() {
     }
   };
 
-  const createOrderItems = async (items: Partial<OrderItem>[]): Promise<boolean> => {
+  const createOrderItems = async (items: CreateOrderItem[]): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('order_items')
