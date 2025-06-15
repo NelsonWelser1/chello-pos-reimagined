@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,14 +60,14 @@ export default function ItemForm({
             </div>
             
             <div>
-              <Label htmlFor="price" className="text-sm font-bold">Price ($)</Label>
+              <Label htmlFor="price" className="text-sm font-bold">Price (UGX)</Label>
               <Input
                 id="price"
                 type="number"
                 step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                placeholder="0.00"
+                placeholder="UGX 0.00"
                 className="mt-1"
               />
             </div>
