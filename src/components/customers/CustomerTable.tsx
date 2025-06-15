@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MoreHorizontal, Edit, Trash2, Mail, Phone, MapPin, Calendar } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Mail, Phone, MapPin, Calendar, Users } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Customer } from "@/hooks/useCustomers";
 import { format } from "date-fns";
