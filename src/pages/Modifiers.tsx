@@ -1,15 +1,27 @@
-
 import { useState, useMemo } from "react";
 import { Settings } from "lucide-react";
 import ModifierStats from "@/components/modifiers/ModifierStats";
 import ModifierCard from "@/components/modifiers/ModifierCard";
 import ModifierTable from "@/components/modifiers/ModifierTable";
 import ModifierForm from "@/components/modifiers/ModifierForm";
-import { useModifiers, Modifier } from "@/hooks/useModifiers";
+import { useModifiers, Modifier, NewModifier } from "@/hooks/useModifiers";
 import ModifiersHeader from "@/components/modifiers/ModifiersHeader";
 import ModifiersControls from "@/components/modifiers/ModifiersControls";
 
 const categories = ['All', 'Add-ons', 'Removals', 'Substitutions', 'Customization'];
+
+const initialFormData: NewModifier = {
+  name: '',
+  description: '',
+  price: 0,
+  category: 'Add-ons',
+  isActive: true,
+  applicableItems: [],
+  modifierType: 'addon',
+  maxQuantity: 1,
+  isRequired: false,
+  sortOrder: 0
+};
 
 export default function Modifiers() {
   const { 
@@ -25,18 +37,7 @@ export default function Modifiers() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingModifier, setEditingModifier] = useState<Modifier | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: 0,
-    category: 'Add-ons',
-    isActive: true,
-    applicableItems: [] as string[],
-    modifierType: 'addon' as 'addon' | 'substitute' | 'removal',
-    maxQuantity: 1,
-    isRequired: false,
-    sortOrder: 0
-  });
+  const [formData, setFormData] = useState<NewModifier>(initialFormData);
 
   const filteredModifiers = useMemo(() => modifiers.filter(modifier => {
     const nameMatch = modifier.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -47,23 +48,10 @@ export default function Modifiers() {
   }), [modifiers, searchTerm, selectedCategory]);
 
   const handleSave = () => {
-    const modifierData = {
-      name: formData.name,
-      description: formData.description,
-      price: formData.price,
-      category: formData.category,
-      is_active: formData.isActive,
-      applicable_items: formData.applicableItems,
-      modifier_type: formData.modifierType,
-      max_quantity: formData.maxQuantity,
-      is_required: formData.isRequired,
-      sort_order: formData.sortOrder,
-    };
-
     if (editingModifier) {
-      updateModifier(editingModifier.id, modifierData);
+      updateModifier(editingModifier.id, formData);
     } else {
-      addModifier(modifierData);
+      addModifier(formData);
     }
 
     handleCloseDialog();
@@ -71,18 +59,8 @@ export default function Modifiers() {
 
   const handleEdit = (modifier: Modifier) => {
     setEditingModifier(modifier);
-    setFormData({
-      name: modifier.name,
-      description: modifier.description ?? '',
-      price: modifier.price ?? 0,
-      category: modifier.category,
-      isActive: modifier.is_active ?? true,
-      applicableItems: modifier.applicable_items ?? [],
-      modifierType: modifier.modifier_type as 'addon' | 'substitute' | 'removal',
-      maxQuantity: modifier.max_quantity ?? 1,
-      isRequired: modifier.is_required ?? false,
-      sortOrder: modifier.sort_order ?? 0
-    });
+    const { id, createdAt, updatedAt, ...formDataToEdit } = modifier;
+    setFormData(formDataToEdit);
     setIsDialogOpen(true);
   };
 
@@ -93,29 +71,19 @@ export default function Modifiers() {
   const toggleActive = (id: string) => {
     const modifier = modifiers.find(m => m.id === id);
     if(modifier) {
-      toggleModifierActive(modifier.id, modifier.is_active ?? true);
+      toggleModifierActive(modifier.id, modifier.isActive);
     }
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingModifier(null);
-    setFormData({
-      name: '',
-      description: '',
-      price: 0,
-      category: 'Add-ons',
-      isActive: true,
-      applicableItems: [],
-      modifierType: 'addon',
-      maxQuantity: 1,
-      isRequired: false,
-      sortOrder: 0
-    });
+    setFormData(initialFormData);
   };
 
   const handleAdd = () => {
     setEditingModifier(null);
+    setFormData(initialFormData);
     setIsDialogOpen(true);
   };
 

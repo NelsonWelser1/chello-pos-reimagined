@@ -4,23 +4,54 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
-export type Modifier = Tables<'modifiers'>;
-export type NewModifier = Omit<TablesInsert<'modifiers'>, 'id' | 'created_at' | 'updated_at'>;
+type DbModifier = Tables<'modifiers'>;
 
-const mapDbToModifier = (modifier: any): Modifier => ({
-    id: modifier.id,
-    name: modifier.name,
-    description: modifier.description ?? '',
-    price: modifier.price ?? 0,
-    category: modifier.category,
-    is_active: modifier.is_active ?? true,
-    applicable_items: modifier.applicable_items ?? [],
-    modifier_type: modifier.modifier_type,
-    max_quantity: modifier.max_quantity ?? 1,
-    is_required: modifier.is_required ?? false,
-    sort_order: modifier.sort_order ?? 0,
-    created_at: modifier.created_at,
-    updated_at: modifier.updated_at,
+export interface Modifier {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    isActive: boolean;
+    applicableItems: string[];
+    modifierType: 'addon' | 'substitute' | 'removal';
+    maxQuantity: number;
+    isRequired: boolean;
+    sortOrder: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export type NewModifier = Omit<Modifier, 'id' | 'createdAt' | 'updatedAt'>;
+export type UpdateModifier = Partial<NewModifier>;
+
+const mapDbToAppModifier = (dbModifier: DbModifier): Modifier => ({
+    id: dbModifier.id,
+    name: dbModifier.name,
+    description: dbModifier.description ?? '',
+    price: dbModifier.price ?? 0,
+    category: dbModifier.category,
+    isActive: dbModifier.is_active ?? true,
+    applicableItems: dbModifier.applicable_items ?? [],
+    modifierType: dbModifier.modifier_type as 'addon' | 'substitute' | 'removal',
+    maxQuantity: dbModifier.max_quantity ?? 1,
+    isRequired: dbModifier.is_required ?? false,
+    sortOrder: dbModifier.sort_order ?? 0,
+    createdAt: dbModifier.created_at,
+    updatedAt: dbModifier.updated_at,
+});
+
+const mapAppToDbModifier = (appModifier: UpdateModifier): TablesUpdate<'modifiers'> => ({
+    name: appModifier.name,
+    description: appModifier.description,
+    price: appModifier.price,
+    category: appModifier.category,
+    is_active: appModifier.isActive,
+    applicable_items: appModifier.applicableItems,
+    modifier_type: appModifier.modifierType,
+    max_quantity: appModifier.maxQuantity,
+    is_required: appModifier.isRequired,
+    sort_order: appModifier.sortOrder,
 });
 
 
@@ -45,7 +76,7 @@ export function useModifiers() {
             });
             setModifiers([]);
         } else {
-            setModifiers(data.map(mapDbToModifier));
+            setModifiers(data.map(mapDbToAppModifier));
         }
         setLoading(false);
     }, [toast]);
@@ -64,10 +95,12 @@ export function useModifiers() {
             return null;
         }
 
+        const dbData = mapAppToDbModifier(modifierData);
+
         setLoading(true);
         const { data, error } = await supabase
             .from('modifiers')
-            .insert(modifierData as TablesInsert<'modifiers'>)
+            .insert(dbData as TablesInsert<'modifiers'>)
             .select()
             .single();
         
@@ -87,11 +120,11 @@ export function useModifiers() {
             description: `"${modifierData.name}" has been created successfully.`,
         });
         setLoading(false);
-        return data ? mapDbToModifier(data) : null;
+        return data ? mapDbToAppModifier(data) : null;
     };
 
-    const updateModifier = async (id: string, modifierData: TablesUpdate<'modifiers'>) => {
-        if (!modifierData.name?.trim()) {
+    const updateModifier = async (id: string, modifierData: UpdateModifier) => {
+        if (modifierData.name !== undefined && !modifierData.name?.trim()) {
             toast({
                 title: "Validation Error",
                 description: "Modifier name is required.",
@@ -100,10 +133,12 @@ export function useModifiers() {
             return null;
         }
 
+        const dbData = mapAppToDbModifier(modifierData);
+
         setLoading(true);
         const { data, error } = await supabase
             .from('modifiers')
-            .update({ ...modifierData, updated_at: new Date().toISOString() })
+            .update({ ...dbData, updated_at: new Date().toISOString() })
             .eq('id', id)
             .select()
             .single();
@@ -121,10 +156,10 @@ export function useModifiers() {
         await fetchModifiers();
         toast({
             title: 'Modifier Updated',
-            description: `"${modifierData.name}" has been updated successfully.`,
+            description: `A modifier has been updated successfully.`,
         });
         setLoading(false);
-        return data ? mapDbToModifier(data) : null;
+        return data ? mapDbToAppModifier(data) : null;
     };
     
     const deleteModifier = async (id: string) => {

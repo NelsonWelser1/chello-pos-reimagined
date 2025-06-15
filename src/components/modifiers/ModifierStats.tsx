@@ -8,9 +8,9 @@ interface ModifierStatsProps {
 }
 
 export default function ModifierStats({ modifiers }: ModifierStatsProps) {
-  const activeModifiers = modifiers.filter(modifier => modifier.is_active);
+  const activeModifiers = modifiers.filter(modifier => modifier.isActive);
   const paidModifiers = modifiers.filter(modifier => (modifier.price ?? 0) > 0);
-  const requiredModifiers = modifiers.filter(modifier => modifier.is_required);
+  const requiredModifiers = modifiers.filter(modifier => modifier.isRequired);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">

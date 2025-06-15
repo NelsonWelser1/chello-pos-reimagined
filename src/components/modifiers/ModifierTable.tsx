@@ -43,15 +43,15 @@ export default function ModifierTable({ modifiers, onEdit, onDelete, onToggleAct
             <TableRow key={modifier.id}>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  {getModifierIcon(modifier.modifier_type)}
-                  <span className="capitalize text-sm">{modifier.modifier_type}</span>
+                  {getModifierIcon(modifier.modifierType)}
+                  <span className="capitalize text-sm">{modifier.modifierType}</span>
                 </div>
               </TableCell>
               <TableCell>
                 <div>
                   <p className="font-bold">{modifier.name}</p>
                   <p className="text-sm text-slate-500">{(modifier.description ?? '').substring(0, 40)}...</p>
-                  {modifier.is_required && (
+                  {modifier.isRequired && (
                     <Badge variant="outline" className="border-orange-400 text-orange-600 text-xs mt-1">
                       Required
                     </Badge>
@@ -64,27 +64,27 @@ export default function ModifierTable({ modifiers, onEdit, onDelete, onToggleAct
               </TableCell>
               <TableCell>
                 <Badge variant="outline">
-                  {modifier.max_quantity}
+                  {modifier.maxQuantity}
                 </Badge>
               </TableCell>
               <TableCell>
                 <Badge 
-                  variant={modifier.is_active ? "default" : "secondary"}
-                  className={modifier.is_active ? "bg-green-500" : "bg-red-500"}
+                  variant={modifier.isActive ? "default" : "secondary"}
+                  className={modifier.isActive ? "bg-green-500" : "bg-red-500"}
                 >
-                  {modifier.is_active ? 'Active' : 'Inactive'}
+                  {modifier.isActive ? 'Active' : 'Inactive'}
                 </Badge>
               </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1 max-w-32">
-                  {(modifier.applicable_items ?? []).slice(0, 2).map(item => (
+                  {(modifier.applicableItems ?? []).slice(0, 2).map(item => (
                     <Badge key={item} variant="outline" className="text-xs">
                       {item}
                     </Badge>
                   ))}
-                  {(modifier.applicable_items?.length ?? 0) > 2 && (
+                  {(modifier.applicableItems?.length ?? 0) > 2 && (
                     <Badge variant="outline" className="text-xs">
-                      +{(modifier.applicable_items?.length ?? 0) - 2}
+                      +{(modifier.applicableItems?.length ?? 0) - 2}
                     </Badge>
                   )}
                 </div>
@@ -96,7 +96,7 @@ export default function ModifierTable({ modifiers, onEdit, onDelete, onToggleAct
                   </Button>
                   <Button 
                     size="sm" 
-                    variant={modifier.is_active ? "secondary" : "default"}
+                    variant={modifier.isActive ? "secondary" : "default"}
                     onClick={() => onToggleActive(modifier.id)}
                   >
                     <Eye className="w-4 h-4" />

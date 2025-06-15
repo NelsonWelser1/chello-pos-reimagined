@@ -4,27 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Modifier } from '@/hooks/useModifiers';
-
-interface FormData {
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  isActive: boolean;
-  applicableItems: string[];
-  modifierType: 'addon' | 'substitute' | 'removal';
-  maxQuantity: number;
-  isRequired: boolean;
-  sortOrder: number;
-}
+import type { Modifier, NewModifier } from '@/hooks/useModifiers';
 
 interface ModifierFormProps {
   isOpen: boolean;
   onClose: () => void;
   editingModifier: Modifier | null;
-  formData: FormData;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  formData: NewModifier;
+  setFormData: React.Dispatch<React.SetStateAction<NewModifier>>;
   onSave: () => void;
   categories: string[];
 }
