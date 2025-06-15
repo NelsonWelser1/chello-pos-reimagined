@@ -90,7 +90,6 @@ export function useIngredients() {
   // LOAD
   useEffect(() => {
     setLoading(true);
-    // @ts-expect-error: 'ingredients' is not in generated Supabase types
     supabase
       .from("ingredients")
       .select("*")
@@ -121,7 +120,6 @@ export function useIngredients() {
       return null;
     }
     setLoading(true);
-    // @ts-expect-error: 'ingredients' is not in generated Supabase types
     const { error, data } = await supabase
       .from("ingredients")
       .insert({
@@ -159,7 +157,6 @@ export function useIngredients() {
     }
 
     // Refetch all
-    // @ts-expect-error: 'ingredients' is not in generated Supabase types
     const { data: allData } = await supabase
       .from("ingredients")
       .select("*")

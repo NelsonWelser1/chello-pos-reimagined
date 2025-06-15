@@ -39,6 +39,81 @@ export type Database = {
         }
         Relationships: []
       }
+      ingredients: {
+        Row: {
+          allergens: string[] | null
+          category: string
+          cost_per_unit: number | null
+          created_at: string
+          current_stock: number | null
+          expiry_date: string | null
+          id: string
+          is_perishable: boolean | null
+          last_restocked: string | null
+          maximum_stock: number | null
+          minimum_stock: number | null
+          name: string
+          nutritional_calories: number | null
+          nutritional_carbs: number | null
+          nutritional_fat: number | null
+          nutritional_fiber: number | null
+          nutritional_protein: number | null
+          storage_location: string | null
+          supplier: string | null
+          supplier_contact: string | null
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          allergens?: string[] | null
+          category: string
+          cost_per_unit?: number | null
+          created_at?: string
+          current_stock?: number | null
+          expiry_date?: string | null
+          id?: string
+          is_perishable?: boolean | null
+          last_restocked?: string | null
+          maximum_stock?: number | null
+          minimum_stock?: number | null
+          name: string
+          nutritional_calories?: number | null
+          nutritional_carbs?: number | null
+          nutritional_fat?: number | null
+          nutritional_fiber?: number | null
+          nutritional_protein?: number | null
+          storage_location?: string | null
+          supplier?: string | null
+          supplier_contact?: string | null
+          unit: string
+          updated_at?: string
+        }
+        Update: {
+          allergens?: string[] | null
+          category?: string
+          cost_per_unit?: number | null
+          created_at?: string
+          current_stock?: number | null
+          expiry_date?: string | null
+          id?: string
+          is_perishable?: boolean | null
+          last_restocked?: string | null
+          maximum_stock?: number | null
+          minimum_stock?: number | null
+          name?: string
+          nutritional_calories?: number | null
+          nutritional_carbs?: number | null
+          nutritional_fat?: number | null
+          nutritional_fiber?: number | null
+          nutritional_protein?: number | null
+          storage_location?: string | null
+          supplier?: string | null
+          supplier_contact?: string | null
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       menu_items: {
         Row: {
           allergens: string[] | null
