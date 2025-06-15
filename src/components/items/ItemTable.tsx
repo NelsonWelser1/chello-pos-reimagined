@@ -4,31 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Eye, Trash2, ImageIcon } from "lucide-react";
-
-interface Item {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  isAvailable: boolean;
-  stockCount: number;
-  lowStockAlert: number;
-  allergens: string[];
-  modifiers: string[];
-  preparationTime: number;
-  calories: number;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { type MenuItem } from '@/hooks/useMenuItems';
 
 interface ItemTableProps {
-  items: Item[];
-  onEdit: (item: Item) => void;
+  items: MenuItem[];
+  onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   onToggleAvailability: (id: string) => void;
 }
@@ -63,24 +43,24 @@ export default function ItemTable({ items, onEdit, onDelete, onToggleAvailabilit
               <TableCell>
                 <div>
                   <p className="font-bold">{item.name}</p>
-                  <p className="text-sm text-slate-500">{item.description.substring(0, 50)}...</p>
+                  <p className="text-sm text-slate-500">{item.description?.substring(0, 50)}...</p>
                 </div>
               </TableCell>
               <TableCell>{item.category}</TableCell>
               <TableCell className="font-bold text-green-600">${item.price}</TableCell>
               <TableCell>
                 <Badge 
-                  variant={item.stockCount <= item.lowStockAlert ? "destructive" : "outline"}
+                  variant={item.stock_count <= item.low_stock_alert ? "destructive" : "outline"}
                 >
-                  {item.stockCount}
+                  {item.stock_count}
                 </Badge>
               </TableCell>
               <TableCell>
                 <Badge 
-                  variant={item.isAvailable ? "default" : "secondary"}
-                  className={item.isAvailable ? "bg-green-500" : "bg-red-500"}
+                  variant={item.is_available ? "default" : "secondary"}
+                  className={item.is_available ? "bg-green-500" : "bg-red-500"}
                 >
-                  {item.isAvailable ? 'Available' : 'Unavailable'}
+                  {item.is_available ? 'Available' : 'Unavailable'}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -90,7 +70,7 @@ export default function ItemTable({ items, onEdit, onDelete, onToggleAvailabilit
                   </Button>
                   <Button 
                     size="sm" 
-                    variant={item.isAvailable ? "secondary" : "default"}
+                    variant={item.is_available ? "secondary" : "default"}
                     onClick={() => onToggleAvailability(item.id)}
                   >
                     <Eye className="w-4 h-4" />

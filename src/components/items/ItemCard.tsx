@@ -3,31 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Eye, Trash2, ImageIcon } from "lucide-react";
-
-interface Item {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  isAvailable: boolean;
-  stockCount: number;
-  lowStockAlert: number;
-  allergens: string[];
-  modifiers: string[];
-  preparationTime: number;
-  calories: number;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { type MenuItem } from '@/hooks/useMenuItems';
 
 interface ItemCardProps {
-  item: Item;
-  onEdit: (item: Item) => void;
+  item: MenuItem;
+  onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   onToggleAvailability: (id: string) => void;
 }
@@ -49,9 +29,9 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability 
             </div>
           )}
           <div className="absolute top-2 right-2 flex gap-1">
-            {item.isVegetarian && <Badge className="bg-green-500 text-xs">V</Badge>}
-            {item.isVegan && <Badge className="bg-green-600 text-xs">VG</Badge>}
-            {item.isGlutenFree && <Badge className="bg-yellow-500 text-xs">GF</Badge>}
+            {item.is_vegetarian && <Badge className="bg-green-500 text-xs">V</Badge>}
+            {item.is_vegan && <Badge className="bg-green-600 text-xs">VG</Badge>}
+            {item.is_gluten_free && <Badge className="bg-yellow-500 text-xs">GF</Badge>}
           </div>
         </div>
         
@@ -62,10 +42,10 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability 
           </div>
           <div className="text-right">
             <Badge 
-              variant={item.isAvailable ? "default" : "secondary"}
-              className={item.isAvailable ? "bg-green-500" : "bg-red-500"}
+              variant={item.is_available ? "default" : "secondary"}
+              className={item.is_available ? "bg-green-500" : "bg-red-500"}
             >
-              {item.isAvailable ? 'Available' : 'Unavailable'}
+              {item.is_available ? 'Available' : 'Unavailable'}
             </Badge>
             <p className="text-sm text-slate-500 mt-1">{item.category}</p>
           </div>
@@ -76,14 +56,14 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability 
         <p className="text-slate-600 text-sm">{item.description}</p>
         
         <div className="flex justify-between text-sm">
-          <span>Stock: <Badge variant="outline">{item.stockCount}</Badge></span>
-          <span>Prep: {item.preparationTime}min</span>
+          <span>Stock: <Badge variant="outline">{item.stock_count}</Badge></span>
+          <span>Prep: {item.preparation_time}min</span>
           <span>{item.calories} cal</span>
         </div>
         
-        {item.stockCount <= item.lowStockAlert && (
+        {item.stock_count <= item.low_stock_alert && (
           <Badge variant="destructive" className="w-full justify-center">
-            {item.stockCount === 0 ? 'Out of Stock' : 'Low Stock'}
+            {item.stock_count === 0 ? 'Out of Stock' : 'Low Stock'}
           </Badge>
         )}
         
@@ -100,12 +80,12 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability 
           
           <Button
             size="sm"
-            variant={item.isAvailable ? "secondary" : "default"}
+            variant={item.is_available ? "secondary" : "default"}
             onClick={() => onToggleAvailability(item.id)}
             className="flex-1"
           >
             <Eye className="w-4 h-4 mr-1" />
-            {item.isAvailable ? 'Hide' : 'Show'}
+            {item.is_available ? 'Hide' : 'Show'}
           </Button>
           
           <Button
