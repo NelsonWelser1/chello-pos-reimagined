@@ -13,7 +13,7 @@ import { Constants } from "@/integrations/supabase/types";
 
 interface StaffFormProps {
   staffMember: Staff | null;
-  onSubmit: (data: NewStaff | (UpdateStaff & { id: string })) => void;
+  onSubmit: (data: NewStaff | UpdateStaff) => void;
   onCancel: () => void;
 }
 
@@ -55,7 +55,7 @@ export default function StaffForm({ staffMember, onSubmit, onCancel }: StaffForm
     e.preventDefault();
     if (staffMember) {
         const { id, created_at, updated_at, ...updateData } = formData as Staff;
-        onSubmit({ id, ...updateData });
+        onSubmit(updateData);
     } else {
         onSubmit(formData as NewStaff);
     }

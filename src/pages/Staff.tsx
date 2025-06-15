@@ -35,17 +35,18 @@ export default function Staff() {
         });
     };
 
-    const handleFormSubmit = (data: NewStaff | (UpdateStaff & { id: string })) => {
-        if ('id' in data) {
-            updateStaffMutation.mutate(data, {
+    const handleFormSubmit = (data: NewStaff | UpdateStaff) => {
+        if (selectedStaff) {
+            updateStaffMutation.mutate({ ...data, id: selectedStaff.id }, {
                 onSuccess: () => {
                     toast.success("Staff member updated successfully.");
                     setIsFormOpen(false);
+                    setSelectedStaff(null);
                 },
                 onError: (error) => toast.error(error.message),
             });
         } else {
-            addStaffMutation.mutate(data, {
+            addStaffMutation.mutate(data as NewStaff, {
                 onSuccess: () => {
                     toast.success("Staff member added successfully.");
                     setIsFormOpen(false);
@@ -82,10 +83,14 @@ export default function Staff() {
                     <StaffForm 
                         staffMember={selectedStaff}
                         onSubmit={handleFormSubmit}
-                        onCancel={() => setIsFormOpen(false)}
+                        onCancel={() => {
+                            setIsFormOpen(false);
+                            setSelectedStaff(null);
+                        }}
                     />
                 )}
             </main>
         </div>
     );
 }
+
