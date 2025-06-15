@@ -1,12 +1,13 @@
+
 import { useState, useMemo } from "react";
-import { Settings, Plus, Search, Archive } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Settings } from "lucide-react";
 import ModifierStats from "@/components/modifiers/ModifierStats";
 import ModifierCard from "@/components/modifiers/ModifierCard";
 import ModifierTable from "@/components/modifiers/ModifierTable";
 import ModifierForm from "@/components/modifiers/ModifierForm";
 import { useModifiers, Modifier } from "@/hooks/useModifiers";
+import ModifiersHeader from "@/components/modifiers/ModifiersHeader";
+import ModifiersControls from "@/components/modifiers/ModifiersControls";
 
 const categories = ['All', 'Add-ons', 'Removals', 'Substitutions', 'Customization'];
 
@@ -113,78 +114,29 @@ export default function Modifiers() {
     });
   };
 
+  const handleAdd = () => {
+    setEditingModifier(null);
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-black bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center justify-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
-              <Settings className="w-10 h-10 text-white" />
-            </div>
-            Modifier Management
-          </h1>
-          <p className="text-xl text-slate-600 mt-4 font-medium">Manage menu item modifiers and customizations</p>
-        </div>
+        <ModifiersHeader />
 
-        {/* Controls */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <Input
-              placeholder="Search modifiers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 text-lg bg-white/90 backdrop-blur-sm border-2 focus:border-purple-400"
-            />
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {categories.map(category => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
-                className="h-12"
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
+        <ModifiersControls
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          onAdd={handleAdd}
+        />
 
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'grid' ? "default" : "outline"}
-              onClick={() => setViewMode('grid')}
-              className="h-12 px-4"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? "default" : "outline"}
-              onClick={() => setViewMode('table')}
-              className="h-12 px-4"
-            >
-              <Archive className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <Button 
-            className="h-12 px-6 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 font-bold text-lg"
-            onClick={() => {
-              setEditingModifier(null);
-              setIsDialogOpen(true);
-            }}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Modifier
-          </Button>
-        </div>
-
-        {/* Statistics */}
         <ModifierStats modifiers={modifiers} />
 
-        {/* Modifiers Display */}
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredModifiers.map(modifier => (

@@ -1,31 +1,16 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Settings, Eye, Star, Archive, DollarSign } from "lucide-react";
-
-interface Modifier {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  isActive: boolean;
-  applicableItems: string[];
-  modifierType: 'addon' | 'substitute' | 'removal';
-  maxQuantity: number;
-  isRequired: boolean;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Modifier } from '@/hooks/useModifiers';
 
 interface ModifierStatsProps {
   modifiers: Modifier[];
 }
 
 export default function ModifierStats({ modifiers }: ModifierStatsProps) {
-  const activeModifiers = modifiers.filter(modifier => modifier.isActive);
-  const paidModifiers = modifiers.filter(modifier => modifier.price > 0);
-  const requiredModifiers = modifiers.filter(modifier => modifier.isRequired);
+  const activeModifiers = modifiers.filter(modifier => modifier.is_active);
+  const paidModifiers = modifiers.filter(modifier => (modifier.price ?? 0) > 0);
+  const requiredModifiers = modifiers.filter(modifier => modifier.is_required);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
@@ -83,7 +68,7 @@ export default function ModifierStats({ modifiers }: ModifierStatsProps) {
             <div>
               <p className="text-indigo-100">Avg Price</p>
               <p className="text-3xl font-black">
-                ${paidModifiers.length > 0 ? (paidModifiers.reduce((sum, modifier) => sum + modifier.price, 0) / paidModifiers.length).toFixed(2) : '0.00'}
+                ${paidModifiers.length > 0 ? (paidModifiers.reduce((sum, modifier) => sum + (modifier.price ?? 0), 0) / paidModifiers.length).toFixed(2) : '0.00'}
               </p>
             </div>
             <Archive className="w-12 h-12 text-indigo-200" />

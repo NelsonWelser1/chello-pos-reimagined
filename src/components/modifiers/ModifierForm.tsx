@@ -6,22 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Modifier } from '@/hooks/useModifiers';
 
-interface Modifier {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  isActive: boolean;
-  applicableItems: string[];
-  modifierType: 'addon' | 'substitute' | 'removal';
-  maxQuantity: number;
-  isRequired: boolean;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface FormData {
   name: string;
   description: string;
