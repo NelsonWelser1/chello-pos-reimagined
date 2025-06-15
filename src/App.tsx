@@ -21,7 +21,6 @@ import PaymentMethods from './pages/PaymentMethods';
 import PickupPoints from './pages/PickupPoints';
 import Backup from './pages/Backup';
 import Customers from './pages/Customers';
-import Staff from './pages/Staff';
 import './App.css';
 
 function App() {
@@ -48,7 +47,6 @@ function App() {
           <Route path="/pickup-points" element={<PickupPoints />} />
           <Route path="/backup" element={<Backup />} />
           <Route path="/customers" element={<Customers />} />
-          <Route path="/staff" element={<Staff />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

@@ -330,45 +330,6 @@ export type Database = {
         }
         Relationships: []
       }
-      staff: {
-        Row: {
-          created_at: string
-          email: string
-          hourly_rate: number | null
-          id: string
-          is_active: boolean
-          name: string
-          phone: string | null
-          pin_code: string | null
-          role: Database["public"]["Enums"]["staff_role"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          hourly_rate?: number | null
-          id?: string
-          is_active?: boolean
-          name: string
-          phone?: string | null
-          pin_code?: string | null
-          role?: Database["public"]["Enums"]["staff_role"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          hourly_rate?: number | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          phone?: string | null
-          pin_code?: string | null
-          role?: Database["public"]["Enums"]["staff_role"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -377,7 +338,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      staff_role: "Admin" | "Manager" | "Chef" | "Waiter" | "Cashier"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -492,8 +453,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      staff_role: ["Admin", "Manager", "Chef", "Waiter", "Cashier"],
-    },
+    Enums: {},
   },
 } as const
