@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import StaffHeader from "@/components/staff/StaffHeader";
 import StaffStats from "@/components/staff/StaffStats";
@@ -8,15 +9,43 @@ import { useGetStaff, useAddStaff, useUpdateStaff, useDeleteStaff, type Staff, t
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Staff() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+    const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+    const queryClient = useQueryClient();
 
     const { data: staff = [], isLoading } = useGetStaff();
     const addStaffMutation = useAddStaff();
     const updateStaffMutation = useUpdateStaff();
     const deleteStaffMutation = useDeleteStaff();
+
+    useEffect(() => {
+        const handleDbChange = (payload: any) => {
+            queryClient.invalidateQueries({ queryKey: ['staff'] });
+
+            if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                const newRecord = payload.new as Staff;
+                if (newRecord.id) {
+                    setHighlightedId(newRecord.id);
+                    setTimeout(() => setHighlightedId(null), 2000);
+                }
+            }
+        };
+
+        const channel = supabase
+            .channel('db-staff-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'staff' }, handleDbChange)
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [queryClient]);
 
     const handleAdd = () => {
         setSelectedStaff(null);
@@ -76,7 +105,7 @@ export default function Staff() {
                     ) : (
                         <div className="space-y-6">
                             <StaffStats staff={staff} />
-                            <StaffTable staff={staff} onEdit={handleEdit} onDelete={handleDelete} />
+                            <StaffTable staff={staff} onEdit={handleEdit} onDelete={handleDelete} highlightedId={highlightedId} />
                         </div>
                     )}
                     

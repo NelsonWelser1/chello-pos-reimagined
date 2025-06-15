@@ -8,14 +8,16 @@ import { MoreHorizontal, Edit, Trash2, Users } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Staff } from "@/hooks/useStaff";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface StaffTableProps {
   staff: Staff[];
   onEdit: (staffMember: Staff) => void;
   onDelete: (id: string) => void;
+  highlightedId?: string | null;
 }
 
-export default function StaffTable({ staff, onEdit, onDelete }: StaffTableProps) {
+export default function StaffTable({ staff, onEdit, onDelete, highlightedId }: StaffTableProps) {
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -62,7 +64,7 @@ export default function StaffTable({ staff, onEdit, onDelete }: StaffTableProps)
             </TableHeader>
             <TableBody>
               {staff.map((staffMember) => (
-                <TableRow key={staffMember.id} className="hover:bg-muted/50">
+                <TableRow key={staffMember.id} className={cn("hover:bg-muted/50 transition-colors duration-300", highlightedId === staffMember.id && "bg-blue-100 dark:bg-blue-900/50")}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                         <Avatar className="w-9 h-9">
