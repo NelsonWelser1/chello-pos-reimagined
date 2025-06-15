@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { ChefHat, Clock, CheckCircle, AlertCircle, Timer, Users, Flame } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChefHat, Clock, CheckCircle, AlertCircle, Timer, Users, Flame, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useKitchenOrders, type KitchenOrder } from "@/hooks/useKitchenOrders";
+import { useKitchenSounds } from "@/hooks/useKitchenSounds";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Kitchen() {
   const { orders, loading, updateOrderStatus } = useKitchenOrders();
+  const { soundEnabled, toggleSound, playReadyAlert } = useKitchenSounds();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('all');
+  const [previousReadyCount, setPreviousReadyCount] = useState(0);
 
   const getStatusColor = (status: KitchenOrder['status']) => {
     switch (status) {
@@ -55,6 +60,20 @@ export default function Kitchen() {
     total: orders.filter(o => o.status !== 'served').length
   };
 
+  // Sound alert when new orders become ready
+  useEffect(() => {
+    const currentReadyCount = orderCounts.ready;
+    if (currentReadyCount > previousReadyCount && previousReadyCount > 0) {
+      playReadyAlert();
+      toast({
+        title: "🔔 Order Ready!",
+        description: `${currentReadyCount - previousReadyCount} order(s) ready to serve`,
+        duration: 5000,
+      });
+    }
+    setPreviousReadyCount(currentReadyCount);
+  }, [orderCounts.ready, previousReadyCount, playReadyAlert, toast]);
+
   if (loading) {
     return (
       <SidebarProvider>
@@ -81,8 +100,18 @@ export default function Kitchen() {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <main className="flex-1">
-          <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b px-4 py-3 shadow-sm">
+          <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b px-4 py-3 shadow-sm flex justify-between items-center">
             <SidebarTrigger className="hover:bg-orange-50 transition-colors" />
+            
+            {/* Sound Control Button */}
+            <Button
+              onClick={toggleSound}
+              variant={soundEnabled ? "default" : "outline"}
+              className="flex items-center gap-2 font-bold"
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              Kitchen Alerts {soundEnabled ? 'ON' : 'OFF'}
+            </Button>
           </div>
           
           <div className="bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 p-6">
