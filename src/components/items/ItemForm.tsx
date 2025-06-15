@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,7 +80,7 @@ export default function ItemForm({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
-            {editingItem ? 'Edit Item' : 'Create New Item'}
+            {editingItem ? 'Edit Menu Item' : 'Add New Menu Item'}
           </DialogTitle>
         </DialogHeader>
         
@@ -200,6 +201,18 @@ export default function ItemForm({
                 className="mt-1"
               />
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="calories" className="text-sm font-bold">Calories</Label>
+            <Input
+              id="calories"
+              type="number"
+              value={formData.calories}
+              onChange={(e) => setFormData(prev => ({ ...prev, calories: parseInt(e.target.value) || 0 }))}
+              className="mt-1"
+              placeholder="Enter calories"
+            />
           </div>
           
           <div>
