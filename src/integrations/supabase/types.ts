@@ -219,6 +219,101 @@ export type Database = {
         }
         Relationships: []
       }
+      kitchen_order_items: {
+        Row: {
+          created_at: string
+          id: string
+          kitchen_order_id: string
+          order_item_id: string
+          prep_time: number
+          special_instructions: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kitchen_order_id: string
+          order_item_id: string
+          prep_time?: number
+          special_instructions?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kitchen_order_id?: string
+          order_item_id?: string
+          prep_time?: number
+          special_instructions?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kitchen_order_items_kitchen_order_id_fkey"
+            columns: ["kitchen_order_id"]
+            isOneToOne: false
+            referencedRelation: "kitchen_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kitchen_order_items_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kitchen_orders: {
+        Row: {
+          actual_completion_time: string | null
+          actual_start_time: string | null
+          created_at: string
+          estimated_time: number
+          id: string
+          notes: string | null
+          order_id: string
+          priority: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_completion_time?: string | null
+          actual_start_time?: string | null
+          created_at?: string
+          estimated_time?: number
+          id?: string
+          notes?: string | null
+          order_id: string
+          priority?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_completion_time?: string | null
+          actual_start_time?: string | null
+          created_at?: string
+          estimated_time?: number
+          id?: string
+          notes?: string | null
+          order_id?: string
+          priority?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kitchen_orders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_items: {
         Row: {
           allergens: string[] | null
