@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -91,8 +90,8 @@ export function useIngredients() {
   // LOAD
   useEffect(() => {
     setLoading(true);
+    // @ts-expect-error: 'ingredients' is not in generated Supabase types
     supabase
-      // @ts-expect-error: 'ingredients' is not yet in generated types, use string table name
       .from("ingredients")
       .select("*")
       .order("created_at", { ascending: false })
@@ -122,7 +121,7 @@ export function useIngredients() {
       return null;
     }
     setLoading(true);
-    // @ts-expect-error: 'ingredients' not in generated types yet
+    // @ts-expect-error: 'ingredients' is not in generated Supabase types
     const { error, data } = await supabase
       .from("ingredients")
       .insert({
@@ -160,7 +159,7 @@ export function useIngredients() {
     }
 
     // Refetch all
-    // @ts-expect-error: 'ingredients' is not yet in generated types
+    // @ts-expect-error: 'ingredients' is not in generated Supabase types
     const { data: allData } = await supabase
       .from("ingredients")
       .select("*")
@@ -177,6 +176,5 @@ export function useIngredients() {
     return data ? mapDbToIngredient(data) : null;
   };
 
-  // Optionally: Update, Delete (for later)
   return { ingredients, loading, addIngredient };
 }
