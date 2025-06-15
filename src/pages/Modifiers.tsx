@@ -1,112 +1,24 @@
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Settings, Plus, Search, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import ModifierStats from "@/components/modifiers/ModifierStats";
 import ModifierCard from "@/components/modifiers/ModifierCard";
 import ModifierTable from "@/components/modifiers/ModifierTable";
 import ModifierForm from "@/components/modifiers/ModifierForm";
-
-interface Modifier {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  isActive: boolean;
-  applicableItems: string[];
-  modifierType: 'addon' | 'substitute' | 'removal';
-  maxQuantity: number;
-  isRequired: boolean;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const initialModifiers: Modifier[] = [
-  {
-    id: '1',
-    name: 'Extra Cheese',
-    description: 'Add extra cheese to your item',
-    price: 2.50,
-    category: 'Add-ons',
-    isActive: true,
-    applicableItems: ['Burgers', 'Pizza', 'Sandwiches'],
-    modifierType: 'addon',
-    maxQuantity: 3,
-    isRequired: false,
-    sortOrder: 1,
-    createdAt: '2024-01-15',
-    updatedAt: '2024-01-20'
-  },
-  {
-    id: '2',
-    name: 'No Onions',
-    description: 'Remove onions from your order',
-    price: 0,
-    category: 'Removals',
-    isActive: true,
-    applicableItems: ['Burgers', 'Salads', 'Sandwiches'],
-    modifierType: 'removal',
-    maxQuantity: 1,
-    isRequired: false,
-    sortOrder: 2,
-    createdAt: '2024-01-16',
-    updatedAt: '2024-01-18'
-  },
-  {
-    id: '3',
-    name: 'Bacon',
-    description: 'Add crispy bacon strips',
-    price: 3.99,
-    category: 'Add-ons',
-    isActive: true,
-    applicableItems: ['Burgers', 'Salads', 'Pizza'],
-    modifierType: 'addon',
-    maxQuantity: 2,
-    isRequired: false,
-    sortOrder: 3,
-    createdAt: '2024-01-17',
-    updatedAt: '2024-01-19'
-  },
-  {
-    id: '4',
-    name: 'Gluten-Free Bun',
-    description: 'Substitute regular bun with gluten-free option',
-    price: 1.50,
-    category: 'Substitutions',
-    isActive: true,
-    applicableItems: ['Burgers', 'Sandwiches'],
-    modifierType: 'substitute',
-    maxQuantity: 1,
-    isRequired: false,
-    sortOrder: 4,
-    createdAt: '2024-01-18',
-    updatedAt: '2024-01-21'
-  },
-  {
-    id: '5',
-    name: 'Spice Level',
-    description: 'Choose your preferred spice level',
-    price: 0,
-    category: 'Customization',
-    isActive: true,
-    applicableItems: ['Burgers', 'Wings', 'Tacos'],
-    modifierType: 'substitute',
-    maxQuantity: 1,
-    isRequired: true,
-    sortOrder: 5,
-    createdAt: '2024-01-19',
-    updatedAt: '2024-01-22'
-  }
-];
+import { useModifiers, Modifier } from "@/hooks/useModifiers";
 
 const categories = ['All', 'Add-ons', 'Removals', 'Substitutions', 'Customization'];
 
 export default function Modifiers() {
-  const [modifiers, setModifiers] = useState<Modifier[]>(initialModifiers);
+  const { 
+    modifiers, 
+    addModifier, 
+    updateModifier, 
+    deleteModifier, 
+    toggleModifierActive 
+  } = useModifiers();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -124,51 +36,33 @@ export default function Modifiers() {
     isRequired: false,
     sortOrder: 0
   });
-  const { toast } = useToast();
 
-  const filteredModifiers = modifiers.filter(modifier => {
-    const matchesSearch = modifier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         modifier.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredModifiers = useMemo(() => modifiers.filter(modifier => {
+    const nameMatch = modifier.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const descMatch = modifier.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false;
+    const matchesSearch = nameMatch || descMatch;
     const matchesCategory = selectedCategory === 'All' || modifier.category === selectedCategory;
     return matchesSearch && matchesCategory;
-  });
+  }), [modifiers, searchTerm, selectedCategory]);
 
   const handleSave = () => {
-    if (!formData.name.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Modifier name is required",
-        variant: "destructive"
-      });
-      return;
-    }
+    const modifierData = {
+      name: formData.name,
+      description: formData.description,
+      price: formData.price,
+      category: formData.category,
+      is_active: formData.isActive,
+      applicable_items: formData.applicableItems,
+      modifier_type: formData.modifierType,
+      max_quantity: formData.maxQuantity,
+      is_required: formData.isRequired,
+      sort_order: formData.sortOrder,
+    };
 
     if (editingModifier) {
-      setModifiers(prev => prev.map(modifier => 
-        modifier.id === editingModifier.id 
-          ? { 
-              ...modifier, 
-              ...formData,
-              updatedAt: new Date().toISOString().split('T')[0] 
-            }
-          : modifier
-      ));
-      toast({
-        title: "Modifier Updated",
-        description: `${formData.name} has been updated successfully`
-      });
+      updateModifier(editingModifier.id, modifierData);
     } else {
-      const newModifier: Modifier = {
-        id: Date.now().toString(),
-        ...formData,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0]
-      };
-      setModifiers(prev => [...prev, newModifier]);
-      toast({
-        title: "Modifier Created",
-        description: `${formData.name} has been created successfully`
-      });
+      addModifier(modifierData);
     }
 
     handleCloseDialog();
@@ -178,31 +72,28 @@ export default function Modifiers() {
     setEditingModifier(modifier);
     setFormData({
       name: modifier.name,
-      description: modifier.description,
-      price: modifier.price,
+      description: modifier.description ?? '',
+      price: modifier.price ?? 0,
       category: modifier.category,
-      isActive: modifier.isActive,
-      applicableItems: modifier.applicableItems,
-      modifierType: modifier.modifierType,
-      maxQuantity: modifier.maxQuantity,
-      isRequired: modifier.isRequired,
-      sortOrder: modifier.sortOrder
+      isActive: modifier.is_active ?? true,
+      applicableItems: modifier.applicable_items ?? [],
+      modifierType: modifier.modifier_type as 'addon' | 'substitute' | 'removal',
+      maxQuantity: modifier.max_quantity ?? 1,
+      isRequired: modifier.is_required ?? false,
+      sortOrder: modifier.sort_order ?? 0
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    setModifiers(prev => prev.filter(modifier => modifier.id !== id));
-    toast({
-      title: "Modifier Deleted",
-      description: "Modifier has been deleted successfully"
-    });
+    deleteModifier(id);
   };
 
   const toggleActive = (id: string) => {
-    setModifiers(prev => prev.map(modifier =>
-      modifier.id === id ? { ...modifier, isActive: !modifier.isActive } : modifier
-    ));
+    const modifier = modifiers.find(m => m.id === id);
+    if(modifier) {
+      toggleModifierActive(modifier.id, modifier.is_active ?? true);
+    }
   };
 
   const handleCloseDialog = () => {
