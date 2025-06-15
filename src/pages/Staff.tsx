@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import StaffHeader from "@/components/staff/StaffHeader";
@@ -87,38 +86,42 @@ export default function Staff() {
     
     return (
         <SidebarProvider>
-            <div className="flex min-h-screen bg-gray-50/50">
+            <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 <AppSidebar />
-                <main className="flex-1 p-6 md:p-8">
-                    <StaffHeader onAdd={handleAdd} />
+                <main className="flex-1 p-4 md:p-6 lg:p-8">
+                    <div className="max-w-7xl mx-auto space-y-8">
+                        <StaffHeader onAdd={handleAdd} />
 
-                    {isLoading ? (
-                        <div className="space-y-6">
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                                <Skeleton className="h-28 rounded-lg" />
-                                <Skeleton className="h-28 rounded-lg" />
-                                <Skeleton className="h-28 rounded-lg" />
-                                <Skeleton className="h-28 rounded-lg" />
+                        {isLoading ? (
+                            <div className="space-y-8">
+                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                                    <Skeleton className="h-32 rounded-xl bg-white/60" />
+                                    <Skeleton className="h-32 rounded-xl bg-white/60" />
+                                    <Skeleton className="h-32 rounded-xl bg-white/60" />
+                                    <Skeleton className="h-32 rounded-xl bg-white/60" />
+                                </div>
+                                <Skeleton className="h-[600px] rounded-xl bg-white/60" />
                             </div>
-                            <Skeleton className="h-96 rounded-lg" />
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            <StaffStats staff={staff} />
-                            <StaffTable staff={staff} onEdit={handleEdit} onDelete={handleDelete} highlightedId={highlightedId} />
-                        </div>
-                    )}
-                    
-                    {isFormOpen && (
-                        <StaffForm 
-                            staffMember={selectedStaff}
-                            onSubmit={handleFormSubmit}
-                            onCancel={() => {
-                                setIsFormOpen(false);
-                                setSelectedStaff(null);
-                            }}
-                        />
-                    )}
+                        ) : (
+                            <div className="space-y-8">
+                                <StaffStats staff={staff} />
+                                <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-1">
+                                    <StaffTable staff={staff} onEdit={handleEdit} onDelete={handleDelete} highlightedId={highlightedId} />
+                                </div>
+                            </div>
+                        )}
+                        
+                        {isFormOpen && (
+                            <StaffForm 
+                                staffMember={selectedStaff}
+                                onSubmit={handleFormSubmit}
+                                onCancel={() => {
+                                    setIsFormOpen(false);
+                                    setSelectedStaff(null);
+                                }}
+                            />
+                        )}
+                    </div>
                 </main>
             </div>
         </SidebarProvider>
