@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Edit } from "lucide-react";
-import type { ExpenseType, ExpenseTypeRule } from "@/pages/ExpenseTypes";
+import { Plus, Trash2, Edit, AlertCircle, Pause, Play } from "lucide-react";
+import type { ExpenseType, ExpenseTypeRule } from "@/hooks/useExpenseTypes";
+import { Badge } from "@/components/ui/badge";
 
 interface ExpenseTypeRulesManagerProps {
   expenseTypes: ExpenseType[];

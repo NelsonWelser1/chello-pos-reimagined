@@ -34,6 +34,16 @@ export interface ExpenseType {
 export type NewExpenseType = Omit<ExpenseType, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateExpenseType = Partial<NewExpenseType>;
 
+export interface ExpenseTypeRule {
+  id: string;
+  typeId: string;
+  name: string;
+  condition: string;
+  action: string;
+  isActive: boolean;
+  priority: number;
+}
+
 
 const mapDbToApp = (dbData: DbExpenseType): ExpenseType => ({
     id: dbData.id,

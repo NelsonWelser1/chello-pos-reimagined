@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,18 +12,8 @@ import ExpenseTypeForm from "@/components/expense-types/ExpenseTypeForm";
 import ExpenseTypeTable from "@/components/expense-types/ExpenseTypeTable";
 import ExpenseTypeBudgetAnalysis from "@/components/expense-types/ExpenseTypeBudgetAnalysis";
 import ExpenseTypeRulesManager from "@/components/expense-types/ExpenseTypeRulesManager";
-import { useExpenseTypes, ExpenseType, NewExpenseType } from "@/hooks/useExpenseTypes";
+import { useExpenseTypes, ExpenseType, NewExpenseType, ExpenseTypeRule } from "@/hooks/useExpenseTypes";
 import { Skeleton } from "@/components/ui/skeleton";
-
-export interface ExpenseTypeRule {
-  id: string;
-  typeId: string;
-  name: string;
-  condition: string;
-  action: string;
-  isActive: boolean;
-  priority: number;
-}
 
 export default function ExpenseTypes() {
   const {
