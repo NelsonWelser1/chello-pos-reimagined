@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +9,7 @@ import CategoryFilter from "@/components/pos/CategoryFilter";
 import MenuGrid from "@/components/pos/MenuGrid";
 import CartSummary from "@/components/pos/CartSummary";
 import PaymentSection from "@/components/pos/PaymentSection";
+import StaffSelector from "@/components/pos/StaffSelector";
 
 interface CartItem {
   id: string;
@@ -27,6 +27,7 @@ export default function POS() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('card');
+  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Get available menu items only
@@ -129,7 +130,8 @@ export default function POS() {
         subtotal: totalAmount,
         tax_amount: totalAmount * 0.085,
         payment_method: paymentMethod,
-        status: 'completed'
+        status: 'completed',
+        staff_id: selectedStaffId
       };
 
       const order = await createOrder(orderData);
@@ -223,6 +225,11 @@ export default function POS() {
 
           {/* Cart Section */}
           <div className="space-y-6">
+            <StaffSelector
+              selectedStaffId={selectedStaffId}
+              onStaffSelect={setSelectedStaffId}
+            />
+            
             <CartSummary
               cart={cart}
               totalItems={getTotalItems()}
