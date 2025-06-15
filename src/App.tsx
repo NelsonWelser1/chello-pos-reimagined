@@ -1,6 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/sonner";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Index from './pages/Index';
 import Sales from './pages/Sales';
 import Items from './pages/Items';
@@ -21,37 +22,43 @@ import PaymentMethods from './pages/PaymentMethods';
 import PickupPoints from './pages/PickupPoints';
 import Backup from './pages/Backup';
 import Customers from './pages/Customers';
+import Staff from './pages/Staff';
 import './App.css';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/items" element={<Items />} />
-          <Route path="/ingredients" element={<Ingredients />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/modifiers" element={<Modifiers />} />
-          <Route path="/expense-types" element={<ExpenseTypes />} />
-          <Route path="/expenses" element={<Expenses />} />
-          <Route path="/tax-reports" element={<TaxReports />} />
-          <Route path="/overall-reports" element={<OverallReports />} />
-          <Route path="/pos" element={<POS />} />
-          <Route path="/kitchen" element={<Kitchen />} />
-          <Route path="/stock-alert" element={<StockAlert />} />
-          <Route path="/imports-exports" element={<ImportsExports />} />
-          <Route path="/service-tables" element={<ServiceTables />} />
-          <Route path="/payment-methods" element={<PaymentMethods />} />
-          <Route path="/pickup-points" element={<PickupPoints />} />
-          <Route path="/backup" element={<Backup />} />
-          <Route path="/customers" element={<Customers />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
-      </div>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/sales" element={<Sales />} />
+            <Route path="/items" element={<Items />} />
+            <Route path="/ingredients" element={<Ingredients />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/modifiers" element={<Modifiers />} />
+            <Route path="/expense-types" element={<ExpenseTypes />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/tax-reports" element={<TaxReports />} />
+            <Route path="/overall-reports" element={<OverallReports />} />
+            <Route path="/pos" element={<POS />} />
+            <Route path="/kitchen" element={<Kitchen />} />
+            <Route path="/stock-alert" element={<StockAlert />} />
+            <Route path="/imports-exports" element={<ImportsExports />} />
+            <Route path="/service-tables" element={<ServiceTables />} />
+            <Route path="/payment-methods" element={<PaymentMethods />} />
+            <Route path="/pickup-points" element={<PickupPoints />} />
+            <Route path="/backup" element={<Backup />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/staff" element={<Staff />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+        </div>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
