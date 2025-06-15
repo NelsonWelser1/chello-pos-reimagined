@@ -1,9 +1,9 @@
-
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, AlertTriangle, Target } from "lucide-react";
-import type { ExpenseType } from "../../pages/ExpenseTypes";
+import type { ExpenseType } from "@/hooks/useExpenseTypes";
 
 interface ExpenseTypeBudgetAnalysisProps {
   expenseTypes: ExpenseType[];

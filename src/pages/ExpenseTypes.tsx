@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Settings, TrendingUp, AlertTriangle, CheckCircle, DollarSign, Target, BarChart3 } from "lucide-react";
+import { Plus, Search, Settings, BarChart3, Target } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import ExpenseTypeStats from "@/components/expense-types/ExpenseTypeStats";
@@ -13,31 +13,8 @@ import ExpenseTypeForm from "@/components/expense-types/ExpenseTypeForm";
 import ExpenseTypeTable from "@/components/expense-types/ExpenseTypeTable";
 import ExpenseTypeBudgetAnalysis from "@/components/expense-types/ExpenseTypeBudgetAnalysis";
 import ExpenseTypeRulesManager from "@/components/expense-types/ExpenseTypeRulesManager";
-
-export interface ExpenseType {
-  id: string;
-  name: string;
-  description: string;
-  category: 'Food & Beverage' | 'Labor' | 'Rent & Utilities' | 'Marketing' | 'Equipment' | 'Maintenance' | 'Other';
-  budgetLimit: number;
-  isActive: boolean;
-  color: string;
-  taxDeductible: boolean;
-  requiresApproval: boolean;
-  approvalThreshold: number;
-  autoRecurring: boolean;
-  defaultVendors: string[];
-  glCode: string;
-  costCenter: string;
-  priority: 'Low' | 'Medium' | 'High' | 'Critical';
-  budgetPeriod: 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly' | 'Yearly';
-  notificationThreshold: number;
-  allowOverBudget: boolean;
-  restrictedUsers: string[];
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { useExpenseTypes, ExpenseType, NewExpenseType } from "@/hooks/useExpenseTypes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface ExpenseTypeRule {
   id: string;
@@ -50,111 +27,20 @@ export interface ExpenseTypeRule {
 }
 
 export default function ExpenseTypes() {
+  const {
+    expenseTypes,
+    loading,
+    addExpenseType,
+    updateExpenseType,
+    deleteExpenseType,
+  } = useExpenseTypes();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [showExpenseTypeForm, setShowExpenseTypeForm] = useState(false);
   const [editingExpenseType, setEditingExpenseType] = useState<ExpenseType | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Mock data for expense types with enhanced properties
-  const [expenseTypes, setExpenseTypes] = useState<ExpenseType[]>([
-    {
-      id: "1",
-      name: "Food Supplies",
-      description: "Raw ingredients and food items for restaurant operations",
-      category: "Food & Beverage",
-      budgetLimit: 5000,
-      isActive: true,
-      color: "#10B981",
-      taxDeductible: true,
-      requiresApproval: false,
-      approvalThreshold: 1000,
-      autoRecurring: true,
-      defaultVendors: ["Food Distributors Inc", "Fresh Produce Co"],
-      glCode: "FOOD-001",
-      costCenter: "Kitchen",
-      priority: "High",
-      budgetPeriod: "Monthly",
-      notificationThreshold: 80,
-      allowOverBudget: false,
-      restrictedUsers: [],
-      tags: ["perishable", "essential", "daily"],
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z"
-    },
-    {
-      id: "2",
-      name: "Staff Salaries",
-      description: "Employee wages, benefits, and payroll expenses",
-      category: "Labor",
-      budgetLimit: 15000,
-      isActive: true,
-      color: "#3B82F6",
-      taxDeductible: true,
-      requiresApproval: true,
-      approvalThreshold: 500,
-      autoRecurring: true,
-      defaultVendors: ["Payroll Services", "Benefits Provider"],
-      glCode: "LAB-001",
-      costCenter: "HR",
-      priority: "Critical",
-      budgetPeriod: "Monthly",
-      notificationThreshold: 90,
-      allowOverBudget: false,
-      restrictedUsers: ["junior-staff"],
-      tags: ["recurring", "critical", "monthly"],
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z"
-    },
-    {
-      id: "3",
-      name: "Rent & Utilities",
-      description: "Property rent, electricity, water, gas, internet",
-      category: "Rent & Utilities",
-      budgetLimit: 8000,
-      isActive: true,
-      color: "#EF4444",
-      taxDeductible: true,
-      requiresApproval: true,
-      approvalThreshold: 100,
-      autoRecurring: true,
-      defaultVendors: ["Property Management", "Electric Company", "Gas Company"],
-      glCode: "RENT-001",
-      costCenter: "Operations",
-      priority: "Critical",
-      budgetPeriod: "Monthly",
-      notificationThreshold: 95,
-      allowOverBudget: false,
-      restrictedUsers: [],
-      tags: ["fixed", "critical", "monthly"],
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z"
-    },
-    {
-      id: "4",
-      name: "Marketing & Advertising",
-      description: "Digital marketing, print ads, promotional materials",
-      category: "Marketing",
-      budgetLimit: 2500,
-      isActive: true,
-      color: "#8B5CF6",
-      taxDeductible: true,
-      requiresApproval: true,
-      approvalThreshold: 300,
-      autoRecurring: false,
-      defaultVendors: ["Digital Agency", "Print Shop"],
-      glCode: "MKT-001",
-      costCenter: "Marketing",
-      priority: "Medium",
-      budgetPeriod: "Monthly",
-      notificationThreshold: 75,
-      allowOverBudget: true,
-      restrictedUsers: [],
-      tags: ["variable", "seasonal", "growth"],
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z"
-    }
-  ]);
-
+  // Mock data for rules remains for now
   const [expenseTypeRules, setExpenseTypeRules] = useState<ExpenseTypeRule[]>([
     {
       id: "1",
@@ -179,50 +65,33 @@ export default function ExpenseTypes() {
   const categories = ['all', 'Food & Beverage', 'Labor', 'Rent & Utilities', 'Marketing', 'Equipment', 'Maintenance', 'Other'];
 
   const filteredExpenseTypes = expenseTypes.filter(type => {
-    const matchesSearch = type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         type.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         type.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         type.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+    const searchContent = `${type.name} ${type.description} ${type.category} ${type.tags?.join(' ')}`.toLowerCase();
+    const matchesSearch = searchContent.includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || type.category === selectedCategory;
-    
     return matchesSearch && matchesCategory;
   });
 
-  const handleAddExpenseType = (expenseType: Omit<ExpenseType, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newExpenseType: ExpenseType = {
-      ...expenseType,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    setExpenseTypes(prev => [...prev, newExpenseType]);
-    setShowExpenseTypeForm(false);
-  };
-
-  const handleEditExpenseType = (expenseType: ExpenseType) => {
-    setExpenseTypes(prev => prev.map(et => 
-      et.id === expenseType.id 
-        ? { ...expenseType, updatedAt: new Date().toISOString() }
-        : et
-    ));
+  const handleSaveExpenseType = async (formData: NewExpenseType) => {
+    if (editingExpenseType) {
+      await updateExpenseType(editingExpenseType.id, formData);
+    } else {
+      await addExpenseType(formData);
+    }
     setEditingExpenseType(null);
     setShowExpenseTypeForm(false);
   };
 
-  const handleDeleteExpenseType = (id: string) => {
-    setExpenseTypes(prev => prev.filter(et => et.id !== id));
+  const handleDeleteExpenseType = async (id: string) => {
+    await deleteExpenseType(id);
   };
 
-  const handleDuplicateExpenseType = (expenseType: ExpenseType) => {
-    const duplicated: ExpenseType = {
-      ...expenseType,
-      id: Date.now().toString(),
-      name: `${expenseType.name} (Copy)`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+  const handleDuplicateExpenseType = async (expenseType: ExpenseType) => {
+    const { id, createdAt, updatedAt, name, ...rest } = expenseType;
+    const duplicatedData: NewExpenseType = {
+      ...rest,
+      name: `${name} (Copy)`,
     };
-    setExpenseTypes(prev => [...prev, duplicated]);
+    await addExpenseType(duplicatedData);
   };
 
   return (
@@ -294,15 +163,23 @@ export default function ExpenseTypes() {
               </TabsList>
 
               <TabsContent value="types" className="space-y-6">
-                <ExpenseTypeTable
-                  expenseTypes={filteredExpenseTypes}
-                  onEdit={(expenseType) => {
-                    setEditingExpenseType(expenseType);
-                    setShowExpenseTypeForm(true);
-                  }}
-                  onDelete={handleDeleteExpenseType}
-                  onDuplicate={handleDuplicateExpenseType}
-                />
+                {loading ? (
+                  <Card>
+                    <CardContent className="p-6">
+                      <Skeleton className="h-40 w-full" />
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <ExpenseTypeTable
+                    expenseTypes={filteredExpenseTypes}
+                    onEdit={(expenseType) => {
+                      setEditingExpenseType(expenseType);
+                      setShowExpenseTypeForm(true);
+                    }}
+                    onDelete={handleDeleteExpenseType}
+                    onDuplicate={handleDuplicateExpenseType}
+                  />
+                )}
               </TabsContent>
 
               <TabsContent value="budget-analysis" className="space-y-6">
@@ -321,7 +198,7 @@ export default function ExpenseTypes() {
             {showExpenseTypeForm && (
               <ExpenseTypeForm
                 expenseType={editingExpenseType}
-                onSubmit={editingExpenseType ? handleEditExpenseType : handleAddExpenseType}
+                onSubmit={handleSaveExpenseType}
                 onCancel={() => {
                   setShowExpenseTypeForm(false);
                   setEditingExpenseType(null);

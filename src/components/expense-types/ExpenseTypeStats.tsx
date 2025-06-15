@@ -1,78 +1,68 @@
-
-import { Card, CardContent } from "@/components/ui/card";
-import { Settings, DollarSign, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
-import type { ExpenseType } from "../../pages/ExpenseTypes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign, CheckCircle, AlertTriangle, TrendingUp } from "lucide-react";
+import type { ExpenseType } from "@/hooks/useExpenseTypes";
 
 interface ExpenseTypeStatsProps {
   expenseTypes: ExpenseType[];
 }
 
 export default function ExpenseTypeStats({ expenseTypes }: ExpenseTypeStatsProps) {
-  const activeTypes = expenseTypes.filter(type => type.isActive);
-  const totalBudgetAllocated = expenseTypes.reduce((sum, type) => sum + type.budgetLimit, 0);
-  const typesRequiringApproval = expenseTypes.filter(type => type.requiresApproval).length;
-  const averageBudgetLimit = expenseTypes.length > 0 ? totalBudgetAllocated / expenseTypes.length : 0;
-  const criticalPriorityTypes = expenseTypes.filter(type => type.priority === 'Critical').length;
+  const totalBudget = expenseTypes.reduce((sum, type) => sum + type.budgetLimit, 0);
+  const activeTypes = expenseTypes.filter(type => type.isActive).length;
+  const approvalRequired = expenseTypes.filter(type => type.requiresApproval).length;
+  const taxDeductible = expenseTypes.filter(type => type.taxDeductible).length;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-      <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-blue-100">Total Types</p>
-              <p className="text-3xl font-black">{expenseTypes.length}</p>
-            </div>
-            <Settings className="w-12 h-12 text-blue-200" />
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="w-4 h-4" />
+            Total Budget
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">${totalBudget.toLocaleString()}</div>
+          <p className="text-sm text-muted-foreground">Across all expense types</p>
         </CardContent>
       </Card>
-      
-      <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-green-100">Active Types</p>
-              <p className="text-3xl font-black">{activeTypes.length}</p>
-            </div>
-            <CheckCircle className="w-12 h-12 text-green-200" />
-          </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            Active Types
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{activeTypes}</div>
+          <p className="text-sm text-muted-foreground">Currently enabled</p>
         </CardContent>
       </Card>
-      
-      <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-purple-100">Total Budget</p>
-              <p className="text-3xl font-black">${totalBudgetAllocated.toLocaleString()}</p>
-            </div>
-            <DollarSign className="w-12 h-12 text-purple-200" />
-          </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-orange-500" />
+            Approval Required
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{approvalRequired}</div>
+          <p className="text-sm text-muted-foreground">Types needing approval</p>
         </CardContent>
       </Card>
-      
-      <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-orange-100">Need Approval</p>
-              <p className="text-3xl font-black">{typesRequiringApproval}</p>
-            </div>
-            <TrendingUp className="w-12 h-12 text-orange-200" />
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white border-0">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-red-100">Critical Priority</p>
-              <p className="text-3xl font-black">{criticalPriorityTypes}</p>
-            </div>
-            <AlertTriangle className="w-12 h-12 text-red-200" />
-          </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-blue-500" />
+            Tax Deductible
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{taxDeductible}</div>
+          <p className="text-sm text-muted-foreground">Eligible for tax deduction</p>
         </CardContent>
       </Card>
     </div>

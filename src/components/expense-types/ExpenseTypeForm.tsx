@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,22 +9,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { ExpenseType } from "../../pages/ExpenseTypes";
+import type { ExpenseType, NewExpenseType } from "@/hooks/useExpenseTypes";
 
 interface ExpenseTypeFormProps {
   expenseType?: ExpenseType | null;
-  onSubmit: (expenseType: Omit<ExpenseType, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (expenseType: NewExpenseType) => void;
   onCancel: () => void;
 }
 
 const categories = [
-  'Food & Beverage',
-  'Labor',
-  'Rent & Utilities',
-  'Marketing',
-  'Equipment',
-  'Maintenance',
-  'Other'
+  'Food & Beverage', 'Labor', 'Rent & Utilities', 'Marketing', 'Equipment', 'Maintenance', 'Other'
 ] as const;
 
 const priorities = ['Low', 'Medium', 'High', 'Critical'] as const;
@@ -36,72 +30,73 @@ const colors = [
 ];
 
 export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: ExpenseTypeFormProps) {
-  const [formData, setFormData] = useState({
-    name: expenseType?.name || '',
-    description: expenseType?.description || '',
-    category: expenseType?.category || 'Other' as const,
-    budgetLimit: expenseType?.budgetLimit || 0,
-    isActive: expenseType?.isActive ?? true,
-    color: expenseType?.color || colors[0],
-    taxDeductible: expenseType?.taxDeductible ?? true,
-    requiresApproval: expenseType?.requiresApproval ?? false,
-    approvalThreshold: expenseType?.approvalThreshold || 1000,
-    autoRecurring: expenseType?.autoRecurring ?? false,
-    defaultVendors: expenseType?.defaultVendors || [],
-    glCode: expenseType?.glCode || '',
-    costCenter: expenseType?.costCenter || '',
-    priority: expenseType?.priority || 'Medium' as const,
-    budgetPeriod: expenseType?.budgetPeriod || 'Monthly' as const,
-    notificationThreshold: expenseType?.notificationThreshold || 80,
-    allowOverBudget: expenseType?.allowOverBudget ?? false,
-    restrictedUsers: expenseType?.restrictedUsers || [],
-    tags: expenseType?.tags || []
+  const [formData, setFormData] = useState<NewExpenseType>({
+    name: '',
+    description: null,
+    category: 'Other',
+    budgetLimit: 0,
+    isActive: true,
+    color: colors[0],
+    taxDeductible: true,
+    requiresApproval: false,
+    approvalThreshold: 1000,
+    autoRecurring: false,
+    defaultVendors: [],
+    glCode: null,
+    costCenter: null,
+    priority: 'Medium',
+    budgetPeriod: 'Monthly',
+    notificationThreshold: 80,
+    allowOverBudget: false,
+    restrictedUsers: [],
+    tags: []
   });
+
+  useEffect(() => {
+    if (expenseType) {
+      const { id, createdAt, updatedAt, ...editData } = expenseType;
+      setFormData(editData);
+    }
+  }, [expenseType]);
 
   const [newVendor, setNewVendor] = useState('');
   const [newTag, setNewTag] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const dataToSubmit: NewExpenseType = {
+        ...formData,
+        description: formData.description || null,
+        glCode: formData.glCode || null,
+        costCenter: formData.costCenter || null,
+    };
+    onSubmit(dataToSubmit);
   };
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: keyof NewExpenseType, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const addVendor = () => {
-    if (newVendor.trim() && !formData.defaultVendors.includes(newVendor.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        defaultVendors: [...prev.defaultVendors, newVendor.trim()]
-      }));
+    if (newVendor.trim() && !(formData.defaultVendors || []).includes(newVendor.trim())) {
+      handleChange('defaultVendors', [...(formData.defaultVendors || []), newVendor.trim()]);
       setNewVendor('');
     }
   };
 
   const removeVendor = (vendor: string) => {
-    setFormData(prev => ({
-      ...prev,
-      defaultVendors: prev.defaultVendors.filter(v => v !== vendor)
-    }));
+    handleChange('defaultVendors', (formData.defaultVendors || []).filter(v => v !== vendor));
   };
 
   const addTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, newTag.trim()]
-      }));
+    if (newTag.trim() && !(formData.tags || []).includes(newTag.trim())) {
+      handleChange('tags', [...(formData.tags || []), newTag.trim()]);
       setNewTag('');
     }
   };
 
   const removeTag = (tag: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(t => t !== tag)
-    }));
+    handleChange('tags', (formData.tags || []).filter(t => t !== tag));
   };
 
   return (
@@ -151,7 +146,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                value={formData.description}
+                value={formData.description || ''}
                 onChange={(e) => handleChange('description', e.target.value)}
                 placeholder="Brief description of this expense type"
                 rows={3}
@@ -211,7 +206,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                 <Label htmlFor="glCode">GL Code</Label>
                 <Input
                   id="glCode"
-                  value={formData.glCode}
+                  value={formData.glCode || ''}
                   onChange={(e) => handleChange('glCode', e.target.value)}
                   placeholder="FOOD-001"
                 />
@@ -221,7 +216,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                 <Label htmlFor="costCenter">Cost Center</Label>
                 <Input
                   id="costCenter"
-                  value={formData.costCenter}
+                  value={formData.costCenter || ''}
                   onChange={(e) => handleChange('costCenter', e.target.value)}
                   placeholder="Kitchen"
                 />
@@ -287,7 +282,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {formData.defaultVendors.map(vendor => (
+                {(formData.defaultVendors || []).map(vendor => (
                   <Badge key={vendor} variant="secondary" className="cursor-pointer" onClick={() => removeVendor(vendor)}>
                     {vendor} <X className="w-3 h-3 ml-1" />
                   </Badge>
@@ -309,7 +304,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {formData.tags.map(tag => (
+                {(formData.tags || []).map(tag => (
                   <Badge key={tag} variant="outline" className="cursor-pointer" onClick={() => removeTag(tag)}>
                     {tag} <X className="w-3 h-3 ml-1" />
                   </Badge>
@@ -323,7 +318,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                   <Checkbox
                     id="isActive"
                     checked={formData.isActive}
-                    onCheckedChange={(checked) => handleChange('isActive', checked)}
+                    onCheckedChange={(checked) => handleChange('isActive', !!checked)}
                   />
                   <Label htmlFor="isActive">Active</Label>
                 </div>
@@ -332,7 +327,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                   <Checkbox
                     id="taxDeductible"
                     checked={formData.taxDeductible}
-                    onCheckedChange={(checked) => handleChange('taxDeductible', checked)}
+                    onCheckedChange={(checked) => handleChange('taxDeductible', !!checked)}
                   />
                   <Label htmlFor="taxDeductible">Tax Deductible</Label>
                 </div>
@@ -341,7 +336,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                   <Checkbox
                     id="requiresApproval"
                     checked={formData.requiresApproval}
-                    onCheckedChange={(checked) => handleChange('requiresApproval', checked)}
+                    onCheckedChange={(checked) => handleChange('requiresApproval', !!checked)}
                   />
                   <Label htmlFor="requiresApproval">Requires Approval</Label>
                 </div>
@@ -350,7 +345,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                   <Checkbox
                     id="autoRecurring"
                     checked={formData.autoRecurring}
-                    onCheckedChange={(checked) => handleChange('autoRecurring', checked)}
+                    onCheckedChange={(checked) => handleChange('autoRecurring', !!checked)}
                   />
                   <Label htmlFor="autoRecurring">Auto Recurring</Label>
                 </div>
@@ -359,7 +354,7 @@ export default function ExpenseTypeForm({ expenseType, onSubmit, onCancel }: Exp
                   <Checkbox
                     id="allowOverBudget"
                     checked={formData.allowOverBudget}
-                    onCheckedChange={(checked) => handleChange('allowOverBudget', checked)}
+                    onCheckedChange={(checked) => handleChange('allowOverBudget', !!checked)}
                   />
                   <Label htmlFor="allowOverBudget">Allow Over Budget</Label>
                 </div>

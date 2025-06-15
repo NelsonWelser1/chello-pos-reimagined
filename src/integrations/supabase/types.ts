@@ -39,6 +39,81 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_types: {
+        Row: {
+          allow_over_budget: boolean
+          approval_threshold: number
+          auto_recurring: boolean
+          budget_limit: number
+          budget_period: string
+          category: string
+          color: string
+          cost_center: string | null
+          created_at: string
+          default_vendors: string[] | null
+          description: string | null
+          gl_code: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notification_threshold: number
+          priority: string
+          requires_approval: boolean
+          restricted_users: string[] | null
+          tags: string[] | null
+          tax_deductible: boolean
+          updated_at: string
+        }
+        Insert: {
+          allow_over_budget?: boolean
+          approval_threshold?: number
+          auto_recurring?: boolean
+          budget_limit?: number
+          budget_period?: string
+          category: string
+          color?: string
+          cost_center?: string | null
+          created_at?: string
+          default_vendors?: string[] | null
+          description?: string | null
+          gl_code?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notification_threshold?: number
+          priority?: string
+          requires_approval?: boolean
+          restricted_users?: string[] | null
+          tags?: string[] | null
+          tax_deductible?: boolean
+          updated_at?: string
+        }
+        Update: {
+          allow_over_budget?: boolean
+          approval_threshold?: number
+          auto_recurring?: boolean
+          budget_limit?: number
+          budget_period?: string
+          category?: string
+          color?: string
+          cost_center?: string | null
+          created_at?: string
+          default_vendors?: string[] | null
+          description?: string | null
+          gl_code?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notification_threshold?: number
+          priority?: string
+          requires_approval?: boolean
+          restricted_users?: string[] | null
+          tags?: string[] | null
+          tax_deductible?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ingredients: {
         Row: {
           allergens: string[] | null

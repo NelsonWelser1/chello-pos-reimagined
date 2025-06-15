@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2, Copy, Settings, Check, X, AlertTriangle } from "lucide-react";
-import type { ExpenseType } from "../../pages/ExpenseTypes";
+import type { ExpenseType } from "@/hooks/useExpenseTypes";
 
 interface ExpenseTypeTableProps {
   expenseTypes: ExpenseType[];
@@ -84,7 +84,7 @@ export default function ExpenseTypeTable({ expenseTypes, onEdit, onDelete, onDup
                             {expenseType.description}
                           </div>
                         )}
-                        {expenseType.tags.length > 0 && (
+                        {(expenseType.tags && expenseType.tags.length > 0) && (
                           <div className="flex gap-1 mt-1">
                             {expenseType.tags.slice(0, 3).map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">
