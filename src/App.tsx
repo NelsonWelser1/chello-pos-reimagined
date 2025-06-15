@@ -20,6 +20,7 @@ import ServiceTables from './pages/ServiceTables';
 import PaymentMethods from './pages/PaymentMethods';
 import PickupPoints from './pages/PickupPoints';
 import Backup from './pages/Backup';
+import Customers from './pages/Customers';
 import './App.css';
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           <Route path="/payment-methods" element={<PaymentMethods />} />
           <Route path="/pickup-points" element={<PickupPoints />} />
           <Route path="/backup" element={<Backup />} />
+          <Route path="/customers" element={<Customers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
