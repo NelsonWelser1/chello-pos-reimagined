@@ -1,11 +1,8 @@
-
 import { DashboardHeader } from "./dashboard/DashboardHeader";
 import { KPICards } from "./dashboard/KPICards";
 import { DashboardTabs } from "./dashboard/DashboardTabs";
-
 export function Dashboard() {
-  return (
-    <div className="space-y-8 p-6 ml-8 max-w-7xl mx-auto">
+  return <div className="space-y-8 p-6 ml-4 px-[24px] my-0 mx-[240px]">
       {/* Header */}
       <DashboardHeader />
 
@@ -14,6 +11,5 @@ export function Dashboard() {
 
       {/* Main Dashboard Tabs */}
       <DashboardTabs />
-    </div>
-  );
+    </div>;
 }
