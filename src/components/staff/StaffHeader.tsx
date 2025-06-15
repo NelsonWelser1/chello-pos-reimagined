@@ -1,0 +1,22 @@
+
+import { Button } from "@/components/ui/button";
+import { PlusCircle, Users } from "lucide-react";
+
+interface StaffHeaderProps {
+  onAdd: () => void;
+}
+
+export default function StaffHeader({ onAdd }: StaffHeaderProps) {
+  return (
+    <div className="flex items-center justify-between mb-6">
+      <h1 className="text-3xl font-bold flex items-center gap-2">
+        <Users className="w-8 h-8" />
+        Staff Management
+      </h1>
+      <Button onClick={onAdd} className="flex items-center gap-2">
+        <PlusCircle className="w-5 h-5" />
+        Add Staff
+      </Button>
+    </div>
+  );
+}
