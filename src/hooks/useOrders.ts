@@ -49,7 +49,7 @@ export function useOrders() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('orders')
+        .from('orders' as any)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -58,7 +58,7 @@ export function useOrders() {
         return;
       }
 
-      setOrders(data || []);
+      setOrders((data as Order[]) || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
     } finally {
@@ -69,7 +69,7 @@ export function useOrders() {
   const createOrder = async (orderData: Partial<Order>): Promise<Order | null> => {
     try {
       const { data, error } = await supabase
-        .from('orders')
+        .from('orders' as any)
         .insert([orderData])
         .select()
         .single();
@@ -80,8 +80,9 @@ export function useOrders() {
       }
 
       if (data) {
-        setOrders(prev => [data, ...prev]);
-        return data;
+        const newOrder = data as Order;
+        setOrders(prev => [newOrder, ...prev]);
+        return newOrder;
       }
 
       return null;
@@ -94,7 +95,7 @@ export function useOrders() {
   const createOrderItems = async (items: CreateOrderItem[]): Promise<boolean> => {
     try {
       const { error } = await supabase
-        .from('order_items')
+        .from('order_items' as any)
         .insert(items);
 
       if (error) {

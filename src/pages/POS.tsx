@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -167,7 +168,7 @@ export default function POS() {
         if (menuItem) {
           const newStockCount = menuItem.stock_count - cartItem.quantity;
           await supabase
-            .from('menu_items')
+            .from('menu_items' as any)
             .update({ stock_count: newStockCount })
             .eq('id', cartItem.id);
         }
