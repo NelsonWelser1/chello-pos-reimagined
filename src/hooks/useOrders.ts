@@ -58,7 +58,7 @@ export function useOrders() {
         return;
       }
 
-      setOrders((data as Order[]) || []);
+      setOrders((data as unknown as Order[]) || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
     } finally {
@@ -80,7 +80,7 @@ export function useOrders() {
       }
 
       if (data) {
-        const newOrder = data as Order;
+        const newOrder = data as unknown as Order;
         setOrders(prev => [newOrder, ...prev]);
         return newOrder;
       }
