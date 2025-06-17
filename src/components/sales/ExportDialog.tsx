@@ -20,7 +20,7 @@ interface ExportDialogProps {
 
 export function ExportDialog({ transactions, trigger }: ExportDialogProps) {
   const [open, setOpen] = useState(false);
-  const [format, setFormat] = useState<'csv' | 'json' | 'xlsx'>('csv');
+  const [exportFormat, setExportFormat] = useState<'csv' | 'json' | 'xlsx'>('csv');
   const [includeHeaders, setIncludeHeaders] = useState(true);
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
@@ -41,7 +41,7 @@ export function ExportDialog({ transactions, trigger }: ExportDialogProps) {
 
     try {
       const options: ExportOptions = {
-        format,
+        format: exportFormat,
         includeHeaders,
         dateRange: dateRange.from && dateRange.to ? {
           from: dateRange.from.toISOString(),
@@ -52,7 +52,7 @@ export function ExportDialog({ transactions, trigger }: ExportDialogProps) {
       await ExportService.exportTransactions(transactions, options);
       
       const summary = ExportService.getExportSummary(transactions);
-      toast.success(`Successfully exported ${summary.totalTransactions} transactions as ${format.toUpperCase()}`);
+      toast.success(`Successfully exported ${summary.totalTransactions} transactions as ${(exportFormat as string).toUpperCase()}`);
       setOpen(false);
     } catch (error) {
       console.error('Export failed:', error);
@@ -100,7 +100,7 @@ export function ExportDialog({ transactions, trigger }: ExportDialogProps) {
           {/* Format Selection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Export Format</label>
-            <Select value={format} onValueChange={(value: 'csv' | 'json' | 'xlsx') => setFormat(value)}>
+            <Select value={exportFormat} onValueChange={(value: 'csv' | 'json' | 'xlsx') => setExportFormat(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
