@@ -5,7 +5,8 @@ import { SidebarMenuSection } from "./sidebar/SidebarMenuSection";
 import { menuItems, portalsItems, foodsItems, expensesItems, peopleItems, reportsItems, advanceItems } from "./sidebar/menuData";
 
 export function AppSidebar() {
-  return <Sidebar className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white border-r border-gray-300 shadow-xl">
+  return (
+    <Sidebar className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white border-r border-gray-300 shadow-xl w-80 fixed left-0 top-0 h-full z-50">
       <SidebarHeader />
       
       <SidebarContent className="p-4 space-y-2 bg-slate-900 border-r border-gray-300">
@@ -23,5 +24,6 @@ export function AppSidebar() {
 
         <SidebarMenuSection title="Advance" emoji="⚡" items={advanceItems} hoverGradient="hover:bg-gradient-to-r hover:from-purple-500/30 hover:to-violet-500/30" iconColor="text-purple-200" textColor="text-purple-300" labelBgColor="bg-purple-500/20" labelBorderColor="border-purple-400/30" />
       </SidebarContent>
-    </Sidebar>;
+    </Sidebar>
+  );
 }

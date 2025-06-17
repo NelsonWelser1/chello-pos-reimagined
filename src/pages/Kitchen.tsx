@@ -39,7 +39,7 @@ export default function Kitchen() {
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-gray-50">
           <AppSidebar />
-          <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+          <main className="flex-1 ml-80 bg-white">
             <KitchenHeader soundEnabled={soundEnabled} onToggleSound={toggleSound} />
             
             <div className="p-6">
@@ -57,7 +57,7 @@ export default function Kitchen() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+        <main className="flex-1 ml-80 bg-white">
           <KitchenHeader soundEnabled={soundEnabled} onToggleSound={toggleSound} />
           
           <div className="bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 p-6 min-h-[calc(100vh-80px)]">

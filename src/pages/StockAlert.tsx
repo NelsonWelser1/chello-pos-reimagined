@@ -36,7 +36,7 @@ export default function StockAlert() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+        <main className="flex-1 ml-80 bg-white">
           <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 shadow-sm">
             <SidebarTrigger className="hover:bg-red-50 transition-colors rounded-md p-2" />
           </div>

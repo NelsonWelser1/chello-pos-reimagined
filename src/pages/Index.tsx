@@ -8,7 +8,7 @@ const Index = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+        <main className="flex-1 ml-80 bg-white">
           <div className="p-6 h-full overflow-auto">
             <Dashboard />
           </div>

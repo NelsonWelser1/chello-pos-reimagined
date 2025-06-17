@@ -15,7 +15,7 @@ const PaymentMethods = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 ml-80 bg-white p-6">
           <div className="space-y-6">
             <PaymentMethodsHeader activeTab={activeTab} setActiveTab={setActiveTab} />
             
