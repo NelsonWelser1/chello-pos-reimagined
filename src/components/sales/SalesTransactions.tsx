@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useSalesTransactions } from "@/hooks/useSalesTransactions";
+import { ExportDialog } from "./ExportDialog";
 
 export function SalesTransactions() {
   const { transactions, loading } = useSalesTransactions();
@@ -123,10 +123,15 @@ export function SalesTransactions() {
                 Filter
               </Button>
             </div>
-            <Button size="lg" className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-12">
-              <Download className="w-5 h-5 mr-2" />
-              Export Data
-            </Button>
+            <ExportDialog 
+              transactions={filteredTransactions}
+              trigger={
+                <Button size="lg" className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-12">
+                  <Download className="w-5 h-5 mr-2" />
+                  Export Data
+                </Button>
+              }
+            />
           </div>
         </CardContent>
       </Card>
