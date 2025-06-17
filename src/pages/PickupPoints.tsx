@@ -1,5 +1,5 @@
 
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PickupPointsHeader } from "@/components/pickup-points/PickupPointsHeader";
 import { PickupPointsList } from "@/components/pickup-points/PickupPointsList";
@@ -15,14 +15,20 @@ const PickupPoints = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 p-6">
-          <div className="space-y-6">
-            <PickupPointsHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-            
-            {activeTab === "locations" && <PickupPointsList />}
-            {activeTab === "orders" && <OrderTracking />}
-            {activeTab === "manager" && <LocationManager />}
-            {activeTab === "analytics" && <PickupAnalytics />}
+        <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 shadow-sm">
+            <SidebarTrigger className="hover:bg-blue-50 transition-colors rounded-md p-2" />
+          </div>
+          
+          <div className="p-6">
+            <div className="space-y-6">
+              <PickupPointsHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+              
+              {activeTab === "locations" && <PickupPointsList />}
+              {activeTab === "orders" && <OrderTracking />}
+              {activeTab === "manager" && <LocationManager />}
+              {activeTab === "analytics" && <PickupAnalytics />}
+            </div>
           </div>
         </main>
       </div>

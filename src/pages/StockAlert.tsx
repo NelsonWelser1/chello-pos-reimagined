@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StockAlertDashboard from "@/components/stock-alert/StockAlertDashboard";
@@ -34,14 +34,18 @@ export default function StockAlert() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <SidebarInset className="flex-1">
-          <div className="p-8 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 min-h-screen">
+        <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 shadow-sm">
+            <SidebarTrigger className="hover:bg-red-50 transition-colors rounded-md p-2" />
+          </div>
+          
+          <div className="p-8 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 min-h-[calc(100vh-80px)]">
             <StockAlertHeader onNotificationAction={handleNotificationAction} />
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-8 lg:w-4/5">
+              <TabsList className="grid w-full grid-cols-8 lg:w-4/5 bg-white border border-gray-200">
                 <TabsTrigger value="dashboard" className="font-bold">Dashboard</TabsTrigger>
                 <TabsTrigger value="low-stock" className="font-bold">Low Stock</TabsTrigger>
                 <TabsTrigger value="expiry" className="font-bold">Expiry</TabsTrigger>
@@ -102,7 +106,7 @@ export default function StockAlert() {
               </TabsContent>
             </Tabs>
           </div>
-        </SidebarInset>
+        </main>
       </div>
     </SidebarProvider>
   );

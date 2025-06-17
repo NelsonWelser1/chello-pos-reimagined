@@ -5,10 +5,10 @@ import { SidebarMenuSection } from "./sidebar/SidebarMenuSection";
 import { menuItems, portalsItems, foodsItems, expensesItems, peopleItems, reportsItems, advanceItems } from "./sidebar/menuData";
 
 export function AppSidebar() {
-  return <Sidebar className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white border-r-0 shadow-2xl">
+  return <Sidebar className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white border-r border-gray-300 shadow-xl">
       <SidebarHeader />
       
-      <SidebarContent className="p-4 space-y-2 bg-slate-900">
+      <SidebarContent className="p-4 space-y-2 bg-slate-900 border-r border-gray-300">
         <SidebarMenuSection items={menuItems} hoverGradient="hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-purple-500/30" iconColor="text-blue-200" textColor="text-white" />
 
         <SidebarMenuSection title="Portals" emoji="🚀" items={portalsItems} hoverGradient="hover:bg-gradient-to-r hover:from-green-500/30 hover:to-teal-500/30" iconColor="text-green-200" textColor="text-orange-300" labelBgColor="bg-slate-50" labelBorderColor="border-orange-400/30" />

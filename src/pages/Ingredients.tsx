@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,9 +85,13 @@ export default function Ingredients() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <main className="flex-1 ml-0 border-l border-gray-200 bg-white">
+          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 shadow-sm">
+            <SidebarTrigger className="hover:bg-green-50 transition-colors rounded-md p-2" />
+          </div>
+          
           <div className="p-8">
             <div className="flex justify-between items-center mb-8">
               <div>
@@ -107,7 +112,7 @@ export default function Ingredients() {
             </div>
             <IngredientStats ingredients={ingredients} />
 
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -135,7 +140,7 @@ export default function Ingredients() {
               />
             )}
           </div>
-        </SidebarInset>
+        </main>
       </div>
     </SidebarProvider>
   );
