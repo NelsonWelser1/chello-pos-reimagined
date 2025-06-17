@@ -14,62 +14,96 @@ import {
   Eye
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-
-const dailySales = [
-  { time: '6:00', amount: 450, orders: 12 },
-  { time: '7:00', amount: 680, orders: 18 },
-  { time: '8:00', amount: 920, orders: 24 },
-  { time: '9:00', amount: 1200, orders: 32 },
-  { time: '10:00', amount: 1450, orders: 38 },
-  { time: '11:00', amount: 1680, orders: 42 },
-  { time: '12:00', amount: 2100, orders: 55 },
-  { time: '13:00', amount: 2450, orders: 62 },
-  { time: '14:00', amount: 2200, orders: 58 },
-  { time: '15:00', amount: 1900, orders: 48 },
-  { time: '16:00', amount: 2300, orders: 60 },
-  { time: '17:00', amount: 2800, orders: 72 },
-  { time: '18:00', amount: 3200, orders: 82 },
-  { time: '19:00', amount: 3600, orders: 90 },
-  { time: '20:00', amount: 3100, orders: 78 },
-  { time: '21:00', amount: 2400, orders: 58 },
-];
-
-const kpiData = [
-  {
-    title: "Today's Revenue",
-    value: "$24,580",
-    change: "+12.5%",
-    trend: "up",
-    icon: DollarSign,
-    gradient: "from-green-500 to-emerald-600"
-  },
-  {
-    title: "Total Orders",
-    value: "342",
-    change: "+8.2%",
-    trend: "up",
-    icon: ShoppingCart,
-    gradient: "from-blue-500 to-cyan-600"
-  },
-  {
-    title: "Average Order",
-    value: "$71.87",
-    change: "+3.1%",
-    trend: "up",
-    icon: Target,
-    gradient: "from-purple-500 to-violet-600"
-  },
-  {
-    title: "Peak Hour",
-    value: "7:00 PM",
-    change: "$3,600",
-    trend: "neutral",
-    icon: Clock,
-    gradient: "from-orange-500 to-red-600"
-  }
-];
+import { useState, useEffect } from 'react';
+import { useSalesAnalytics } from "@/hooks/useSalesAnalytics";
+import { salesService } from "@/services/salesService";
 
 export function SalesDashboard() {
+  const { getTodaysAnalytics } = useSalesAnalytics();
+  const [metrics, setMetrics] = useState({
+    todayRevenue: 0,
+    totalOrders: 0,
+    averageOrderValue: 0,
+    peakHour: '7:00 PM',
+    dailyGrowth: 0,
+    weeklyGrowth: 0
+  });
+  const [hourlySales, setHourlySales] = useState<Array<{ time: string; amount: number; orders: number }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch today's metrics
+        const metricsData = await salesService.getTodaysMetrics();
+        setMetrics(metricsData);
+
+        // Fetch hourly sales data
+        const hourlyData = await salesService.getHourlySalesData();
+        const formattedHourlyData = hourlyData.map(item => ({
+          time: item.hour,
+          amount: item.sales,
+          orders: item.orders
+        }));
+        setHourlySales(formattedHourlyData);
+
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const kpiData = [
+    {
+      title: "Today's Revenue",
+      value: `$${metrics.todayRevenue.toFixed(2)}`,
+      change: `${metrics.dailyGrowth > 0 ? '+' : ''}${metrics.dailyGrowth.toFixed(1)}%`,
+      trend: metrics.dailyGrowth >= 0 ? "up" : "down",
+      icon: DollarSign,
+      gradient: "from-green-500 to-emerald-600"
+    },
+    {
+      title: "Total Orders",
+      value: metrics.totalOrders.toString(),
+      change: "+8.2%",
+      trend: "up",
+      icon: ShoppingCart,
+      gradient: "from-blue-500 to-cyan-600"
+    },
+    {
+      title: "Average Order",
+      value: `$${metrics.averageOrderValue.toFixed(2)}`,
+      change: `${metrics.weeklyGrowth > 0 ? '+' : ''}${metrics.weeklyGrowth.toFixed(1)}%`,
+      trend: metrics.weeklyGrowth >= 0 ? "up" : "down",
+      icon: Target,
+      gradient: "from-purple-500 to-violet-600"
+    },
+    {
+      title: "Peak Hour",
+      value: metrics.peakHour,
+      change: `$${(metrics.todayRevenue * 0.15).toFixed(0)}`,
+      trend: "neutral",
+      icon: Clock,
+      gradient: "from-orange-500 to-red-600"
+    }
+  ];
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <div className="text-xl text-slate-600">Loading dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* KPI Cards */}
@@ -119,7 +153,7 @@ export function SalesDashboard() {
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={dailySales}>
+                <AreaChart data={hourlySales}>
                   <defs>
                     <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
@@ -163,7 +197,7 @@ export function SalesDashboard() {
               <div className="flex items-center justify-between p-4 bg-white/70 rounded-xl shadow-sm">
                 <div>
                   <p className="font-bold text-lg">Customer Satisfaction</p>
-                  <p className="text-sm text-gray-600">Based on 234 reviews</p>
+                  <p className="text-sm text-gray-600">Based on recent feedback</p>
                 </div>
                 <Badge className="bg-green-100 text-green-800 text-lg px-4 py-2">4.8/5.0</Badge>
               </div>

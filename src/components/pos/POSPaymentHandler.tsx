@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useOrders } from "@/hooks/useOrders";
+import { useSalesTransactions } from "@/hooks/useSalesTransactions";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import OrderSummaryCard from "./OrderSummaryCard";
 import { createKitchenOrder } from "@/services/kitchenOrderService";
@@ -52,6 +53,7 @@ export default function POSPaymentHandler({
   const [processing, setProcessing] = useState(false);
   const { toast } = useToast();
   const { createOrder, createOrderItems } = useOrders();
+  const { createTransaction } = useSalesTransactions();
 
   const TAX_RATE = 0.1; // 10% tax
   const subtotal = totalAmount;
@@ -77,7 +79,7 @@ export default function POSPaymentHandler({
         subtotal: subtotal,
         tax_amount: taxAmount,
         payment_method: paymentMethod,
-        status: 'completed',
+        status: 'completed', // Directly mark as completed for POS orders
         staff_id: selectedStaffId,
         table_number: null
       };
@@ -107,6 +109,20 @@ export default function POSPaymentHandler({
         throw new Error('Failed to create order items');
       }
 
+      // Create sales transaction (this will also be created automatically via trigger)
+      const transactionId = `TXN-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+      await createTransaction({
+        transaction_id: transactionId,
+        order_id: newOrder.id,
+        staff_id: selectedStaffId,
+        total_amount: finalTotal,
+        subtotal: subtotal,
+        tax_amount: taxAmount,
+        payment_method: paymentMethod,
+        payment_status: 'completed',
+        transaction_date: new Date().toISOString()
+      });
+
       // Create kitchen order automatically
       await createKitchenOrder(newOrder.id, cart, menuItems);
 
@@ -115,7 +131,7 @@ export default function POSPaymentHandler({
 
       toast({
         title: "Payment Successful!",
-        description: `Order completed with ${paymentMethod} payment. Kitchen has been notified.`,
+        description: `Order completed with ${paymentMethod} payment. Transaction ID: ${transactionId}`,
       });
 
       onCartClear();

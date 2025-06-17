@@ -539,6 +539,196 @@ export type Database = {
           },
         ]
       }
+      sales_analytics: {
+        Row: {
+          average_order_value: number
+          created_at: string
+          date: string
+          hourly_sales: Json | null
+          id: string
+          menu_performance: Json | null
+          payment_methods_breakdown: Json | null
+          peak_hour: number | null
+          peak_hour_sales: number | null
+          staff_performance: Json | null
+          total_customers: number
+          total_orders: number
+          total_sales: number
+          updated_at: string
+        }
+        Insert: {
+          average_order_value?: number
+          created_at?: string
+          date: string
+          hourly_sales?: Json | null
+          id?: string
+          menu_performance?: Json | null
+          payment_methods_breakdown?: Json | null
+          peak_hour?: number | null
+          peak_hour_sales?: number | null
+          staff_performance?: Json | null
+          total_customers?: number
+          total_orders?: number
+          total_sales?: number
+          updated_at?: string
+        }
+        Update: {
+          average_order_value?: number
+          created_at?: string
+          date?: string
+          hourly_sales?: Json | null
+          id?: string
+          menu_performance?: Json | null
+          payment_methods_breakdown?: Json | null
+          peak_hour?: number | null
+          peak_hour_sales?: number | null
+          staff_performance?: Json | null
+          total_customers?: number
+          total_orders?: number
+          total_sales?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sales_targets: {
+        Row: {
+          achieved: boolean | null
+          created_at: string
+          created_by: string | null
+          current_amount: number | null
+          id: string
+          staff_id: string | null
+          target_amount: number
+          target_date: string
+          target_name: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          achieved?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          current_amount?: number | null
+          id?: string
+          staff_id?: string | null
+          target_amount: number
+          target_date: string
+          target_name: string
+          target_type: string
+          updated_at?: string
+        }
+        Update: {
+          achieved?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          current_amount?: number | null
+          id?: string
+          staff_id?: string | null
+          target_amount?: number
+          target_date?: string
+          target_name?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_targets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_targets_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_transactions: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          discount_amount: number | null
+          id: string
+          notes: string | null
+          order_id: string | null
+          payment_method: string
+          payment_status: string
+          refund_amount: number | null
+          refund_reason: string | null
+          staff_id: string | null
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          transaction_date: string
+          transaction_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          discount_amount?: number | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          payment_method: string
+          payment_status?: string
+          refund_amount?: number | null
+          refund_reason?: string | null
+          staff_id?: string | null
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          transaction_date?: string
+          transaction_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          discount_amount?: number | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          payment_method?: string
+          payment_status?: string
+          refund_amount?: number | null
+          refund_reason?: string | null
+          staff_id?: string | null
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          transaction_date?: string
+          transaction_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_transactions_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff: {
         Row: {
           created_at: string

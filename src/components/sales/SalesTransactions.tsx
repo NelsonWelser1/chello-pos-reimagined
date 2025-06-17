@@ -17,64 +17,37 @@ import {
   XCircle,
   RefreshCw
 } from "lucide-react";
-import { useState } from "react";
-
-const transactions = [
-  {
-    id: "TXN-2024-001234",
-    time: "2024-01-15 19:45:23",
-    customer: "Sarah Johnson",
-    items: ["Grilled Salmon", "Caesar Salad", "Wine"],
-    amount: 89.50,
-    payment: "Credit Card",
-    status: "completed",
-    table: "Table 12"
-  },
-  {
-    id: "TXN-2024-001235",
-    time: "2024-01-15 19:42:11",
-    customer: "Mike Chen",
-    items: ["Burger Deluxe", "Fries", "Soda"],
-    amount: 24.75,
-    payment: "Cash",
-    status: "completed",
-    table: "Counter"
-  },
-  {
-    id: "TXN-2024-001236",
-    time: "2024-01-15 19:38:45",
-    customer: "Emily Rodriguez",
-    items: ["Pasta Primavera", "Garlic Bread"],
-    amount: 32.90,
-    payment: "Mobile Pay",
-    status: "processing",
-    table: "Table 8"
-  },
-  {
-    id: "TXN-2024-001237",
-    time: "2024-01-15 19:35:12",
-    customer: "David Wilson",
-    items: ["Steak Dinner", "Side Salad", "Beer"],
-    amount: 67.25,
-    payment: "Credit Card",
-    status: "refunded",
-    table: "Table 5"
-  },
-  {
-    id: "TXN-2024-001238",
-    time: "2024-01-15 19:30:33",
-    customer: "Lisa Thompson",
-    items: ["Chicken Wrap", "Soup", "Iced Tea"],
-    amount: 18.40,
-    payment: "Debit Card",
-    status: "completed",
-    table: "Table 3"
-  }
-];
+import { useState, useMemo } from "react";
+import { useSalesTransactions } from "@/hooks/useSalesTransactions";
 
 export function SalesTransactions() {
+  const { transactions, loading } = useSalesTransactions();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(transaction => {
+      const matchesSearch = transaction.transaction_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           transaction.payment_method.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "all" || transaction.payment_status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [transactions, searchTerm, statusFilter]);
+
+  const summaryMetrics = useMemo(() => {
+    const completedTransactions = transactions.filter(t => t.payment_status === 'completed');
+    const processingTransactions = transactions.filter(t => t.payment_status === 'processing');
+    
+    return {
+      totalSales: completedTransactions.reduce((sum, t) => sum + t.total_amount, 0),
+      totalTransactions: transactions.length,
+      processingCount: processingTransactions.length,
+      averageOrder: completedTransactions.length > 0 
+        ? completedTransactions.reduce((sum, t) => sum + t.total_amount, 0) / completedTransactions.length 
+        : 0
+    };
+  }, [transactions]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -106,11 +79,22 @@ export function SalesTransactions() {
     switch (payment.toLowerCase()) {
       case "credit card":
       case "debit card":
+      case "card":
         return <CreditCard className="w-4 h-4" />;
       default:
         return <DollarSign className="w-4 h-4" />;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <div className="text-xl text-slate-600">Loading transactions...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -155,8 +139,6 @@ export function SalesTransactions() {
               <TableRow className="bg-gray-50/50">
                 <TableHead className="font-black text-base">Transaction ID</TableHead>
                 <TableHead className="font-black text-base">Time & Date</TableHead>
-                <TableHead className="font-black text-base">Customer</TableHead>
-                <TableHead className="font-black text-base">Items</TableHead>
                 <TableHead className="font-black text-base">Amount</TableHead>
                 <TableHead className="font-black text-base">Payment</TableHead>
                 <TableHead className="font-black text-base">Status</TableHead>
@@ -164,44 +146,36 @@ export function SalesTransactions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions.map((transaction) => (
+              {filteredTransactions.map((transaction) => (
                 <TableRow key={transaction.id} className="hover:bg-blue-50/30 transition-colors">
                   <TableCell className="font-mono font-semibold text-blue-600">
-                    {transaction.id}
+                    {transaction.transaction_id}
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-semibold">{transaction.time.split(' ')[1]}</span>
-                      <span className="text-sm text-gray-600">{transaction.time.split(' ')[0]}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-semibold">{transaction.customer}</span>
-                      <span className="text-sm text-gray-600">{transaction.table}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="max-w-48">
-                      <p className="truncate font-medium">{transaction.items.join(", ")}</p>
-                      <p className="text-sm text-gray-600">{transaction.items.length} items</p>
+                      <span className="font-semibold">
+                        {new Date(transaction.transaction_date).toLocaleTimeString()}
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        {new Date(transaction.transaction_date).toLocaleDateString()}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <span className="text-xl font-black text-green-600">
-                      ${transaction.amount.toFixed(2)}
+                      ${transaction.total_amount.toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {getPaymentIcon(transaction.payment)}
-                      <span className="font-medium">{transaction.payment}</span>
+                      {getPaymentIcon(transaction.payment_method)}
+                      <span className="font-medium">{transaction.payment_method}</span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getStatusColor(transaction.status)} flex items-center gap-1 px-3 py-1`}>
-                      {getStatusIcon(transaction.status)}
-                      {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                    <Badge className={`${getStatusColor(transaction.payment_status)} flex items-center gap-1 px-3 py-1`}>
+                      {getStatusIcon(transaction.payment_status)}
+                      {transaction.payment_status.charAt(0).toUpperCase() + transaction.payment_status.slice(1)}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -224,7 +198,7 @@ export function SalesTransactions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 font-semibold">Total Sales</p>
-                <p className="text-3xl font-black">$232.80</p>
+                <p className="text-3xl font-black">${summaryMetrics.totalSales.toFixed(2)}</p>
               </div>
               <CheckCircle className="w-10 h-10 text-green-200" />
             </div>
@@ -236,7 +210,7 @@ export function SalesTransactions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 font-semibold">Transactions</p>
-                <p className="text-3xl font-black">5</p>
+                <p className="text-3xl font-black">{summaryMetrics.totalTransactions}</p>
               </div>
               <Receipt className="w-10 h-10 text-blue-200" />
             </div>
@@ -248,7 +222,7 @@ export function SalesTransactions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-yellow-100 font-semibold">Processing</p>
-                <p className="text-3xl font-black">1</p>
+                <p className="text-3xl font-black">{summaryMetrics.processingCount}</p>
               </div>
               <RefreshCw className="w-10 h-10 text-yellow-200" />
             </div>
@@ -260,7 +234,7 @@ export function SalesTransactions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 font-semibold">Avg. Order</p>
-                <p className="text-3xl font-black">$46.56</p>
+                <p className="text-3xl font-black">${summaryMetrics.averageOrder.toFixed(2)}</p>
               </div>
               <DollarSign className="w-10 h-10 text-purple-200" />
             </div>
