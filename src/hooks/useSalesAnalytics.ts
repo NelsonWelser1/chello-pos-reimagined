@@ -44,7 +44,25 @@ export function useSalesAnalytics() {
         return;
       }
 
-      setAnalytics(data || []);
+      // Transform the data to match our interface
+      const transformedData: SalesAnalytics[] = (data || []).map(item => ({
+        id: item.id,
+        date: item.date,
+        total_sales: Number(item.total_sales),
+        total_orders: item.total_orders,
+        average_order_value: Number(item.average_order_value),
+        total_customers: item.total_customers,
+        peak_hour: item.peak_hour,
+        peak_hour_sales: item.peak_hour_sales ? Number(item.peak_hour_sales) : undefined,
+        staff_performance: Array.isArray(item.staff_performance) ? item.staff_performance : [],
+        menu_performance: Array.isArray(item.menu_performance) ? item.menu_performance : [],
+        payment_methods_breakdown: typeof item.payment_methods_breakdown === 'object' ? item.payment_methods_breakdown : {},
+        hourly_sales: Array.isArray(item.hourly_sales) ? item.hourly_sales : [],
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }));
+
+      setAnalytics(transformedData);
     } catch (error) {
       console.error('Error fetching sales analytics:', error);
     } finally {
@@ -66,7 +84,27 @@ export function useSalesAnalytics() {
         return null;
       }
 
-      return data || null;
+      if (!data) return null;
+
+      // Transform the data to match our interface
+      const transformedData: SalesAnalytics = {
+        id: data.id,
+        date: data.date,
+        total_sales: Number(data.total_sales),
+        total_orders: data.total_orders,
+        average_order_value: Number(data.average_order_value),
+        total_customers: data.total_customers,
+        peak_hour: data.peak_hour,
+        peak_hour_sales: data.peak_hour_sales ? Number(data.peak_hour_sales) : undefined,
+        staff_performance: Array.isArray(data.staff_performance) ? data.staff_performance : [],
+        menu_performance: Array.isArray(data.menu_performance) ? data.menu_performance : [],
+        payment_methods_breakdown: typeof data.payment_methods_breakdown === 'object' ? data.payment_methods_breakdown : {},
+        hourly_sales: Array.isArray(data.hourly_sales) ? data.hourly_sales : [],
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
+
+      return transformedData;
     } catch (error) {
       console.error('Error fetching today\'s analytics:', error);
       return null;
@@ -90,7 +128,25 @@ export function useSalesAnalytics() {
         return [];
       }
 
-      return data || [];
+      // Transform the data to match our interface
+      const transformedData: SalesAnalytics[] = (data || []).map(item => ({
+        id: item.id,
+        date: item.date,
+        total_sales: Number(item.total_sales),
+        total_orders: item.total_orders,
+        average_order_value: Number(item.average_order_value),
+        total_customers: item.total_customers,
+        peak_hour: item.peak_hour,
+        peak_hour_sales: item.peak_hour_sales ? Number(item.peak_hour_sales) : undefined,
+        staff_performance: Array.isArray(item.staff_performance) ? item.staff_performance : [],
+        menu_performance: Array.isArray(item.menu_performance) ? item.menu_performance : [],
+        payment_methods_breakdown: typeof item.payment_methods_breakdown === 'object' ? item.payment_methods_breakdown : {},
+        hourly_sales: Array.isArray(item.hourly_sales) ? item.hourly_sales : [],
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }));
+
+      return transformedData;
     } catch (error) {
       console.error('Error fetching weekly analytics:', error);
       return [];
