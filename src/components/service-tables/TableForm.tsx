@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table } from "@/hooks/useTables";
+import { toast } from "sonner";
 
 interface TableFormProps {
   isOpen: boolean;
@@ -60,10 +61,17 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+
+    console.log("Form submission started with data:", formData);
+
     // Validate required fields
     if (!formData.number || !formData.seats || !formData.shape || !formData.location) {
       console.error("Missing required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -73,11 +81,13 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
     
     if (isNaN(tableNumber) || tableNumber <= 0) {
       console.error("Invalid table number");
+      toast.error("Please enter a valid table number");
       return;
     }
     
     if (isNaN(seatCount) || seatCount <= 0) {
       console.error("Invalid seat count");
+      toast.error("Please enter a valid seat count");
       return;
     }
 
@@ -92,14 +102,18 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
         notes: formData.notes || null
       };
 
-      console.log("Submitting table data:", tableData);
+      console.log("Submitting table data to Supabase:", tableData);
       await onSubmit(tableData);
+      
+      console.log("Table submission successful");
+      toast.success("Table saved successfully!");
       
       // Clear form and close dialog on success
       resetForm();
       onClose();
     } catch (error) {
       console.error("Error submitting table:", error);
+      toast.error("Failed to save table. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -118,7 +132,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="table-number">Table Number *</Label>
@@ -130,6 +144,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                 onChange={(e) => setFormData(prev => ({ ...prev, number: e.target.value }))}
                 disabled={isSubmitting}
                 min="1"
+                required
               />
             </div>
             <div>
@@ -142,6 +157,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                 onChange={(e) => setFormData(prev => ({ ...prev, seats: e.target.value }))}
                 disabled={isSubmitting}
                 min="1"
+                required
               />
             </div>
           </div>
@@ -152,6 +168,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                 value={formData.shape} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, shape: value }))}
                 disabled={isSubmitting}
+                required
               >
                 <SelectTrigger id="table-shape">
                   <SelectValue placeholder="Select shape" />
@@ -169,6 +186,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                 value={formData.location} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
                 disabled={isSubmitting}
+                required
               >
                 <SelectTrigger id="table-location">
                   <SelectValue placeholder="Select location" />
@@ -194,13 +212,14 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
           </div>
           <div className="flex gap-2">
             <Button 
-              onClick={handleSubmit} 
+              type="submit"
               className="flex-1"
               disabled={isSubmitting || !formData.number || !formData.seats || !formData.shape || !formData.location}
             >
               {isSubmitting ? 'Saving...' : (editingTable ? 'Update Table' : 'Add Table')}
             </Button>
             <Button 
+              type="button"
               variant="outline" 
               onClick={handleClose} 
               className="flex-1"
@@ -209,7 +228,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
               Cancel
             </Button>
           </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
