@@ -2,47 +2,18 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Users, Clock, MapPin } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTables } from "@/hooks/useTables";
 import { useTableSessions } from "@/hooks/useTableSessions";
+import { FloorPlan } from "./FloorPlan";
+import { StatusLegend } from "./StatusLegend";
+import { TableDetailsCard } from "./TableDetailsCard";
 
 export function TableLayout() {
   const { tables, loading: tablesLoading, updateTableStatus } = useTables();
   const { sessions, getActiveSessionForTable, startTableSession, endTableSession } = useTableSessions();
   const [selectedTable, setSelectedTable] = useState<any>(null);
   const [isAddingTable, setIsAddingTable] = useState(false);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "available": return "bg-green-500";
-      case "occupied": return "bg-red-500";
-      case "reserved": return "bg-yellow-500";
-      case "cleaning": return "bg-gray-500";
-      default: return "bg-gray-400";
-    }
-  };
-
-  const getShapeClass = (shape: string) => {
-    switch (shape) {
-      case "round": return "rounded-full";
-      case "square": return "rounded-lg";
-      case "rectangle": return "rounded-lg";
-      default: return "rounded-lg";
-    }
-  };
-
-  const getShapeSize = (shape: string, seats: number) => {
-    const baseSize = Math.max(60, seats * 8);
-    if (shape === "rectangle") {
-      return { width: baseSize * 1.5, height: baseSize };
-    }
-    return { width: baseSize, height: baseSize };
-  };
 
   const handleTableClick = (table: any) => {
     const activeSession = getActiveSessionForTable(table.id);
@@ -83,6 +54,11 @@ export function TableLayout() {
     }
   };
 
+  const handleStatusChange = async (status: any) => {
+    if (!selectedTable) return;
+    await updateTableStatus(selectedTable.id, status);
+  };
+
   if (tablesLoading) {
     return (
       <div className="text-center py-12">
@@ -108,123 +84,25 @@ export function TableLayout() {
               <CardTitle>Floor Layout</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-dashed border-slate-300 rounded-lg h-96 overflow-hidden">
-                {tables.map((table) => {
-                  const size = getShapeSize(table.shape, table.seats);
-                  return (
-                    <div
-                      key={table.id}
-                      className={`absolute cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-lg ${getShapeClass(table.shape)} ${getStatusColor(table.status)} flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-md`}
-                      style={{
-                        left: table.position_x,
-                        top: table.position_y,
-                        width: size.width,
-                        height: size.height,
-                      }}
-                      onClick={() => handleTableClick(table)}
-                    >
-                      <div className="text-center">
-                        <div>T{table.number}</div>
-                        <div className="text-xs">{table.seats} seats</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <FloorPlan 
+                tables={tables}
+                onTableClick={handleTableClick}
+                getActiveSessionForTable={getActiveSessionForTable}
+              />
             </CardContent>
           </Card>
         </div>
 
         <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Status Legend</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Available</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span className="text-sm">Occupied</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span className="text-sm">Reserved</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-500 rounded"></div>
-                <span className="text-sm">Cleaning</span>
-              </div>
-            </CardContent>
-          </Card>
+          <StatusLegend />
 
           {selectedTable && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Table {selectedTable.number} Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    <span className="text-sm">{selectedTable.seats} seats</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-sm">{selectedTable.location}</span>
-                  </div>
-                  <Badge className={getStatusColor(selectedTable.status)}>
-                    {selectedTable.status}
-                  </Badge>
-                </div>
-
-                {selectedTable.currentParty && (
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <h4 className="font-semibold text-sm mb-2">Current Party</h4>
-                    <div className="space-y-1 text-sm">
-                      <div>Customer: {selectedTable.currentParty.customerName}</div>
-                      <div>Guests: {selectedTable.currentParty.guests}</div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Duration: {selectedTable.currentParty.duration} min
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label>Actions</Label>
-                  <div className="flex gap-2 flex-col">
-                    {selectedTable.status === 'available' && (
-                      <Button onClick={handleStartSession} size="sm">
-                        Start Session
-                      </Button>
-                    )}
-                    {selectedTable.status === 'occupied' && (
-                      <Button onClick={handleEndSession} size="sm" variant="outline">
-                        End Session
-                      </Button>
-                    )}
-                    <Select
-                      value={selectedTable.status}
-                      onValueChange={(value) => updateTableStatus(selectedTable.id, value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="occupied">Occupied</SelectItem>
-                        <SelectItem value="reserved">Reserved</SelectItem>
-                        <SelectItem value="cleaning">Cleaning</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <TableDetailsCard
+              table={selectedTable}
+              onStartSession={handleStartSession}
+              onEndSession={handleEndSession}
+              onStatusChange={handleStatusChange}
+            />
           )}
         </div>
       </div>

@@ -1,42 +1,38 @@
 
-import { CreditCard, DollarSign } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreditCard, Banknote } from "lucide-react";
 
 interface PaymentMethodSelectorProps {
-  paymentMethod: 'cash' | 'card';
-  onPaymentMethodChange: (method: 'cash' | 'card') => void;
+  selectedMethod: 'cash' | 'card';
+  onMethodChange: (method: 'cash' | 'card') => void;
 }
 
-export default function PaymentMethodSelector({
-  paymentMethod,
-  onPaymentMethodChange
+export default function PaymentMethodSelector({ 
+  selectedMethod, 
+  onMethodChange 
 }: PaymentMethodSelectorProps) {
   return (
-    <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-xl font-black text-slate-800">Payment Method</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          <Button
-            variant={paymentMethod === 'card' ? 'default' : 'outline'}
-            onClick={() => onPaymentMethodChange('card')}
-            className="flex flex-col items-center p-6 h-auto"
-          >
-            <CreditCard className="w-8 h-8 mb-2" />
-            <span className="font-bold">Card</span>
-          </Button>
-          <Button
-            variant={paymentMethod === 'cash' ? 'default' : 'outline'}
-            onClick={() => onPaymentMethodChange('cash')}
-            className="flex flex-col items-center p-6 h-auto"
-          >
-            <DollarSign className="w-8 h-8 mb-2" />
-            <span className="font-bold">Cash</span>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-3">
+      <div className="text-sm font-medium">Payment Method</div>
+      <div className="grid grid-cols-2 gap-3">
+        <Button
+          variant={selectedMethod === 'card' ? 'default' : 'outline'}
+          onClick={() => onMethodChange('card')}
+          className="flex items-center gap-2 h-12"
+        >
+          <CreditCard className="w-5 h-5" />
+          Card
+        </Button>
+        <Button
+          variant={selectedMethod === 'cash' ? 'default' : 'outline'}
+          onClick={() => onMethodChange('cash')}
+          className="flex items-center gap-2 h-12"
+        >
+          <Banknote className="w-5 h-5" />
+          Cash
+        </Button>
+      </div>
+    </div>
   );
 }

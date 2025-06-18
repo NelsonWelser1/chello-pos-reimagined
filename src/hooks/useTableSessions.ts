@@ -42,7 +42,7 @@ export function useTableSessions() {
         return;
       }
 
-      setSessions(data || []);
+      setSessions(data as TableSession[] || []);
     } catch (error) {
       console.error('Error fetching table sessions:', error);
       toast.error('Failed to load table sessions');
@@ -69,9 +69,9 @@ export function useTableSessions() {
       }
 
       if (data) {
-        setSessions(prev => [data, ...prev]);
+        setSessions(prev => [data as TableSession, ...prev]);
         toast.success(`Table session started for ${data.customer_name || 'customer'}`);
-        return data;
+        return data as TableSession;
       }
     } catch (error) {
       console.error('Error starting table session:', error);
@@ -102,7 +102,7 @@ export function useTableSessions() {
       }
 
       if (data) {
-        setSessions(prev => prev.map(session => session.id === sessionId ? data : session));
+        setSessions(prev => prev.map(session => session.id === sessionId ? data as TableSession : session));
         toast.success('Table session ended successfully');
         return true;
       }
@@ -132,7 +132,7 @@ export function useTableSessions() {
       }
 
       if (data) {
-        setSessions(prev => prev.map(session => session.id === sessionId ? data : session));
+        setSessions(prev => prev.map(session => session.id === sessionId ? data as TableSession : session));
         toast.success('Table session updated successfully');
         return true;
       }

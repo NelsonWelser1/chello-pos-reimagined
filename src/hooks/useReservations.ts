@@ -45,7 +45,7 @@ export function useReservations() {
         return;
       }
 
-      setReservations(data || []);
+      setReservations(data as Reservation[] || []);
     } catch (error) {
       console.error('Error fetching reservations:', error);
       toast.error('Failed to load reservations');
@@ -72,7 +72,7 @@ export function useReservations() {
       }
 
       if (data) {
-        setReservations(prev => [...prev, data].sort((a, b) => {
+        setReservations(prev => [...prev, data as Reservation].sort((a, b) => {
           const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
           if (dateCompare === 0) {
             return a.time.localeCompare(b.time);
@@ -80,7 +80,7 @@ export function useReservations() {
           return dateCompare;
         }));
         toast.success(`Reservation for ${data.customer_name} created successfully`);
-        return data;
+        return data as Reservation;
       }
     } catch (error) {
       console.error('Error creating reservation:', error);
@@ -108,7 +108,7 @@ export function useReservations() {
       }
 
       if (data) {
-        setReservations(prev => prev.map(reservation => reservation.id === id ? data : reservation));
+        setReservations(prev => prev.map(reservation => reservation.id === id ? data as Reservation : reservation));
         toast.success(`Reservation for ${data.customer_name} updated successfully`);
         return true;
       }
