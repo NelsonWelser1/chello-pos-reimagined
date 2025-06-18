@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,75 +8,37 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar, Clock, Phone, Users, Plus, Edit, Trash2, CheckCircle } from "lucide-react";
-import { toast } from "sonner";
+import { useReservations } from "@/hooks/useReservations";
+import { useTables } from "@/hooks/useTables";
 
 interface Reservation {
   id: string;
-  customerName: string;
+  customer_name: string;
   phone: string;
   email: string;
   date: string;
   time: string;
-  partySize: number;
-  tableNumber?: number;
+  party_size: number;
+  table?: { number: number };
   status: "confirmed" | "pending" | "seated" | "cancelled" | "completed";
-  specialRequests: string;
-  duration: number;
+  special_requests: string;
+  duration_minutes: number;
 }
 
 export function ReservationManager() {
-  const [reservations, setReservations] = useState<Reservation[]>([
-    {
-      id: "1",
-      customerName: "John Smith",
-      phone: "+1-555-0123",
-      email: "john@email.com",
-      date: "2024-01-15",
-      time: "19:00",
-      partySize: 4,
-      tableNumber: 3,
-      status: "confirmed",
-      specialRequests: "Window seat preferred",
-      duration: 120
-    },
-    {
-      id: "2",
-      customerName: "Sarah Johnson",
-      phone: "+1-555-0456",
-      email: "sarah@email.com",
-      date: "2024-01-15",
-      time: "20:30",
-      partySize: 2,
-      status: "pending",
-      specialRequests: "Anniversary dinner",
-      duration: 90
-    },
-    {
-      id: "3",
-      customerName: "Mike Wilson",
-      phone: "+1-555-0789",
-      email: "mike@email.com",
-      date: "2024-01-16",
-      time: "18:00",
-      partySize: 6,
-      tableNumber: 5,
-      status: "seated",
-      specialRequests: "Business dinner",
-      duration: 150
-    }
-  ]);
-
-  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+  const { reservations, loading: reservationsLoading, createReservation, updateReservation, deleteReservation } = useReservations();
+  const { tables } = useTables();
+  const [selectedReservation, setSelectedReservation] = useState<any>(null);
   const [isAddingReservation, setIsAddingReservation] = useState(false);
   const [newReservation, setNewReservation] = useState({
-    customerName: "",
+    customer_name: "",
     phone: "",
     email: "",
     date: "",
     time: "",
-    partySize: "",
-    specialRequests: "",
-    duration: "120"
+    party_size: "",
+    special_requests: "",
+    duration_minutes: "120"
   });
 
   const getStatusColor = (status: string) => {
@@ -91,55 +52,53 @@ export function ReservationManager() {
     }
   };
 
-  const handleAddReservation = () => {
-    if (!newReservation.customerName || !newReservation.phone || !newReservation.date || !newReservation.time || !newReservation.partySize) {
-      toast.error("Please fill in all required fields");
+  const handleAddReservation = async () => {
+    if (!newReservation.customer_name || !newReservation.phone || !newReservation.date || !newReservation.time || !newReservation.party_size) {
       return;
     }
 
-    const reservation: Reservation = {
-      id: Date.now().toString(),
-      customerName: newReservation.customerName,
+    await createReservation({
+      customer_name: newReservation.customer_name,
       phone: newReservation.phone,
-      email: newReservation.email,
+      email: newReservation.email || undefined,
       date: newReservation.date,
       time: newReservation.time,
-      partySize: parseInt(newReservation.partySize),
-      status: "pending",
-      specialRequests: newReservation.specialRequests,
-      duration: parseInt(newReservation.duration)
-    };
+      party_size: parseInt(newReservation.party_size),
+      status: 'pending',
+      special_requests: newReservation.special_requests || undefined,
+      duration_minutes: parseInt(newReservation.duration_minutes)
+    });
 
-    setReservations(prev => [...prev, reservation]);
     setNewReservation({
-      customerName: "",
+      customer_name: "",
       phone: "",
       email: "",
       date: "",
       time: "",
-      partySize: "",
-      specialRequests: "",
-      duration: "120"
+      party_size: "",
+      special_requests: "",
+      duration_minutes: "120"
     });
     setIsAddingReservation(false);
-    toast.success("Reservation added successfully");
   };
 
-  const updateReservationStatus = (reservationId: string, newStatus: string) => {
-    setReservations(prev => prev.map(reservation => 
-      reservation.id === reservationId ? { ...reservation, status: newStatus as any } : reservation
-    ));
-    toast.success("Reservation status updated");
+  const updateReservationStatus = async (reservationId: string, newStatus: string) => {
+    await updateReservation(reservationId, { status: newStatus as any });
   };
 
-  const deleteReservation = (reservationId: string) => {
-    const reservation = reservations.find(r => r.id === reservationId);
-    setReservations(prev => prev.filter(r => r.id !== reservationId));
-    toast.success(`Reservation for ${reservation?.customerName} deleted`);
+  const handleDeleteReservation = async (reservationId: string) => {
+    await deleteReservation(reservationId);
   };
 
-  const todaysReservations = reservations.filter(r => r.date === "2024-01-15");
-  const upcomingReservations = reservations.filter(r => r.date > "2024-01-15");
+  const todaysReservations = reservations.filter(r => r.date === new Date().toISOString().split('T')[0]);
+
+  if (reservationsLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-xl text-slate-600">Loading reservations...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -161,8 +120,8 @@ export function ReservationManager() {
                 <Label>Customer Name *</Label>
                 <Input
                   placeholder="Enter customer name"
-                  value={newReservation.customerName}
-                  onChange={(e) => setNewReservation(prev => ({ ...prev, customerName: e.target.value }))}
+                  value={newReservation.customer_name}
+                  onChange={(e) => setNewReservation(prev => ({ ...prev, customer_name: e.target.value }))}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -179,8 +138,8 @@ export function ReservationManager() {
                   <Input
                     type="number"
                     placeholder="4"
-                    value={newReservation.partySize}
-                    onChange={(e) => setNewReservation(prev => ({ ...prev, partySize: e.target.value }))}
+                    value={newReservation.party_size}
+                    onChange={(e) => setNewReservation(prev => ({ ...prev, party_size: e.target.value }))}
                   />
                 </div>
               </div>
@@ -213,7 +172,7 @@ export function ReservationManager() {
               </div>
               <div>
                 <Label>Duration (minutes)</Label>
-                <Select value={newReservation.duration} onValueChange={(value) => setNewReservation(prev => ({ ...prev, duration: value }))}>
+                <Select value={newReservation.duration_minutes} onValueChange={(value) => setNewReservation(prev => ({ ...prev, duration_minutes: value }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -230,8 +189,8 @@ export function ReservationManager() {
                 <Label>Special Requests</Label>
                 <Input
                   placeholder="Any special requirements..."
-                  value={newReservation.specialRequests}
-                  onChange={(e) => setNewReservation(prev => ({ ...prev, specialRequests: e.target.value }))}
+                  value={newReservation.special_requests}
+                  onChange={(e) => setNewReservation(prev => ({ ...prev, special_requests: e.target.value }))}
                 />
               </div>
               <div className="flex gap-2">
@@ -256,7 +215,7 @@ export function ReservationManager() {
               {todaysReservations.map((reservation) => (
                 <div key={reservation.id} className="p-3 border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">{reservation.customerName}</span>
+                    <span className="font-semibold">{reservation.customer_name}</span>
                     <Badge className={getStatusColor(reservation.status)}>
                       {reservation.status}
                     </Badge>
@@ -268,10 +227,10 @@ export function ReservationManager() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      {reservation.partySize} guests
+                      {reservation.party_size} guests
                     </div>
-                    {reservation.tableNumber && (
-                      <div>Table #{reservation.tableNumber}</div>
+                    {reservation.table && (
+                      <div>Table #{reservation.table.number}</div>
                     )}
                   </div>
                   <div className="flex gap-1 mt-2">
@@ -310,7 +269,7 @@ export function ReservationManager() {
               <TableBody>
                 {reservations.map((reservation) => (
                   <TableRow key={reservation.id}>
-                    <TableCell className="font-medium">{reservation.customerName}</TableCell>
+                    <TableCell className="font-medium">{reservation.customer_name}</TableCell>
                     <TableCell>
                       <div className="text-sm">
                         <div className="flex items-center gap-1">
@@ -327,10 +286,10 @@ export function ReservationManager() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{reservation.partySize} guests</Badge>
+                      <Badge variant="outline">{reservation.party_size} guests</Badge>
                     </TableCell>
                     <TableCell>
-                      {reservation.tableNumber ? `#${reservation.tableNumber}` : "-"}
+                      {reservation.table ? `#${reservation.table.number}` : "-"}
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(reservation.status)}>
@@ -342,7 +301,7 @@ export function ReservationManager() {
                         <Button size="sm" variant="outline" onClick={() => setSelectedReservation(reservation)}>
                           <Edit className="w-3 h-3" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => deleteReservation(reservation.id)}>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteReservation(reservation.id)}>
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>

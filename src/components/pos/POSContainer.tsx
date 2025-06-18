@@ -6,8 +6,8 @@ import { useCart } from "@/hooks/useCart";
 import CategoryFilter from "./CategoryFilter";
 import MenuGrid from "./MenuGrid";
 import CartSummary from "./CartSummary";
-import PaymentSection from "./PaymentSection";
 import StaffSelector from "./StaffSelector";
+import TableSelector from "./TableSelector";
 import POSPaymentHandler from "./POSPaymentHandler";
 
 export default function POSContainer() {
@@ -16,6 +16,7 @@ export default function POSContainer() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('card');
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
+  const [selectedTableSession, setSelectedTableSession] = useState<string | null>(null);
   
   const {
     cart,
@@ -71,6 +72,11 @@ export default function POSContainer() {
             onStaffSelect={setSelectedStaffId}
           />
           
+          <TableSelector
+            selectedTableSession={selectedTableSession}
+            onTableSessionSelect={setSelectedTableSession}
+          />
+          
           <CartSummary
             cart={cart}
             totalItems={getTotalItems()}
@@ -86,6 +92,7 @@ export default function POSContainer() {
               totalAmount={getTotalAmount()}
               paymentMethod={paymentMethod}
               selectedStaffId={selectedStaffId}
+              selectedTableSession={selectedTableSession}
               onPaymentMethodChange={setPaymentMethod}
               onClearCart={clearCart}
               onCartClear={() => setCart([])}

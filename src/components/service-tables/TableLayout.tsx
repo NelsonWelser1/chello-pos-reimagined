@@ -8,33 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Users, Clock, MapPin } from "lucide-react";
-import { toast } from "sonner";
-
-interface Table {
-  id: string;
-  number: number;
-  seats: number;
-  status: "available" | "occupied" | "reserved" | "cleaning";
-  position: { x: number; y: number };
-  shape: "round" | "square" | "rectangle";
-  currentParty?: {
-    guests: number;
-    duration: number;
-    customerName: string;
-  };
-}
+import { useTables } from "@/hooks/useTables";
+import { useTableSessions } from "@/hooks/useTableSessions";
 
 export function TableLayout() {
-  const [tables, setTables] = useState<Table[]>([
-    { id: "1", number: 1, seats: 4, status: "occupied", position: { x: 10, y: 10 }, shape: "round", currentParty: { guests: 3, duration: 45, customerName: "Smith" } },
-    { id: "2", number: 2, seats: 2, status: "available", position: { x: 200, y: 10 }, shape: "square" },
-    { id: "3", number: 3, seats: 6, status: "reserved", position: { x: 400, y: 10 }, shape: "rectangle" },
-    { id: "4", number: 4, seats: 4, status: "cleaning", position: { x: 10, y: 150 }, shape: "round" },
-    { id: "5", number: 5, seats: 8, status: "available", position: { x: 200, y: 150 }, shape: "rectangle" },
-    { id: "6", number: 6, seats: 2, status: "occupied", position: { x: 400, y: 150 }, shape: "square", currentParty: { guests: 2, duration: 25, customerName: "Johnson" } },
-  ]);
-
-  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+  const { tables, loading: tablesLoading, updateTableStatus } = useTables();
+  const { sessions, getActiveSessionForTable, startTableSession, endTableSession } = useTableSessions();
+  const [selectedTable, setSelectedTable] = useState<any>(null);
   const [isAddingTable, setIsAddingTable] = useState(false);
 
   const getStatusColor = (status: string) => {
@@ -64,16 +44,52 @@ export function TableLayout() {
     return { width: baseSize, height: baseSize };
   };
 
-  const handleTableClick = (table: Table) => {
-    setSelectedTable(table);
+  const handleTableClick = (table: any) => {
+    const activeSession = getActiveSessionForTable(table.id);
+    setSelectedTable({
+      ...table,
+      currentParty: activeSession ? {
+        guests: activeSession.party_size,
+        duration: Math.floor((new Date().getTime() - new Date(activeSession.started_at).getTime()) / (1000 * 60)),
+        customerName: activeSession.customer_name || 'Unknown'
+      } : null
+    });
   };
 
-  const updateTableStatus = (tableId: string, newStatus: string) => {
-    setTables(prev => prev.map(table => 
-      table.id === tableId ? { ...table, status: newStatus as any } : table
-    ));
-    toast.success(`Table ${tables.find(t => t.id === tableId)?.number} status updated to ${newStatus}`);
+  const handleStartSession = async () => {
+    if (!selectedTable) return;
+
+    const customerName = prompt("Enter customer name:");
+    const partySizeStr = prompt("Enter party size:");
+    
+    if (!customerName || !partySizeStr) return;
+    
+    const partySize = parseInt(partySizeStr);
+    if (isNaN(partySize) || partySize <= 0) return;
+
+    await startTableSession({
+      table_id: selectedTable.id,
+      customer_name: customerName,
+      party_size: partySize
+    });
   };
+
+  const handleEndSession = async () => {
+    if (!selectedTable) return;
+    
+    const activeSession = getActiveSessionForTable(selectedTable.id);
+    if (activeSession) {
+      await endTableSession(activeSession.id);
+    }
+  };
+
+  if (tablesLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-xl text-slate-600">Loading tables...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -100,8 +116,8 @@ export function TableLayout() {
                       key={table.id}
                       className={`absolute cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-lg ${getShapeClass(table.shape)} ${getStatusColor(table.status)} flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-md`}
                       style={{
-                        left: table.position.x,
-                        top: table.position.y,
+                        left: table.position_x,
+                        top: table.position_y,
                         width: size.width,
                         height: size.height,
                       }}
@@ -157,7 +173,7 @@ export function TableLayout() {
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-sm">{selectedTable.shape} table</span>
+                    <span className="text-sm">{selectedTable.location}</span>
                   </div>
                   <Badge className={getStatusColor(selectedTable.status)}>
                     {selectedTable.status}
@@ -179,21 +195,33 @@ export function TableLayout() {
                 )}
 
                 <div className="space-y-2">
-                  <Label>Change Status</Label>
-                  <Select
-                    value={selectedTable.status}
-                    onValueChange={(value) => updateTableStatus(selectedTable.id, value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="occupied">Occupied</SelectItem>
-                      <SelectItem value="reserved">Reserved</SelectItem>
-                      <SelectItem value="cleaning">Cleaning</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>Actions</Label>
+                  <div className="flex gap-2 flex-col">
+                    {selectedTable.status === 'available' && (
+                      <Button onClick={handleStartSession} size="sm">
+                        Start Session
+                      </Button>
+                    )}
+                    {selectedTable.status === 'occupied' && (
+                      <Button onClick={handleEndSession} size="sm" variant="outline">
+                        End Session
+                      </Button>
+                    )}
+                    <Select
+                      value={selectedTable.status}
+                      onValueChange={(value) => updateTableStatus(selectedTable.id, value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="occupied">Occupied</SelectItem>
+                        <SelectItem value="reserved">Reserved</SelectItem>
+                        <SelectItem value="cleaning">Cleaning</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>

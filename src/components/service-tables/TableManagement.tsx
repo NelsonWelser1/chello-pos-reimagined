@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2, Plus, Users, MapPin } from "lucide-react";
-import { toast } from "sonner";
+import { useTables } from "@/hooks/useTables";
 
 interface TableData {
   id: string;
@@ -22,16 +21,8 @@ interface TableData {
 }
 
 export function TableManagement() {
-  const [tables, setTables] = useState<TableData[]>([
-    { id: "1", number: 1, seats: 4, status: "occupied", shape: "round", location: "Main Floor", notes: "Window table" },
-    { id: "2", number: 2, seats: 2, status: "available", shape: "square", location: "Main Floor", notes: "" },
-    { id: "3", number: 3, seats: 6, status: "reserved", shape: "rectangle", location: "Main Floor", notes: "Large party table" },
-    { id: "4", number: 4, seats: 4, status: "cleaning", shape: "round", location: "Patio", notes: "Outdoor seating" },
-    { id: "5", number: 5, seats: 8, status: "available", shape: "rectangle", location: "Private Room", notes: "VIP area" },
-    { id: "6", number: 6, seats: 2, status: "occupied", shape: "square", location: "Bar Area", notes: "High top" },
-  ]);
-
-  const [editingTable, setEditingTable] = useState<TableData | null>(null);
+  const { tables, loading, createTable, updateTable, deleteTable } = useTables();
+  const [editingTable, setEditingTable] = useState<any>(null);
   const [isAddingTable, setIsAddingTable] = useState(false);
   const [newTable, setNewTable] = useState({
     number: "",
@@ -51,47 +42,51 @@ export function TableManagement() {
     }
   };
 
-  const handleAddTable = () => {
+  const handleAddTable = async () => {
     if (!newTable.number || !newTable.seats || !newTable.shape || !newTable.location) {
-      toast.error("Please fill in all required fields");
       return;
     }
 
-    const table: TableData = {
-      id: Date.now().toString(),
+    await createTable({
       number: parseInt(newTable.number),
       seats: parseInt(newTable.seats),
-      status: "available",
-      shape: newTable.shape,
+      status: 'available',
+      shape: newTable.shape as any,
       location: newTable.location,
+      position_x: 0,
+      position_y: 0,
       notes: newTable.notes
-    };
+    });
 
-    setTables(prev => [...prev, table]);
     setNewTable({ number: "", seats: "", shape: "", location: "", notes: "" });
     setIsAddingTable(false);
-    toast.success(`Table ${table.number} added successfully`);
   };
 
-  const handleEditTable = (table: TableData) => {
-    setEditingTable(table);
-  };
-
-  const handleUpdateTable = () => {
+  const handleUpdateTable = async () => {
     if (!editingTable) return;
 
-    setTables(prev => prev.map(table => 
-      table.id === editingTable.id ? editingTable : table
-    ));
+    await updateTable(editingTable.id, {
+      number: editingTable.number,
+      seats: editingTable.seats,
+      shape: editingTable.shape,
+      location: editingTable.location,
+      notes: editingTable.notes
+    });
+    
     setEditingTable(null);
-    toast.success(`Table ${editingTable.number} updated successfully`);
   };
 
-  const handleDeleteTable = (tableId: string) => {
-    const table = tables.find(t => t.id === tableId);
-    setTables(prev => prev.filter(table => table.id !== tableId));
-    toast.success(`Table ${table?.number} deleted successfully`);
+  const handleDeleteTable = async (tableId: string) => {
+    await deleteTable(tableId);
   };
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-xl text-slate-600">Loading tables...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -217,7 +212,7 @@ export function TableManagement() {
                   <TableCell className="max-w-32 truncate">{table.notes || "-"}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => handleEditTable(table)}>
+                      <Button size="sm" variant="outline" onClick={() => setEditingTable(table)}>
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button size="sm" variant="destructive" onClick={() => handleDeleteTable(table.id)}>

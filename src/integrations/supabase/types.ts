@@ -490,6 +490,7 @@ export type Database = {
           status: string
           subtotal: number
           table_number: number | null
+          table_session_id: string | null
           tax_amount: number
           total_amount: number
           updated_at: string
@@ -504,6 +505,7 @@ export type Database = {
           status?: string
           subtotal?: number
           table_number?: number | null
+          table_session_id?: string | null
           tax_amount?: number
           total_amount?: number
           updated_at?: string
@@ -518,6 +520,7 @@ export type Database = {
           status?: string
           subtotal?: number
           table_number?: number | null
+          table_session_id?: string | null
           tax_amount?: number
           total_amount?: number
           updated_at?: string
@@ -535,6 +538,69 @@ export type Database = {
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_table_session_id_fkey"
+            columns: ["table_session_id"]
+            isOneToOne: false
+            referencedRelation: "table_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservations: {
+        Row: {
+          created_at: string
+          customer_name: string
+          date: string
+          duration_minutes: number | null
+          email: string | null
+          id: string
+          party_size: number
+          phone: string
+          special_requests: string | null
+          status: string
+          table_id: string | null
+          time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          date: string
+          duration_minutes?: number | null
+          email?: string | null
+          id?: string
+          party_size: number
+          phone: string
+          special_requests?: string | null
+          status?: string
+          table_id?: string | null
+          time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          date?: string
+          duration_minutes?: number | null
+          email?: string | null
+          id?: string
+          party_size?: number
+          phone?: string
+          special_requests?: string | null
+          status?: string
+          table_id?: string | null
+          time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "tables"
             referencedColumns: ["id"]
           },
         ]
@@ -764,6 +830,95 @@ export type Database = {
           phone?: string | null
           pin_code?: string | null
           role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      table_sessions: {
+        Row: {
+          created_at: string
+          customer_name: string | null
+          ended_at: string | null
+          id: string
+          notes: string | null
+          party_size: number
+          started_at: string
+          status: string
+          table_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name?: string | null
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          party_size: number
+          started_at?: string
+          status?: string
+          table_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string | null
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          party_size?: number
+          started_at?: string
+          status?: string
+          table_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "table_sessions_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tables: {
+        Row: {
+          created_at: string
+          id: string
+          location: string
+          notes: string | null
+          number: number
+          position_x: number | null
+          position_y: number | null
+          seats: number
+          shape: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string
+          notes?: string | null
+          number: number
+          position_x?: number | null
+          position_y?: number | null
+          seats: number
+          shape?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string
+          notes?: string | null
+          number?: number
+          position_x?: number | null
+          position_y?: number | null
+          seats?: number
+          shape?: string
+          status?: string
           updated_at?: string
         }
         Relationships: []
