@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useTables } from "@/hooks/useTables";
+import { useTables, Table } from "@/hooks/useTables";
 import { useTableSessions } from "@/hooks/useTableSessions";
 import { FloorPlan } from "./FloorPlan";
 import { StatusLegend } from "./StatusLegend";
@@ -54,9 +54,9 @@ export function TableLayout() {
     }
   };
 
-  const handleStatusChange = async (status: any) => {
+  const handleStatusChange = async (status: string) => {
     if (!selectedTable) return;
-    await updateTableStatus(selectedTable.id, status);
+    await updateTableStatus(selectedTable.id, status as Table['status']);
   };
 
   if (tablesLoading) {

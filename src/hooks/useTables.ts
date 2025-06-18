@@ -35,7 +35,7 @@ export function useTables() {
         return;
       }
 
-      setTables(data || []);
+      setTables((data || []) as Table[]);
     } catch (error) {
       console.error('Error fetching tables:', error);
       toast.error('Failed to load tables');
@@ -59,9 +59,9 @@ export function useTables() {
       }
 
       if (data) {
-        setTables(prev => [...prev, data].sort((a, b) => a.number - b.number));
+        setTables(prev => [...prev, data as Table].sort((a, b) => a.number - b.number));
         toast.success(`Table ${data.number} created successfully`);
-        return data;
+        return data as Table;
       }
     } catch (error) {
       console.error('Error creating table:', error);
@@ -86,7 +86,7 @@ export function useTables() {
       }
 
       if (data) {
-        setTables(prev => prev.map(table => table.id === id ? data : table));
+        setTables(prev => prev.map(table => table.id === id ? data as Table : table));
         toast.success(`Table ${data.number} updated successfully`);
         return true;
       }

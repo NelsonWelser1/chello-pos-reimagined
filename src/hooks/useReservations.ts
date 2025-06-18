@@ -45,7 +45,7 @@ export function useReservations() {
         return;
       }
 
-      setReservations(data as Reservation[] || []);
+      setReservations((data || []) as Reservation[]);
     } catch (error) {
       console.error('Error fetching reservations:', error);
       toast.error('Failed to load reservations');

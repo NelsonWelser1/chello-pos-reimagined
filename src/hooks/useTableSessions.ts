@@ -42,7 +42,7 @@ export function useTableSessions() {
         return;
       }
 
-      setSessions(data as TableSession[] || []);
+      setSessions((data || []) as TableSession[]);
     } catch (error) {
       console.error('Error fetching table sessions:', error);
       toast.error('Failed to load table sessions');
