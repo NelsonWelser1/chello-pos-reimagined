@@ -8,9 +8,10 @@ import { useTableSessions } from "@/hooks/useTableSessions";
 import { FloorPlan } from "./FloorPlan";
 import { StatusLegend } from "./StatusLegend";
 import { TableDetailsCard } from "./TableDetailsCard";
+import { TableForm } from "./TableForm";
 
 export function TableLayout() {
-  const { tables, loading: tablesLoading, updateTableStatus } = useTables();
+  const { tables, loading: tablesLoading, updateTableStatus, createTable } = useTables();
   const { sessions, getActiveSessionForTable, startTableSession, endTableSession } = useTableSessions();
   const [selectedTable, setSelectedTable] = useState<any>(null);
   const [isAddingTable, setIsAddingTable] = useState(false);
@@ -57,6 +58,16 @@ export function TableLayout() {
   const handleStatusChange = async (status: string) => {
     if (!selectedTable) return;
     await updateTableStatus(selectedTable.id, status as Table['status']);
+  };
+
+  const handleAddTable = async (tableData: any) => {
+    await createTable({
+      ...tableData,
+      status: 'available' as const,
+      position_x: Math.floor(Math.random() * 300),
+      position_y: Math.floor(Math.random() * 200)
+    });
+    setIsAddingTable(false);
   };
 
   if (tablesLoading) {
@@ -106,6 +117,13 @@ export function TableLayout() {
           )}
         </div>
       </div>
+
+      <TableForm
+        isOpen={isAddingTable}
+        onClose={() => setIsAddingTable(false)}
+        onSubmit={handleAddTable}
+        title="Add New Table"
+      />
     </div>
   );
 }
