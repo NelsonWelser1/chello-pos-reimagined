@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,34 +17,99 @@ interface TableFormProps {
 
 export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: TableFormProps) {
   const [formData, setFormData] = useState({
-    number: editingTable?.number?.toString() || "",
-    seats: editingTable?.seats?.toString() || "",
-    shape: editingTable?.shape || "",
-    location: editingTable?.location || "",
-    notes: editingTable?.notes || ""
+    number: "",
+    seats: "",
+    shape: "",
+    location: "",
+    notes: ""
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Reset form when dialog opens/closes or when editingTable changes
+  useEffect(() => {
+    if (isOpen) {
+      if (editingTable) {
+        setFormData({
+          number: editingTable.number?.toString() || "",
+          seats: editingTable.seats?.toString() || "",
+          shape: editingTable.shape || "",
+          location: editingTable.location || "",
+          notes: editingTable.notes || ""
+        });
+      } else {
+        // Clear form for new table
+        setFormData({
+          number: "",
+          seats: "",
+          shape: "",
+          location: "",
+          notes: ""
+        });
+      }
+    }
+  }, [isOpen, editingTable]);
+
+  const resetForm = () => {
+    setFormData({
+      number: "",
+      seats: "",
+      shape: "",
+      location: "",
+      notes: ""
+    });
+  };
+
   const handleSubmit = async () => {
+    // Validate required fields
     if (!formData.number || !formData.seats || !formData.shape || !formData.location) {
+      console.error("Missing required fields");
       return;
     }
 
-    const tableData = {
-      number: parseInt(formData.number),
-      seats: parseInt(formData.seats),
-      shape: formData.shape,
-      location: formData.location,
-      notes: formData.notes
-    };
+    // Validate number fields
+    const tableNumber = parseInt(formData.number);
+    const seatCount = parseInt(formData.seats);
+    
+    if (isNaN(tableNumber) || tableNumber <= 0) {
+      console.error("Invalid table number");
+      return;
+    }
+    
+    if (isNaN(seatCount) || seatCount <= 0) {
+      console.error("Invalid seat count");
+      return;
+    }
 
-    await onSubmit(tableData);
-    setFormData({ number: "", seats: "", shape: "", location: "", notes: "" });
-    onClose();
+    setIsSubmitting(true);
+
+    try {
+      const tableData = {
+        number: tableNumber,
+        seats: seatCount,
+        shape: formData.shape,
+        location: formData.location,
+        notes: formData.notes || null
+      };
+
+      console.log("Submitting table data:", tableData);
+      await onSubmit(tableData);
+      
+      // Clear form and close dialog on success
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error("Error submitting table:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
-    setFormData({ number: "", seats: "", shape: "", location: "", notes: "" });
-    onClose();
+    if (!isSubmitting) {
+      resetForm();
+      onClose();
+    }
   };
 
   return (
@@ -56,32 +121,39 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Table Number</Label>
+              <Label htmlFor="table-number">Table Number *</Label>
               <Input
+                id="table-number"
                 type="number"
                 placeholder="Enter table number"
                 value={formData.number}
                 onChange={(e) => setFormData(prev => ({ ...prev, number: e.target.value }))}
+                disabled={isSubmitting}
+                min="1"
               />
             </div>
             <div>
-              <Label>Number of Seats</Label>
+              <Label htmlFor="seat-count">Number of Seats *</Label>
               <Input
+                id="seat-count"
                 type="number"
                 placeholder="Enter seat count"
                 value={formData.seats}
                 onChange={(e) => setFormData(prev => ({ ...prev, seats: e.target.value }))}
+                disabled={isSubmitting}
+                min="1"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Table Shape</Label>
+              <Label htmlFor="table-shape">Table Shape *</Label>
               <Select 
                 value={formData.shape} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, shape: value }))}
+                disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger id="table-shape">
                   <SelectValue placeholder="Select shape" />
                 </SelectTrigger>
                 <SelectContent>
@@ -92,12 +164,13 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
               </Select>
             </div>
             <div>
-              <Label>Location</Label>
+              <Label htmlFor="table-location">Location *</Label>
               <Select 
                 value={formData.location} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger id="table-location">
                   <SelectValue placeholder="Select location" />
                 </SelectTrigger>
                 <SelectContent>
@@ -110,18 +183,31 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
             </div>
           </div>
           <div>
-            <Label>Notes (Optional)</Label>
+            <Label htmlFor="table-notes">Notes (Optional)</Label>
             <Input
+              id="table-notes"
               placeholder="Additional notes..."
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              disabled={isSubmitting}
             />
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleSubmit} className="flex-1">
-              {editingTable ? 'Update Table' : 'Add Table'}
+            <Button 
+              onClick={handleSubmit} 
+              className="flex-1"
+              disabled={isSubmitting || !formData.number || !formData.seats || !formData.shape || !formData.location}
+            >
+              {isSubmitting ? 'Saving...' : (editingTable ? 'Update Table' : 'Add Table')}
             </Button>
-            <Button variant="outline" onClick={handleClose} className="flex-1">Cancel</Button>
+            <Button 
+              variant="outline" 
+              onClick={handleClose} 
+              className="flex-1"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       </DialogContent>
