@@ -35,7 +35,11 @@ export function useTables() {
         return;
       }
 
-      setTables((data || []) as Table[]);
+      setTables((data || []).map(table => ({
+        ...table,
+        status: table.status as Table['status'],
+        shape: table.shape as Table['shape']
+      })));
     } catch (error) {
       console.error('Error fetching tables:', error);
       toast.error('Failed to load tables');
@@ -59,9 +63,14 @@ export function useTables() {
       }
 
       if (data) {
-        setTables(prev => [...prev, data as Table].sort((a, b) => a.number - b.number));
+        const typedTable: Table = {
+          ...data,
+          status: data.status as Table['status'],
+          shape: data.shape as Table['shape']
+        };
+        setTables(prev => [...prev, typedTable].sort((a, b) => a.number - b.number));
         toast.success(`Table ${data.number} created successfully`);
-        return data as Table;
+        return typedTable;
       }
     } catch (error) {
       console.error('Error creating table:', error);
@@ -86,7 +95,12 @@ export function useTables() {
       }
 
       if (data) {
-        setTables(prev => prev.map(table => table.id === id ? data as Table : table));
+        const typedTable: Table = {
+          ...data,
+          status: data.status as Table['status'],
+          shape: data.shape as Table['shape']
+        };
+        setTables(prev => prev.map(table => table.id === id ? typedTable : table));
         toast.success(`Table ${data.number} updated successfully`);
         return true;
       }
