@@ -9,9 +9,10 @@ import { FloorPlan } from "./FloorPlan";
 import { StatusLegend } from "./StatusLegend";
 import { TableDetailsCard } from "./TableDetailsCard";
 import { TableForm } from "./TableForm";
+import { toast } from "sonner";
 
 export function TableLayout() {
-  const { tables, loading: tablesLoading, updateTableStatus, createTable } = useTables();
+  const { tables, loading: tablesLoading, updateTableStatus, createTable, error } = useTables();
   const { sessions, getActiveSessionForTable, startTableSession, endTableSession } = useTableSessions();
   const [selectedTable, setSelectedTable] = useState<any>(null);
   const [isAddingTable, setIsAddingTable] = useState(false);
@@ -61,19 +62,38 @@ export function TableLayout() {
   };
 
   const handleAddTable = async (tableData: any) => {
-    await createTable({
-      ...tableData,
-      status: 'available' as const,
-      position_x: Math.floor(Math.random() * 300),
-      position_y: Math.floor(Math.random() * 200)
-    });
-    setIsAddingTable(false);
+    try {
+      await createTable({
+        ...tableData,
+        status: 'available' as const,
+        position_x: Math.floor(Math.random() * 300),
+        position_y: Math.floor(Math.random() * 200)
+      });
+      setIsAddingTable(false);
+    } catch (error) {
+      console.error("Failed to create table:", error);
+      // Error handling is already done in the hook
+    }
   };
 
   if (tablesLoading) {
     return (
       <div className="text-center py-12">
         <div className="text-xl text-slate-600">Loading tables...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-xl text-red-600">Error: {error}</div>
+        <Button 
+          onClick={() => window.location.reload()} 
+          className="mt-4"
+        >
+          Retry
+        </Button>
       </div>
     );
   }

@@ -26,6 +26,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Reset form when dialog opens/closes or when editingTable changes
   useEffect(() => {
@@ -39,15 +40,9 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
           notes: editingTable.notes || ""
         });
       } else {
-        // Clear form for new table
-        setFormData({
-          number: "",
-          seats: "",
-          shape: "",
-          location: "",
-          notes: ""
-        });
+        resetForm();
       }
+      setErrors({});
     }
   }, [isOpen, editingTable]);
 
@@ -59,35 +54,41 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
       location: "",
       notes: ""
     });
+    setErrors({});
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.number.trim()) {
+      newErrors.number = "Table number is required";
+    } else if (isNaN(parseInt(formData.number)) || parseInt(formData.number) <= 0) {
+      newErrors.number = "Please enter a valid table number";
     }
 
-    console.log("Form submission started with data:", formData);
-
-    // Validate required fields
-    if (!formData.number || !formData.seats || !formData.shape || !formData.location) {
-      console.error("Missing required fields");
-      toast.error("Please fill in all required fields");
-      return;
+    if (!formData.seats.trim()) {
+      newErrors.seats = "Number of seats is required";
+    } else if (isNaN(parseInt(formData.seats)) || parseInt(formData.seats) <= 0) {
+      newErrors.seats = "Please enter a valid seat count";
     }
 
-    // Validate number fields
-    const tableNumber = parseInt(formData.number);
-    const seatCount = parseInt(formData.seats);
-    
-    if (isNaN(tableNumber) || tableNumber <= 0) {
-      console.error("Invalid table number");
-      toast.error("Please enter a valid table number");
-      return;
+    if (!formData.shape) {
+      newErrors.shape = "Table shape is required";
     }
-    
-    if (isNaN(seatCount) || seatCount <= 0) {
-      console.error("Invalid seat count");
-      toast.error("Please enter a valid seat count");
+
+    if (!formData.location) {
+      newErrors.location = "Table location is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fix the form errors before submitting");
       return;
     }
 
@@ -95,18 +96,18 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
 
     try {
       const tableData = {
-        number: tableNumber,
-        seats: seatCount,
-        shape: formData.shape,
+        number: parseInt(formData.number),
+        seats: parseInt(formData.seats),
+        shape: formData.shape as 'round' | 'square' | 'rectangle',
         location: formData.location,
-        notes: formData.notes || null
+        notes: formData.notes.trim() || null
       };
 
       console.log("Submitting table data to Supabase:", tableData);
       await onSubmit(tableData);
       
       console.log("Table submission successful");
-      toast.success("Table saved successfully!");
+      toast.success(editingTable ? "Table updated successfully!" : "Table created successfully!");
       
       // Clear form and close dialog on success
       resetForm();
@@ -126,9 +127,17 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
     }
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
@@ -141,11 +150,13 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                 type="number"
                 placeholder="Enter table number"
                 value={formData.number}
-                onChange={(e) => setFormData(prev => ({ ...prev, number: e.target.value }))}
+                onChange={(e) => handleInputChange("number", e.target.value)}
                 disabled={isSubmitting}
                 min="1"
+                className={errors.number ? "border-red-500" : ""}
                 required
               />
+              {errors.number && <p className="text-sm text-red-500 mt-1">{errors.number}</p>}
             </div>
             <div>
               <Label htmlFor="seat-count">Number of Seats *</Label>
@@ -154,11 +165,13 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                 type="number"
                 placeholder="Enter seat count"
                 value={formData.seats}
-                onChange={(e) => setFormData(prev => ({ ...prev, seats: e.target.value }))}
+                onChange={(e) => handleInputChange("seats", e.target.value)}
                 disabled={isSubmitting}
                 min="1"
+                className={errors.seats ? "border-red-500" : ""}
                 required
               />
+              {errors.seats && <p className="text-sm text-red-500 mt-1">{errors.seats}</p>}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -166,11 +179,11 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
               <Label htmlFor="table-shape">Table Shape *</Label>
               <Select 
                 value={formData.shape} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, shape: value }))}
+                onValueChange={(value) => handleInputChange("shape", value)}
                 disabled={isSubmitting}
                 required
               >
-                <SelectTrigger id="table-shape">
+                <SelectTrigger id="table-shape" className={errors.shape ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select shape" />
                 </SelectTrigger>
                 <SelectContent>
@@ -179,16 +192,17 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                   <SelectItem value="rectangle">Rectangle</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.shape && <p className="text-sm text-red-500 mt-1">{errors.shape}</p>}
             </div>
             <div>
               <Label htmlFor="table-location">Location *</Label>
               <Select 
                 value={formData.location} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                onValueChange={(value) => handleInputChange("location", value)}
                 disabled={isSubmitting}
                 required
               >
-                <SelectTrigger id="table-location">
+                <SelectTrigger id="table-location" className={errors.location ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select location" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,6 +212,7 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
                   <SelectItem value="Bar Area">Bar Area</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.location && <p className="text-sm text-red-500 mt-1">{errors.location}</p>}
             </div>
           </div>
           <div>
@@ -206,15 +221,15 @@ export function TableForm({ isOpen, onClose, onSubmit, editingTable, title }: Ta
               id="table-notes"
               placeholder="Additional notes..."
               value={formData.notes}
-              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              onChange={(e) => handleInputChange("notes", e.target.value)}
               disabled={isSubmitting}
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-4">
             <Button 
               type="submit"
               className="flex-1"
-              disabled={isSubmitting || !formData.number || !formData.seats || !formData.shape || !formData.location}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Saving...' : (editingTable ? 'Update Table' : 'Add Table')}
             </Button>
