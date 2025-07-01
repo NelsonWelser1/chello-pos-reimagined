@@ -30,22 +30,38 @@ export function useReservations() {
   const fetchReservations = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // First, fetch reservations without join to avoid join errors
+      const { data: reservationsData, error: reservationsError } = await supabase
         .from('reservations')
-        .select(`
-          *,
-          table:tables(id, number)
-        `)
+        .select('*')
         .order('date', { ascending: true })
         .order('time', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching reservations:', error);
+      if (reservationsError) {
+        console.error('Error fetching reservations:', reservationsError);
         toast.error('Failed to load reservations');
         return;
       }
 
-      setReservations((data || []) as Reservation[]);
+      // Then fetch tables separately and match them up
+      const { data: tablesData, error: tablesError } = await supabase
+        .from('tables')
+        .select('id, number');
+
+      let enrichedReservations = reservationsData || [];
+
+      // If tables data is available, enrich reservations with table info
+      if (!tablesError && tablesData) {
+        enrichedReservations = (reservationsData || []).map(reservation => ({
+          ...reservation,
+          table: reservation.table_id ? 
+            tablesData.find(table => table.id === reservation.table_id) : 
+            undefined
+        }));
+      }
+
+      setReservations(enrichedReservations as Reservation[]);
     } catch (error) {
       console.error('Error fetching reservations:', error);
       toast.error('Failed to load reservations');
@@ -59,10 +75,7 @@ export function useReservations() {
       const { data, error } = await supabase
         .from('reservations')
         .insert([reservationData])
-        .select(`
-          *,
-          table:tables(id, number)
-        `)
+        .select()
         .single();
 
       if (error) {
@@ -72,7 +85,21 @@ export function useReservations() {
       }
 
       if (data) {
-        setReservations(prev => [...prev, data as Reservation].sort((a, b) => {
+        // Enrich with table data if table_id exists
+        let enrichedReservation = data;
+        if (data.table_id) {
+          const { data: tableData } = await supabase
+            .from('tables')
+            .select('id, number')
+            .eq('id', data.table_id)
+            .single();
+          
+          if (tableData) {
+            enrichedReservation = { ...data, table: tableData };
+          }
+        }
+
+        setReservations(prev => [...prev, enrichedReservation as Reservation].sort((a, b) => {
           const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
           if (dateCompare === 0) {
             return a.time.localeCompare(b.time);
@@ -80,7 +107,7 @@ export function useReservations() {
           return dateCompare;
         }));
         toast.success(`Reservation for ${data.customer_name} created successfully`);
-        return data as Reservation;
+        return enrichedReservation as Reservation;
       }
     } catch (error) {
       console.error('Error creating reservation:', error);
@@ -95,10 +122,7 @@ export function useReservations() {
         .from('reservations')
         .update(updates)
         .eq('id', id)
-        .select(`
-          *,
-          table:tables(id, number)
-        `)
+        .select()
         .single();
 
       if (error) {
@@ -108,7 +132,23 @@ export function useReservations() {
       }
 
       if (data) {
-        setReservations(prev => prev.map(reservation => reservation.id === id ? data as Reservation : reservation));
+        // Enrich with table data if table_id exists
+        let enrichedReservation = data;
+        if (data.table_id) {
+          const { data: tableData } = await supabase
+            .from('tables')
+            .select('id, number')
+            .eq('id', data.table_id)
+            .single();
+          
+          if (tableData) {
+            enrichedReservation = { ...data, table: tableData };
+          }
+        }
+
+        setReservations(prev => prev.map(reservation => 
+          reservation.id === id ? enrichedReservation as Reservation : reservation
+        ));
         toast.success(`Reservation for ${data.customer_name} updated successfully`);
         return true;
       }
