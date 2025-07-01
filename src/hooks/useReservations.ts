@@ -86,7 +86,7 @@ export function useReservations() {
 
       if (data) {
         // Enrich with table data if table_id exists
-        let enrichedReservation = data;
+        let enrichedReservation: Reservation = data as Reservation;
         if (data.table_id) {
           const { data: tableData } = await supabase
             .from('tables')
@@ -95,11 +95,11 @@ export function useReservations() {
             .single();
           
           if (tableData) {
-            enrichedReservation = { ...data, table: tableData };
+            enrichedReservation = { ...data, table: tableData } as Reservation;
           }
         }
 
-        setReservations(prev => [...prev, enrichedReservation as Reservation].sort((a, b) => {
+        setReservations(prev => [...prev, enrichedReservation].sort((a, b) => {
           const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
           if (dateCompare === 0) {
             return a.time.localeCompare(b.time);
@@ -107,7 +107,7 @@ export function useReservations() {
           return dateCompare;
         }));
         toast.success(`Reservation for ${data.customer_name} created successfully`);
-        return enrichedReservation as Reservation;
+        return enrichedReservation;
       }
     } catch (error) {
       console.error('Error creating reservation:', error);
@@ -133,7 +133,7 @@ export function useReservations() {
 
       if (data) {
         // Enrich with table data if table_id exists
-        let enrichedReservation = data;
+        let enrichedReservation: Reservation = data as Reservation;
         if (data.table_id) {
           const { data: tableData } = await supabase
             .from('tables')
@@ -142,12 +142,12 @@ export function useReservations() {
             .single();
           
           if (tableData) {
-            enrichedReservation = { ...data, table: tableData };
+            enrichedReservation = { ...data, table: tableData } as Reservation;
           }
         }
 
         setReservations(prev => prev.map(reservation => 
-          reservation.id === id ? enrichedReservation as Reservation : reservation
+          reservation.id === id ? enrichedReservation : reservation
         ));
         toast.success(`Reservation for ${data.customer_name} updated successfully`);
         return true;
