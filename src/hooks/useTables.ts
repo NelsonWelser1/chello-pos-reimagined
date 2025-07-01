@@ -94,6 +94,7 @@ export function useTables() {
         
         console.log("Table created successfully:", typedTable);
         setTables(prev => [...prev, typedTable].sort((a, b) => a.number - b.number));
+        toast.success("Table created successfully!");
         return typedTable;
       }
     } catch (error) {

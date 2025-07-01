@@ -42,6 +42,7 @@ export function useTableSessions() {
         return;
       }
 
+      console.log("Table sessions fetched successfully:", data);
       setSessions((data || []) as TableSession[]);
     } catch (error) {
       console.error('Error fetching table sessions:', error);
@@ -53,6 +54,8 @@ export function useTableSessions() {
 
   const startTableSession = async (sessionData: Omit<TableSession, 'id' | 'created_at' | 'updated_at' | 'table' | 'started_at' | 'status'>) => {
     try {
+      console.log("Starting table session:", sessionData);
+      
       const { data, error } = await supabase
         .from('table_sessions')
         .insert([{ ...sessionData, status: 'active' }])
@@ -69,6 +72,7 @@ export function useTableSessions() {
       }
 
       if (data) {
+        console.log("Table session started successfully:", data);
         setSessions(prev => [data as TableSession, ...prev]);
         toast.success(`Table session started for ${data.customer_name || 'customer'}`);
         return data as TableSession;
@@ -82,6 +86,8 @@ export function useTableSessions() {
 
   const endTableSession = async (sessionId: string) => {
     try {
+      console.log("Ending table session:", sessionId);
+      
       const { data, error } = await supabase
         .from('table_sessions')
         .update({ 
@@ -102,6 +108,7 @@ export function useTableSessions() {
       }
 
       if (data) {
+        console.log("Table session ended successfully:", data);
         setSessions(prev => prev.map(session => session.id === sessionId ? data as TableSession : session));
         toast.success('Table session ended successfully');
         return true;
@@ -115,6 +122,8 @@ export function useTableSessions() {
 
   const updateTableSession = async (sessionId: string, updates: Partial<TableSession>) => {
     try {
+      console.log("Updating table session:", sessionId, updates);
+      
       const { data, error } = await supabase
         .from('table_sessions')
         .update(updates)
@@ -132,6 +141,7 @@ export function useTableSessions() {
       }
 
       if (data) {
+        console.log("Table session updated successfully:", data);
         setSessions(prev => prev.map(session => session.id === sessionId ? data as TableSession : session));
         toast.success('Table session updated successfully');
         return true;
@@ -147,8 +157,38 @@ export function useTableSessions() {
     return sessions.find(session => session.table_id === tableId && session.status === 'active');
   };
 
+  // Set up real-time subscriptions for table session updates
   useEffect(() => {
     fetchSessions();
+
+    const channel = supabase
+      .channel('table-sessions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'table_sessions'
+        },
+        (payload) => {
+          console.log('Real-time table session update:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            // Refetch to get the joined table data
+            fetchSessions();
+          } else if (payload.eventType === 'UPDATE') {
+            // Refetch to get the updated joined table data
+            fetchSessions();
+          } else if (payload.eventType === 'DELETE') {
+            setSessions(prev => prev.filter(session => session.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return {

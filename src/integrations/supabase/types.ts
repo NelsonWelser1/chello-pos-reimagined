@@ -540,13 +540,6 @@ export type Database = {
             referencedRelation: "staff"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "orders_table_session_id_fkey"
-            columns: ["table_session_id"]
-            isOneToOne: false
-            referencedRelation: "table_sessions"
-            referencedColumns: ["id"]
-          },
         ]
       }
       reservations: {
@@ -595,15 +588,7 @@ export type Database = {
           time?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "reservations_table_id_fkey"
-            columns: ["table_id"]
-            isOneToOne: false
-            referencedRelation: "tables"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       sales_analytics: {
         Row: {
@@ -888,8 +873,8 @@ export type Database = {
           location: string
           notes: string | null
           number: number
-          position_x: number | null
-          position_y: number | null
+          position_x: number
+          position_y: number
           seats: number
           shape: string
           status: string
@@ -898,13 +883,13 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          location?: string
+          location: string
           notes?: string | null
           number: number
-          position_x?: number | null
-          position_y?: number | null
+          position_x?: number
+          position_y?: number
           seats: number
-          shape?: string
+          shape: string
           status?: string
           updated_at?: string
         }
@@ -914,8 +899,8 @@ export type Database = {
           location?: string
           notes?: string | null
           number?: number
-          position_x?: number | null
-          position_y?: number | null
+          position_x?: number
+          position_y?: number
           seats?: number
           shape?: string
           status?: string

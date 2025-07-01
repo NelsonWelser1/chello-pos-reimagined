@@ -9,6 +9,7 @@ import { FloorPlan } from "./FloorPlan";
 import { StatusLegend } from "./StatusLegend";
 import { TableDetailsCard } from "./TableDetailsCard";
 import { TableForm } from "./TableForm";
+import { SampleDataInitializer } from "./SampleDataInitializer";
 import { toast } from "sonner";
 
 export function TableLayout() {
@@ -38,13 +39,22 @@ export function TableLayout() {
     if (!customerName || !partySizeStr) return;
     
     const partySize = parseInt(partySizeStr);
-    if (isNaN(partySize) || partySize <= 0) return;
+    if (isNaN(partySize) || partySize <= 0) {
+      toast.error("Please enter a valid party size");
+      return;
+    }
 
-    await startTableSession({
-      table_id: selectedTable.id,
-      customer_name: customerName,
-      party_size: partySize
-    });
+    try {
+      await startTableSession({
+        table_id: selectedTable.id,
+        customer_name: customerName,
+        party_size: partySize
+      });
+      toast.success("Table session started successfully");
+    } catch (error) {
+      console.error("Failed to start table session:", error);
+      toast.error("Failed to start table session");
+    }
   };
 
   const handleEndSession = async () => {
@@ -52,13 +62,26 @@ export function TableLayout() {
     
     const activeSession = getActiveSessionForTable(selectedTable.id);
     if (activeSession) {
-      await endTableSession(activeSession.id);
+      try {
+        await endTableSession(activeSession.id);
+        toast.success("Table session ended successfully");
+      } catch (error) {
+        console.error("Failed to end table session:", error);
+        toast.error("Failed to end table session");
+      }
     }
   };
 
   const handleStatusChange = async (status: string) => {
     if (!selectedTable) return;
-    await updateTableStatus(selectedTable.id, status as Table['status']);
+    
+    try {
+      await updateTableStatus(selectedTable.id, status as Table['status']);
+      toast.success("Table status updated successfully");
+    } catch (error) {
+      console.error("Failed to update table status:", error);
+      toast.error("Failed to update table status");
+    }
   };
 
   const handleAddTable = async (tableData: any) => {
@@ -70,9 +93,10 @@ export function TableLayout() {
         position_y: Math.floor(Math.random() * 200)
       });
       setIsAddingTable(false);
+      toast.success("Table created successfully");
     } catch (error) {
       console.error("Failed to create table:", error);
-      // Error handling is already done in the hook
+      toast.error("Failed to create table");
     }
   };
 
@@ -100,6 +124,8 @@ export function TableLayout() {
 
   return (
     <div className="space-y-6">
+      <SampleDataInitializer />
+      
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Restaurant Floor Plan</h2>
         <Button onClick={() => setIsAddingTable(true)}>
