@@ -13,8 +13,13 @@ import {
   Settings,
   Trash2,
   CheckCircle,
-  XCircle
+  XCircle,
+  Shield,
+  Zap
 } from "lucide-react";
+import { PaymentMethodForm } from "./PaymentMethodForm";
+import { PaymentGatewayForm } from "./PaymentGatewayForm";
+import { PaymentRulesForm } from "./PaymentRulesForm";
 
 export function PaymentMethodsList() {
   const [paymentMethods, setPaymentMethods] = useState([
@@ -68,6 +73,11 @@ export function PaymentMethodsList() {
     }
   ]);
 
+  const [showMethodForm, setShowMethodForm] = useState(false);
+  const [showGatewayForm, setShowGatewayForm] = useState(false);
+  const [showRulesForm, setShowRulesForm] = useState(false);
+  const [editingMethod, setEditingMethod] = useState(null);
+
   const toggleMethod = (id: number) => {
     setPaymentMethods(methods =>
       methods.map(method =>
@@ -78,18 +88,47 @@ export function PaymentMethodsList() {
     );
   };
 
-  const addNewMethod = () => {
-    console.log("Adding new payment method...");
+  const handleAddMethod = (data: any) => {
+    console.log("Adding payment method:", data);
+  };
+
+  const handleAddGateway = (data: any) => {
+    console.log("Adding payment gateway:", data);
+  };
+
+  const handleAddRule = (data: any) => {
+    console.log("Adding payment rule:", data);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Available Payment Methods</h2>
-        <Button onClick={addNewMethod} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Add Payment Method
-        </Button>
+        <h2 className="text-2xl font-bold text-gray-900">Payment Methods Management</h2>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowRulesForm(true)}
+            className="flex items-center gap-2"
+          >
+            <Shield className="w-4 h-4" />
+            Payment Rules
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowGatewayForm(true)}
+            className="flex items-center gap-2"
+          >
+            <Zap className="w-4 h-4" />
+            Add Gateway
+          </Button>
+          <Button 
+            onClick={() => setShowMethodForm(true)} 
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Method
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,7 +182,15 @@ export function PaymentMethodsList() {
               </div>
               
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => {
+                    setEditingMethod(method);
+                    setShowMethodForm(true);
+                  }}
+                >
                   <Settings className="w-4 h-4 mr-1" />
                   Configure
                 </Button>
@@ -155,6 +202,28 @@ export function PaymentMethodsList() {
           </Card>
         ))}
       </div>
+
+      <PaymentMethodForm
+        isOpen={showMethodForm}
+        onClose={() => {
+          setShowMethodForm(false);
+          setEditingMethod(null);
+        }}
+        onSubmit={handleAddMethod}
+        editingMethod={editingMethod}
+      />
+
+      <PaymentGatewayForm
+        isOpen={showGatewayForm}
+        onClose={() => setShowGatewayForm(false)}
+        onSubmit={handleAddGateway}
+      />
+
+      <PaymentRulesForm
+        isOpen={showRulesForm}
+        onClose={() => setShowRulesForm(false)}
+        onSubmit={handleAddRule}
+      />
     </div>
   );
 }
