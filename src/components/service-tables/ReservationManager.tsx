@@ -3,18 +3,31 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { useReservations } from "@/hooks/useReservations";
+import { useReservations, Reservation } from "@/hooks/useReservations";
 import { ReservationForm } from "./ReservationForm";
+import { EditReservationForm } from "./EditReservationForm";
 import { TodaysReservations } from "./TodaysReservations";
 import { AllReservationsTable } from "./AllReservationsTable";
 
 export function ReservationManager() {
   const { reservations, loading: reservationsLoading, createReservation, updateReservation, deleteReservation } = useReservations();
-  const [selectedReservation, setSelectedReservation] = useState<any>(null);
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [isAddingReservation, setIsAddingReservation] = useState(false);
+  const [isEditingReservation, setIsEditingReservation] = useState(false);
 
   const handleAddReservation = async (reservationData: any) => {
     await createReservation(reservationData);
+  };
+
+  const handleEditReservation = (reservation: Reservation) => {
+    setSelectedReservation(reservation);
+    setIsEditingReservation(true);
+  };
+
+  const handleUpdateReservation = async (reservationId: string, updates: Partial<Reservation>) => {
+    await updateReservation(reservationId, updates);
+    setIsEditingReservation(false);
+    setSelectedReservation(null);
   };
 
   const updateReservationStatus = async (reservationId: string, newStatus: string) => {
@@ -50,13 +63,13 @@ export function ReservationManager() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <TodaysReservations
           reservations={reservations}
-          onEdit={setSelectedReservation}
+          onEdit={handleEditReservation}
           onUpdateStatus={updateReservationStatus}
         />
 
         <AllReservationsTable
           reservations={reservations}
-          onEdit={setSelectedReservation}
+          onEdit={handleEditReservation}
           onDelete={handleDeleteReservation}
         />
       </div>
@@ -65,6 +78,16 @@ export function ReservationManager() {
         isOpen={isAddingReservation}
         onClose={() => setIsAddingReservation(false)}
         onSubmit={handleAddReservation}
+      />
+
+      <EditReservationForm
+        isOpen={isEditingReservation}
+        onClose={() => {
+          setIsEditingReservation(false);
+          setSelectedReservation(null);
+        }}
+        onSubmit={handleUpdateReservation}
+        reservation={selectedReservation}
       />
     </div>
   );
