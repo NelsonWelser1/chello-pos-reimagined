@@ -542,6 +542,413 @@ export type Database = {
           },
         ]
       }
+      payment_configurations: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_type: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_type: string
+          setting_value: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_type?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_fraud_logs: {
+        Row: {
+          action_taken: string
+          created_at: string
+          fraud_indicators: Json | null
+          id: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          risk_score: number | null
+          rule_id: string | null
+          transaction_id: string | null
+        }
+        Insert: {
+          action_taken: string
+          created_at?: string
+          fraud_indicators?: Json | null
+          id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          risk_score?: number | null
+          rule_id?: string | null
+          transaction_id?: string | null
+        }
+        Update: {
+          action_taken?: string
+          created_at?: string
+          fraud_indicators?: Json | null
+          id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          risk_score?: number | null
+          rule_id?: string | null
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_fraud_logs_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "payment_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_fraud_logs_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_method_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_gateways: {
+        Row: {
+          api_key: string
+          created_at: string
+          description: string | null
+          enabled: boolean
+          environment: string
+          id: string
+          max_transaction_amount: number | null
+          merchant_id: string | null
+          min_transaction_amount: number | null
+          name: string
+          priority: number
+          provider: string
+          public_key: string | null
+          secret_key: string
+          supported_currencies: string[]
+          updated_at: string
+          webhook_secret: string | null
+          webhook_url: string | null
+        }
+        Insert: {
+          api_key: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          environment: string
+          id?: string
+          max_transaction_amount?: number | null
+          merchant_id?: string | null
+          min_transaction_amount?: number | null
+          name: string
+          priority?: number
+          provider: string
+          public_key?: string | null
+          secret_key: string
+          supported_currencies?: string[]
+          updated_at?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          environment?: string
+          id?: string
+          max_transaction_amount?: number | null
+          merchant_id?: string | null
+          min_transaction_amount?: number | null
+          name?: string
+          priority?: number
+          provider?: string
+          public_key?: string | null
+          secret_key?: string
+          supported_currencies?: string[]
+          updated_at?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      payment_method_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          customer_id: string | null
+          error_message: string | null
+          fee_amount: number
+          gateway_id: string | null
+          gateway_reference: string | null
+          gateway_transaction_id: string | null
+          id: string
+          net_amount: number
+          order_id: string | null
+          payment_method_id: string | null
+          processed_at: string | null
+          response_data: Json | null
+          staff_id: string | null
+          status: string
+          transaction_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          error_message?: string | null
+          fee_amount?: number
+          gateway_id?: string | null
+          gateway_reference?: string | null
+          gateway_transaction_id?: string | null
+          id?: string
+          net_amount: number
+          order_id?: string | null
+          payment_method_id?: string | null
+          processed_at?: string | null
+          response_data?: Json | null
+          staff_id?: string | null
+          status: string
+          transaction_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          error_message?: string | null
+          fee_amount?: number
+          gateway_id?: string | null
+          gateway_reference?: string | null
+          gateway_transaction_id?: string | null
+          id?: string
+          net_amount?: number
+          order_id?: string | null
+          payment_method_id?: string | null
+          processed_at?: string | null
+          response_data?: Json | null
+          staff_id?: string | null
+          status?: string
+          transaction_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_method_transactions_gateway_id_fkey"
+            columns: ["gateway_id"]
+            isOneToOne: false
+            referencedRelation: "payment_gateways"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_method_transactions_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          api_key: string | null
+          auto_settlement: boolean
+          created_at: string
+          currency: string
+          daily_limit: number | null
+          description: string | null
+          enabled: boolean
+          id: string
+          merchant_id: string | null
+          monthly_limit: number | null
+          name: string
+          processing_fee_fixed: number
+          processing_fee_percentage: number
+          provider: string | null
+          requires_verification: boolean
+          terminal_id: string | null
+          type: string
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          api_key?: string | null
+          auto_settlement?: boolean
+          created_at?: string
+          currency?: string
+          daily_limit?: number | null
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          merchant_id?: string | null
+          monthly_limit?: number | null
+          name: string
+          processing_fee_fixed?: number
+          processing_fee_percentage?: number
+          provider?: string | null
+          requires_verification?: boolean
+          terminal_id?: string | null
+          type: string
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          api_key?: string | null
+          auto_settlement?: boolean
+          created_at?: string
+          currency?: string
+          daily_limit?: number | null
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          merchant_id?: string | null
+          monthly_limit?: number | null
+          name?: string
+          processing_fee_fixed?: number
+          processing_fee_percentage?: number
+          provider?: string | null
+          requires_verification?: boolean
+          terminal_id?: string | null
+          type?: string
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      payment_refunds: {
+        Row: {
+          amount: number
+          approved_by: string | null
+          created_at: string
+          gateway_refund_id: string | null
+          id: string
+          original_transaction_id: string
+          processed_at: string | null
+          reason: string
+          refund_transaction_id: string
+          refund_type: string
+          requested_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          approved_by?: string | null
+          created_at?: string
+          gateway_refund_id?: string | null
+          id?: string
+          original_transaction_id: string
+          processed_at?: string | null
+          reason: string
+          refund_transaction_id: string
+          refund_type: string
+          requested_by?: string | null
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approved_by?: string | null
+          created_at?: string
+          gateway_refund_id?: string | null
+          id?: string
+          original_transaction_id?: string
+          processed_at?: string | null
+          reason?: string
+          refund_transaction_id?: string
+          refund_type?: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_refunds_original_transaction_id_fkey"
+            columns: ["original_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_method_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_rules: {
+        Row: {
+          actions: Json
+          allowed_countries: string[] | null
+          applies_to_methods: string[] | null
+          blocked_countries: string[] | null
+          conditions: Json
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          max_amount: number | null
+          min_amount: number | null
+          name: string
+          priority: number
+          rule_type: string
+          time_restrictions: Json | null
+          updated_at: string
+        }
+        Insert: {
+          actions?: Json
+          allowed_countries?: string[] | null
+          applies_to_methods?: string[] | null
+          blocked_countries?: string[] | null
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          max_amount?: number | null
+          min_amount?: number | null
+          name: string
+          priority?: number
+          rule_type: string
+          time_restrictions?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          allowed_countries?: string[] | null
+          applies_to_methods?: string[] | null
+          blocked_countries?: string[] | null
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          max_amount?: number | null
+          min_amount?: number | null
+          name?: string
+          priority?: number
+          rule_type?: string
+          time_restrictions?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reservations: {
         Row: {
           created_at: string
