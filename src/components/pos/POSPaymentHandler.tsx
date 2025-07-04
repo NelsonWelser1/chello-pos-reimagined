@@ -8,6 +8,7 @@ import { Receipt, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useOrders } from "@/hooks/useOrders";
 import { useTableSessions } from "@/hooks/useTableSessions";
+import { useConfiguredSalesTransactions } from "@/hooks/useConfiguredSalesTransactions";
 import { paymentConfigService, PaymentConfigSettings } from "@/services/paymentConfigService";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 
@@ -36,6 +37,7 @@ export default function POSPaymentHandler({
 }: POSPaymentHandlerProps) {
   const { createOrder, createOrderItems } = useOrders();
   const { sessions } = useTableSessions();
+  const { createTransaction } = useConfiguredSalesTransactions();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cashReceived, setCashReceived] = useState<string>('');
   const [config, setConfig] = useState<PaymentConfigSettings | null>(null);
@@ -159,6 +161,25 @@ export default function POSPaymentHandler({
       const itemsCreated = await createOrderItems(orderItems);
       if (!itemsCreated) {
         throw new Error('Failed to create order items');
+      }
+
+      // Create sales transaction using the configured transaction service
+      const transactionData = {
+        transaction_id: `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        order_id: newOrder.id,
+        staff_id: selectedStaffId,
+        total_amount: total,
+        subtotal: subtotal,
+        tax_amount: taxAmount,
+        payment_method: paymentMethod,
+        payment_status: config.autoSettlement ? 'completed' : 'pending_settlement',
+        transaction_date: new Date().toISOString(),
+        notes: orderData.notes
+      };
+
+      const salesTransaction = await createTransaction(transactionData);
+      if (!salesTransaction) {
+        console.warn('Failed to create sales transaction record');
       }
 
       // Show success message with configuration-aware details

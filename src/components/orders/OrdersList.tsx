@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { format } from "date-fns";
 import { Receipt, User, CreditCard, Calendar, DollarSign } from "lucide-react";
+import { OrderTransactionLink } from "./OrderTransactionLink";
+import { toast } from "sonner";
 
 export function OrdersList() {
   const { orders, loading } = useOrders();
@@ -33,11 +35,18 @@ export function OrdersList() {
         return 'bg-green-100 text-green-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
+      case 'pending_verification':
+        return 'bg-orange-100 text-orange-800';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleViewTransaction = (transactionId: string) => {
+    toast.info(`Viewing transaction details: ${transactionId}`);
+    // Here you could navigate to a detailed transaction view or open a modal
   };
 
   if (loading) {
@@ -75,6 +84,7 @@ export function OrdersList() {
                     <TableHead className="font-bold">Total Amount</TableHead>
                     <TableHead className="font-bold">Payment Method</TableHead>
                     <TableHead className="font-bold">Status</TableHead>
+                    <TableHead className="font-bold">Transaction Status</TableHead>
                     <TableHead className="font-bold">Processed By</TableHead>
                     <TableHead className="font-bold">Table</TableHead>
                   </TableRow>
@@ -105,7 +115,7 @@ export function OrdersList() {
                           <div className="flex items-center gap-2">
                             <DollarSign className="w-4 h-4 text-green-500" />
                             <span className="font-bold text-green-600">
-                              ${order.total_amount.toFixed(2)}
+                              {order.total_amount.toFixed(2)} UGX
                             </span>
                           </div>
                         </TableCell>
@@ -119,6 +129,12 @@ export function OrdersList() {
                           <Badge className={getStatusColor(order.status)}>
                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <OrderTransactionLink 
+                            orderId={order.id} 
+                            onViewTransaction={handleViewTransaction}
+                          />
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
