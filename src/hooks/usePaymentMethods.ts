@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PaymentMethodFormData } from '@/components/payment-methods/forms/PaymentMethodFormSchema';
 import { toast } from 'sonner';
+import type { Tables } from '@/integrations/supabase/types';
 
 export interface PaymentMethod {
   id: string;
@@ -52,9 +53,29 @@ export function usePaymentMethods() {
 
   const addPaymentMethod = async (data: PaymentMethodFormData) => {
     try {
+      // Transform the form data to match the database schema
+      const insertData: Tables<'payment_methods'>['Insert'] = {
+        name: data.name,
+        type: data.type,
+        provider: data.provider,
+        processing_fee_percentage: data.processing_fee_percentage,
+        processing_fee_fixed: data.processing_fee_fixed,
+        daily_limit: data.daily_limit,
+        monthly_limit: data.monthly_limit,
+        enabled: data.enabled,
+        requires_verification: data.requires_verification,
+        auto_settlement: data.auto_settlement,
+        currency: data.currency,
+        description: data.description,
+        api_key: data.api_key,
+        webhook_url: data.webhook_url,
+        merchant_id: data.merchant_id,
+        terminal_id: data.terminal_id,
+      };
+
       const { data: newPaymentMethod, error } = await supabase
         .from('payment_methods')
-        .insert(data)
+        .insert(insertData)
         .select()
         .single();
 
@@ -76,9 +97,29 @@ export function usePaymentMethods() {
 
   const updatePaymentMethod = async (id: string, data: Partial<PaymentMethodFormData>) => {
     try {
+      // Transform the form data to match the database schema
+      const updateData: Tables<'payment_methods'>['Update'] = {
+        name: data.name,
+        type: data.type,
+        provider: data.provider,
+        processing_fee_percentage: data.processing_fee_percentage,
+        processing_fee_fixed: data.processing_fee_fixed,
+        daily_limit: data.daily_limit,
+        monthly_limit: data.monthly_limit,
+        enabled: data.enabled,
+        requires_verification: data.requires_verification,
+        auto_settlement: data.auto_settlement,
+        currency: data.currency,
+        description: data.description,
+        api_key: data.api_key,
+        webhook_url: data.webhook_url,
+        merchant_id: data.merchant_id,
+        terminal_id: data.terminal_id,
+      };
+
       const { data: updatedPaymentMethod, error } = await supabase
         .from('payment_methods')
-        .update(data)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
