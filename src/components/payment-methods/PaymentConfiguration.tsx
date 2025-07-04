@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,7 @@ export function PaymentConfiguration() {
     tipEnabled: true,
     defaultTipPercentage: "18",
     maxTransactionAmount: "500",
-    currency: "USD",
+    currency: "UGX",
     merchantId: "MERCH_12345",
     terminalId: "TERM_001"
   });
@@ -99,10 +98,14 @@ export function PaymentConfiguration() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD - US Dollar</SelectItem>
-                  <SelectItem value="EUR">EUR - Euro</SelectItem>
-                  <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                  <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
+                  <SelectItem value="UGX">Uganda shillings (UGX)</SelectItem>
+                  <SelectItem value="KSH">Kenyan Shilling (KSH)</SelectItem>
+                  <SelectItem value="TSH">Tanzanian Shilling (TSH)</SelectItem>
+                  <SelectItem value="RWF">Rwandan Franc (RWF)</SelectItem>
+                  <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                  <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                  <SelectItem value="GBP">British Pound (GBP)</SelectItem>
+                  <SelectItem value="CAD">Canadian Dollar (CAD)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -143,12 +146,12 @@ export function PaymentConfiguration() {
             </div>
             
             <div className="space-y-2">
-              <Label>Max Transaction Amount ($)</Label>
+              <Label>Max Transaction Amount (UGX)</Label>
               <Input
                 type="number"
                 value={config.maxTransactionAmount}
                 onChange={(e) => setConfig({...config, maxTransactionAmount: e.target.value})}
-                placeholder="Enter maximum amount"
+                placeholder="Enter maximum amount in UGX"
               />
             </div>
 

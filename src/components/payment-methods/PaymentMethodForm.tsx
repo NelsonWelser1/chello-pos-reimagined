@@ -35,7 +35,7 @@ export function PaymentMethodForm({ isOpen, onClose, onSubmit, editingMethod }: 
       enabled: true,
       requires_verification: false,
       auto_settlement: true,
-      currency: "USD",
+      currency: "UGX",
     }
   });
 

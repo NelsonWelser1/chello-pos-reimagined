@@ -16,7 +16,7 @@ export function LimitFields({ form }: LimitFieldsProps) {
         name="daily_limit"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Daily Limit ($)</FormLabel>
+            <FormLabel>Daily Limit (UGX)</FormLabel>
             <FormControl>
               <Input 
                 type="number" 
@@ -35,7 +35,7 @@ export function LimitFields({ form }: LimitFieldsProps) {
         name="monthly_limit"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Monthly Limit ($)</FormLabel>
+            <FormLabel>Monthly Limit (UGX)</FormLabel>
             <FormControl>
               <Input 
                 type="number" 

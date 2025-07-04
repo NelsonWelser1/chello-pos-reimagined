@@ -39,14 +39,14 @@ export function ProviderFields({ form }: ProviderFieldsProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="UGX">UGX</SelectItem>
-                <SelectItem value="KSH">KSH</SelectItem>
-                <SelectItem value="TSH">TSH</SelectItem>
-                <SelectItem value="RF">RF</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
-                <SelectItem value="EUR">EUR</SelectItem>
-                <SelectItem value="GBP">GBP</SelectItem>
-                <SelectItem value="CAD">CAD</SelectItem>
+                <SelectItem value="UGX">Uganda shillings (UGX)</SelectItem>
+                <SelectItem value="KSH">Kenyan Shilling (KSH)</SelectItem>
+                <SelectItem value="TSH">Tanzanian Shilling (TSH)</SelectItem>
+                <SelectItem value="RWF">Rwandan Franc (RWF)</SelectItem>
+                <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                <SelectItem value="GBP">British Pound (GBP)</SelectItem>
+                <SelectItem value="CAD">Canadian Dollar (CAD)</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />

@@ -12,7 +12,7 @@ export const paymentMethodSchema = z.object({
   enabled: z.boolean().default(true),
   requires_verification: z.boolean().default(false),
   auto_settlement: z.boolean().default(true),
-  currency: z.string().default("USD"),
+  currency: z.string().default("UGX"),
   description: z.string().optional(),
   api_key: z.string().optional(),
   webhook_url: z.string().optional(),
