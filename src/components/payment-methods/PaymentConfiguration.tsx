@@ -5,34 +5,69 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
-import { Save, AlertTriangle, Shield, CreditCard } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Save, AlertTriangle, Shield, CreditCard, RefreshCw } from "lucide-react";
+import { usePaymentConfiguration } from "@/hooks/usePaymentConfiguration";
 
 export function PaymentConfiguration() {
-  const [config, setConfig] = useState({
+  const { config, loading, saving, saveConfig, refreshConfig } = usePaymentConfiguration();
+  const [localConfig, setLocalConfig] = useState({
     autoSettlement: true,
     fraudDetection: true,
     requireSignature: false,
     tipEnabled: true,
     defaultTipPercentage: "18",
-    maxTransactionAmount: "500",
+    maxTransactionAmount: "500000",
     currency: "UGX",
     merchantId: "MERCH_12345",
     terminalId: "TERM_001"
   });
 
-  const handleSave = () => {
-    console.log("Saving payment configuration:", config);
+  useEffect(() => {
+    if (config) {
+      setLocalConfig(config);
+    }
+  }, [config]);
+
+  const handleSave = async () => {
+    console.log("Saving payment configuration:", localConfig);
+    await saveConfig(localConfig);
   };
+
+  const handleRefresh = () => {
+    refreshConfig();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-gray-600">Loading payment configuration...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Payment Configuration</h2>
-        <Button onClick={handleSave} className="flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          Save Configuration
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleRefresh}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
+          <Button 
+            onClick={handleSave} 
+            disabled={saving}
+            className="flex items-center gap-2"
+          >
+            <Save className="w-4 h-4" />
+            {saving ? 'Saving...' : 'Save Configuration'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -51,8 +86,8 @@ export function PaymentConfiguration() {
                 <p className="text-sm text-gray-500">Automatically settle transactions daily</p>
               </div>
               <Switch
-                checked={config.autoSettlement}
-                onCheckedChange={(checked) => setConfig({...config, autoSettlement: checked})}
+                checked={localConfig.autoSettlement}
+                onCheckedChange={(checked) => setLocalConfig({...localConfig, autoSettlement: checked})}
               />
             </div>
             
@@ -64,16 +99,16 @@ export function PaymentConfiguration() {
                 <p className="text-sm text-gray-500">Allow customers to add tips</p>
               </div>
               <Switch
-                checked={config.tipEnabled}
-                onCheckedChange={(checked) => setConfig({...config, tipEnabled: checked})}
+                checked={localConfig.tipEnabled}
+                onCheckedChange={(checked) => setLocalConfig({...localConfig, tipEnabled: checked})}
               />
             </div>
             
             <div className="space-y-2">
               <Label>Default Tip Percentage</Label>
               <Select 
-                value={config.defaultTipPercentage}
-                onValueChange={(value) => setConfig({...config, defaultTipPercentage: value})}
+                value={localConfig.defaultTipPercentage}
+                onValueChange={(value) => setLocalConfig({...localConfig, defaultTipPercentage: value})}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -91,8 +126,8 @@ export function PaymentConfiguration() {
             <div className="space-y-2">
               <Label>Currency</Label>
               <Select 
-                value={config.currency}
-                onValueChange={(value) => setConfig({...config, currency: value})}
+                value={localConfig.currency}
+                onValueChange={(value) => setLocalConfig({...localConfig, currency: value})}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -127,8 +162,8 @@ export function PaymentConfiguration() {
                 <p className="text-sm text-gray-500">Enable advanced fraud protection</p>
               </div>
               <Switch
-                checked={config.fraudDetection}
-                onCheckedChange={(checked) => setConfig({...config, fraudDetection: checked})}
+                checked={localConfig.fraudDetection}
+                onCheckedChange={(checked) => setLocalConfig({...localConfig, fraudDetection: checked})}
               />
             </div>
             
@@ -140,8 +175,8 @@ export function PaymentConfiguration() {
                 <p className="text-sm text-gray-500">Require signature for transactions</p>
               </div>
               <Switch
-                checked={config.requireSignature}
-                onCheckedChange={(checked) => setConfig({...config, requireSignature: checked})}
+                checked={localConfig.requireSignature}
+                onCheckedChange={(checked) => setLocalConfig({...localConfig, requireSignature: checked})}
               />
             </div>
             
@@ -149,8 +184,8 @@ export function PaymentConfiguration() {
               <Label>Max Transaction Amount (UGX)</Label>
               <Input
                 type="number"
-                value={config.maxTransactionAmount}
-                onChange={(e) => setConfig({...config, maxTransactionAmount: e.target.value})}
+                value={localConfig.maxTransactionAmount}
+                onChange={(e) => setLocalConfig({...localConfig, maxTransactionAmount: e.target.value})}
                 placeholder="Enter maximum amount in UGX"
               />
             </div>
@@ -158,18 +193,17 @@ export function PaymentConfiguration() {
             <div className="space-y-2">
               <Label>Merchant ID</Label>
               <Input
-                value={config.merchantId}
-                onChange={(e) => setConfig({...config, merchantId: e.target.value})}
+                value={localConfig.merchantId}
+                onChange={(e) => setLocalConfig({...localConfig, merchantId: e.target.value})}
                 placeholder="Enter merchant ID"
-                disabled
               />
             </div>
 
             <div className="space-y-2">
               <Label>Terminal ID</Label>
               <Input
-                value={config.terminalId}
-                onChange={(e) => setConfig({...config, terminalId: e.target.value})}
+                value={localConfig.terminalId}
+                onChange={(e) => setLocalConfig({...localConfig, terminalId: e.target.value})}
                 placeholder="Enter terminal ID"
               />
             </div>
@@ -185,8 +219,9 @@ export function PaymentConfiguration() {
             <div>
               <h4 className="font-semibold text-yellow-800">Configuration Changes</h4>
               <p className="text-sm text-yellow-700 mt-1">
-                Changes to payment configuration will take effect immediately. Ensure all settings are correct before saving.
-                Some changes may require PCI compliance verification.
+                Changes to payment configuration will take effect immediately across the entire system. 
+                This includes the POS system, transaction limits, tip calculations, and fraud detection.
+                Ensure all settings are correct before saving.
               </p>
             </div>
           </div>
