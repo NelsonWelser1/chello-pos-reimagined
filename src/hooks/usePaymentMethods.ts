@@ -54,7 +54,7 @@ export function usePaymentMethods() {
     try {
       const { data: newPaymentMethod, error } = await supabase
         .from('payment_methods')
-        .insert([data])
+        .insert(data)
         .select()
         .single();
 

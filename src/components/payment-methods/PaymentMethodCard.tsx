@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 interface PaymentMethod {
-  id: number;
+  id: string;
   name: string;
   type: string;
   icon: any;
@@ -25,7 +25,7 @@ interface PaymentMethod {
 
 interface PaymentMethodCardProps {
   method: PaymentMethod;
-  onToggle: (id: number) => void;
+  onToggle: (id: string) => void;
   onEdit: (method: PaymentMethod) => void;
 }
 

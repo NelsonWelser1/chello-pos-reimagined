@@ -2,7 +2,7 @@
 import { PaymentMethodCard } from "./PaymentMethodCard";
 
 interface PaymentMethod {
-  id: number;
+  id: string;
   name: string;
   type: string;
   icon: any;
@@ -16,7 +16,7 @@ interface PaymentMethod {
 
 interface PaymentMethodsGridProps {
   paymentMethods: PaymentMethod[];
-  onToggleMethod: (id: number) => void;
+  onToggleMethod: (id: string) => void;
   onEditMethod: (method: PaymentMethod) => void;
 }
 

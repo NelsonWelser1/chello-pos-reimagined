@@ -60,8 +60,8 @@ export function PaymentMethodsList() {
     originalData: method
   }));
 
-  const handleToggleMethod = async (id: string | number) => {
-    await togglePaymentMethod(String(id));
+  const handleToggleMethod = async (id: string) => {
+    await togglePaymentMethod(id);
   };
 
   const handleEditMethod = (method: any) => {
