@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PaymentMethodFormData } from '@/components/payment-methods/forms/PaymentMethodFormSchema';
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
+import type { TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
 export interface PaymentMethod {
   id: string;
@@ -54,7 +54,7 @@ export function usePaymentMethods() {
   const addPaymentMethod = async (data: PaymentMethodFormData) => {
     try {
       // Transform the form data to match the database schema
-      const insertData: Tables<'payment_methods'>['Insert'] = {
+      const insertData: TablesInsert<'payment_methods'> = {
         name: data.name,
         type: data.type,
         provider: data.provider,
@@ -98,7 +98,7 @@ export function usePaymentMethods() {
   const updatePaymentMethod = async (id: string, data: Partial<PaymentMethodFormData>) => {
     try {
       // Transform the form data to match the database schema
-      const updateData: Tables<'payment_methods'>['Update'] = {
+      const updateData: TablesUpdate<'payment_methods'> = {
         name: data.name,
         type: data.type,
         provider: data.provider,
