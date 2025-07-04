@@ -39,6 +39,10 @@ export function ProviderFields({ form }: ProviderFieldsProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
+                <SelectItem value="UGX">UGX</SelectItem>
+                <SelectItem value="KSH">KSH</SelectItem>
+                <SelectItem value="TSH">TSH</SelectItem>
+                <SelectItem value="RF">RF</SelectItem>
                 <SelectItem value="USD">USD</SelectItem>
                 <SelectItem value="EUR">EUR</SelectItem>
                 <SelectItem value="GBP">GBP</SelectItem>
