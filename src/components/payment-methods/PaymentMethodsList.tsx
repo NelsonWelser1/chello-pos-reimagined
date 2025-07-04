@@ -4,88 +4,87 @@ import {
   CreditCard, 
   Smartphone, 
   Banknote, 
-  Gift
+  Gift,
+  Building2,
+  Coins
 } from "lucide-react";
 import { PaymentMethodForm } from "./PaymentMethodForm";
 import { PaymentGatewayForm } from "./PaymentGatewayForm";
 import { PaymentRulesForm } from "./PaymentRulesForm";
 import { PaymentMethodsActions } from "./PaymentMethodsActions";
 import { PaymentMethodsGrid } from "./PaymentMethodsGrid";
+import { usePaymentMethods } from "@/hooks/usePaymentMethods";
+import { PaymentMethodFormData } from "./forms/PaymentMethodFormSchema";
+
+const getIconForType = (type: string) => {
+  switch (type) {
+    case 'card':
+      return CreditCard;
+    case 'mobile':
+      return Smartphone;
+    case 'cash':
+      return Banknote;
+    case 'gift':
+      return Gift;
+    case 'bank_transfer':
+      return Building2;
+    case 'crypto':
+      return Coins;
+    default:
+      return CreditCard;
+  }
+};
+
+const getStatusFromEnabled = (enabled: boolean) => enabled ? 'active' : 'inactive';
 
 export function PaymentMethodsList() {
-  const [paymentMethods, setPaymentMethods] = useState([
-    {
-      id: 1,
-      name: "Credit/Debit Cards",
-      type: "card",
-      icon: CreditCard,
-      enabled: true,
-      processingFee: "2.9%",
-      dailyLimit: "$10,000",
-      status: "active",
-      transactions: 145,
-      revenue: "$3,250"
-    },
-    {
-      id: 2,
-      name: "Mobile Payments",
-      type: "mobile",
-      icon: Smartphone,
-      enabled: true,
-      processingFee: "2.5%",
-      dailyLimit: "$5,000",
-      status: "active",
-      transactions: 87,
-      revenue: "$1,890"
-    },
-    {
-      id: 3,
-      name: "Cash",
-      type: "cash",
-      icon: Banknote,
-      enabled: true,
-      processingFee: "0%",
-      dailyLimit: "Unlimited",
-      status: "active",
-      transactions: 92,
-      revenue: "$2,100"
-    },
-    {
-      id: 4,
-      name: "Gift Cards",
-      type: "gift",
-      icon: Gift,
-      enabled: false,
-      processingFee: "1%",
-      dailyLimit: "$2,000",
-      status: "inactive",
-      transactions: 0,
-      revenue: "$0"
-    }
-  ]);
-
+  const { paymentMethods, loading, addPaymentMethod, updatePaymentMethod, togglePaymentMethod } = usePaymentMethods();
   const [showMethodForm, setShowMethodForm] = useState(false);
   const [showGatewayForm, setShowGatewayForm] = useState(false);
   const [showRulesForm, setShowRulesForm] = useState(false);
   const [editingMethod, setEditingMethod] = useState(null);
 
-  const toggleMethod = (id: number) => {
-    setPaymentMethods(methods =>
-      methods.map(method =>
-        method.id === id
-          ? { ...method, enabled: !method.enabled, status: !method.enabled ? "active" : "inactive" }
-          : method
-      )
-    );
+  // Transform database payment methods to match the grid component interface
+  const transformedPaymentMethods = paymentMethods.map((method) => ({
+    id: method.id,
+    name: method.name,
+    type: method.type,
+    icon: getIconForType(method.type),
+    enabled: method.enabled,
+    processingFee: `${method.processing_fee_percentage}%${method.processing_fee_fixed > 0 ? ` + $${method.processing_fee_fixed}` : ''}`,
+    dailyLimit: method.daily_limit ? `$${method.daily_limit.toLocaleString()}` : 'No limit',
+    status: getStatusFromEnabled(method.enabled),
+    transactions: 0, // This would come from actual transaction data
+    revenue: "$0", // This would come from actual transaction data
+    // Include original data for editing
+    originalData: method
+  }));
+
+  const handleToggleMethod = async (id: string | number) => {
+    await togglePaymentMethod(String(id));
   };
 
   const handleEditMethod = (method: any) => {
-    setEditingMethod(method);
+    setEditingMethod(method.originalData);
     setShowMethodForm(true);
   };
 
-  const handleAddMethod = (data: any) => {
-    console.log("Adding payment method:", data);
+  const handleAddMethod = async (data: PaymentMethodFormData) => {
+    const success = await addPaymentMethod(data);
+    if (success) {
+      setShowMethodForm(false);
+      setEditingMethod(null);
+    }
+  };
+
+  const handleUpdateMethod = async (data: PaymentMethodFormData) => {
+    if (editingMethod) {
+      const success = await updatePaymentMethod(editingMethod.id, data);
+      if (success) {
+        setShowMethodForm(false);
+        setEditingMethod(null);
+      }
+    }
   };
 
   const handleAddGateway = (data: any) => {
@@ -96,6 +95,10 @@ export function PaymentMethodsList() {
     console.log("Adding payment rule:", data);
   };
 
+  if (loading) {
+    return <div>Loading payment methods...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <PaymentMethodsActions
@@ -105,8 +108,8 @@ export function PaymentMethodsList() {
       />
 
       <PaymentMethodsGrid
-        paymentMethods={paymentMethods}
-        onToggleMethod={toggleMethod}
+        paymentMethods={transformedPaymentMethods}
+        onToggleMethod={handleToggleMethod}
         onEditMethod={handleEditMethod}
       />
 
@@ -116,7 +119,7 @@ export function PaymentMethodsList() {
           setShowMethodForm(false);
           setEditingMethod(null);
         }}
-        onSubmit={handleAddMethod}
+        onSubmit={editingMethod ? handleUpdateMethod : handleAddMethod}
         editingMethod={editingMethod}
       />
 

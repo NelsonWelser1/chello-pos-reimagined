@@ -6,7 +6,6 @@ import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { toast } from "sonner";
 import { paymentMethodSchema, PaymentMethodFormData } from "./forms/PaymentMethodFormSchema";
 import { BasicInfoFields } from "./forms/BasicInfoFields";
 import { ProviderFields } from "./forms/ProviderFields";
@@ -19,11 +18,13 @@ import { SettingsFields } from "./forms/SettingsFields";
 interface PaymentMethodFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: PaymentMethodFormData) => void;
+  onSubmit: (data: PaymentMethodFormData) => Promise<void> | void;
   editingMethod?: any;
 }
 
 export function PaymentMethodForm({ isOpen, onClose, onSubmit, editingMethod }: PaymentMethodFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<PaymentMethodFormData>({
     resolver: zodResolver(paymentMethodSchema),
     defaultValues: editingMethod || {
@@ -38,11 +39,16 @@ export function PaymentMethodForm({ isOpen, onClose, onSubmit, editingMethod }: 
     }
   });
 
-  const handleSubmit = (data: PaymentMethodFormData) => {
-    onSubmit(data);
-    form.reset();
-    onClose();
-    toast.success("Payment method saved successfully!");
+  const handleSubmit = async (data: PaymentMethodFormData) => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(data);
+      form.reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -70,8 +76,8 @@ export function PaymentMethodForm({ isOpen, onClose, onSubmit, editingMethod }: 
               <SettingsFields form={form} />
 
               <div className="flex gap-3 pt-4">
-                <Button type="submit" className="flex-1">
-                  {editingMethod ? "Update" : "Add"} Payment Method
+                <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                  {isSubmitting ? "Saving..." : (editingMethod ? "Update" : "Add")} Payment Method
                 </Button>
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel
