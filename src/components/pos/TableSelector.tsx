@@ -13,7 +13,7 @@ interface TableSelectorProps {
 
 export default function TableSelector({ selectedTableSession, onTableSessionSelect }: TableSelectorProps) {
   const { tables } = useTables();
-  const { sessions, createSession } = useTableSessions();
+  const { sessions, startTableSession } = useTableSessions();
 
   const handleTableSelect = async (tableId: string) => {
     if (!tableId || tableId === "none") {
@@ -32,11 +32,10 @@ export default function TableSelector({ selectedTableSession, onTableSessionSele
       // Create a new session for this table
       const table = tables.find(t => t.id === tableId);
       if (table) {
-        const newSession = await createSession({
+        const newSession = await startTableSession({
           table_id: tableId,
           party_size: 2, // Default party size
           customer_name: `Table ${table.number}`,
-          status: 'active'
         });
         
         if (newSession) {
