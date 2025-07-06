@@ -1,15 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Receipt, AlertTriangle } from "lucide-react";
+import { Receipt, AlertTriangle, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { useOrders } from "@/hooks/useOrders";
 import { useTableSessions } from "@/hooks/useTableSessions";
 import { useConfiguredSalesTransactions } from "@/hooks/useConfiguredSalesTransactions";
 import { paymentConfigService, PaymentConfigSettings } from "@/services/paymentConfigService";
+import { receiptService } from "@/services/receiptService";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 
 interface POSPaymentHandlerProps {
@@ -115,7 +115,6 @@ export default function POSPaymentHandler({
     }
 
     if (signatureRequired && paymentMethod === 'card') {
-      // In a real implementation, you would integrate with signature capture
       const confirmed = confirm("Signature required for this transaction. Proceed?");
       if (!confirmed) return;
     }
@@ -180,6 +179,45 @@ export default function POSPaymentHandler({
       const salesTransaction = await createTransaction(transactionData);
       if (!salesTransaction) {
         console.warn('Failed to create sales transaction record');
+      }
+
+      // Generate and print receipt automatically
+      const receiptData = {
+        orderId: newOrder.id,
+        orderNumber: `#${newOrder.id.slice(0, 8).toUpperCase()}`,
+        transactionId: salesTransaction?.transaction_id,
+        items: cart.map(item => {
+          const menuItem = menuItems.find(mi => mi.id === item.id);
+          return {
+            name: menuItem?.name || 'Unknown Item',
+            quantity: item.quantity,
+            unitPrice: menuItem?.price || 0,
+            totalPrice: (menuItem?.price || 0) * item.quantity,
+            specialInstructions: item.notes
+          };
+        }),
+        subtotal: subtotal,
+        taxAmount: taxAmount,
+        tipAmount: finalTipAmount,
+        total: total,
+        paymentMethod: paymentMethod,
+        cashReceived: paymentMethod === 'cash' ? parseFloat(cashReceived) : undefined,
+        change: change > 0 ? change : undefined,
+        staffName: 'Staff Member', // You might want to get actual staff name
+        tableName: tableSession ? `Table ${tableSession.table?.number}` : undefined,
+        customerName: tableSession?.customer_name
+      };
+
+      const receipt = await receiptService.generateReceipt(receiptData);
+      if (receipt) {
+        const printed = await receiptService.printReceipt(receipt);
+        if (printed) {
+          toast.success("Receipt generated and sent to printer!");
+        } else {
+          toast.warning("Receipt generated but printing failed");
+        }
+      } else {
+        toast.warning("Order processed but receipt generation failed");
       }
 
       // Show success message with configuration-aware details
@@ -349,7 +387,17 @@ export default function POSPaymentHandler({
             disabled={isProcessing || isOverLimit || (paymentMethod === 'cash' && (!cashReceived || parseFloat(cashReceived) < total))}
             className="w-full h-12 text-lg font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
           >
-            {isProcessing ? 'Processing...' : `Process ${paymentMethod === 'cash' ? 'Cash' : 'Card'} Payment`}
+            {isProcessing ? (
+              <div className="flex items-center gap-2">
+                <Printer className="w-4 h-4 animate-spin" />
+                Processing & Printing...
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Receipt className="w-4 h-4" />
+                Process {paymentMethod === 'cash' ? 'Cash' : 'Card'} Payment & Print Receipt
+              </div>
+            )}
           </Button>
           
           <Button
