@@ -59,7 +59,7 @@ class ReceiptService {
       const receiptNumber = `RCP-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
       const { data, error } = await supabase
-        .from('receipts')
+        .from('receipts' as any)
         .insert([{
           order_id: receiptData.orderId,
           receipt_number: receiptNumber,
@@ -84,7 +84,7 @@ class ReceiptService {
     try {
       // Mark receipt as printed
       const { error } = await supabase
-        .from('receipts')
+        .from('receipts' as any)
         .update({ printed_at: new Date().toISOString() })
         .eq('id', receipt.id);
 
