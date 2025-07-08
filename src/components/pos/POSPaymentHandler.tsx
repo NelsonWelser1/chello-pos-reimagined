@@ -39,7 +39,7 @@ export default function POSPaymentHandler({
   const { toast } = useToast();
   const { createOrder, createOrderItems } = useOrders();
   const { staff } = useStaff();
-  const { tableSessions } = useTableSessions();
+  const { sessions } = useTableSessions();
 
   const subtotal = totalAmount;
   const taxRate = 0.10; // 10% tax
@@ -110,7 +110,7 @@ export default function POSPaymentHandler({
       // Get staff and table information
       const selectedStaff = staff.find(s => s.id === selectedStaffId);
       const selectedTable = selectedTableSession ? 
-        tableSessions.find(ts => ts.id === selectedTableSession) : null;
+        sessions.find(ts => ts.id === selectedTableSession) : null;
 
       // Generate receipt
       const receiptData = {
@@ -178,7 +178,7 @@ export default function POSPaymentHandler({
       <CardContent className="space-y-6">
         <PaymentMethodSelector
           selectedMethod={paymentMethod}
-          onMethodSelect={onPaymentMethodChange}
+          onMethodChange={onPaymentMethodChange}
         />
 
         <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
