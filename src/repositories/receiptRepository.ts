@@ -11,7 +11,11 @@ export class ReceiptRepository {
     try {
       const { data, error } = await supabase
         .from('receipts')
-        .insert([receiptData])
+        .insert([{
+          order_id: receiptData.order_id,
+          receipt_number: receiptData.receipt_number,
+          receipt_data: receiptData.receipt_data as any // Cast to Json type for Supabase
+        }])
         .select()
         .single();
 
@@ -20,7 +24,11 @@ export class ReceiptRepository {
         return null;
       }
 
-      return data;
+      // Cast the returned data back to our expected type
+      return {
+        ...data,
+        receipt_data: data.receipt_data as ReceiptData
+      } as Receipt;
     } catch (error) {
       console.error('Error in receipt creation:', error);
       return null;
