@@ -33,7 +33,7 @@ export class ReceiptRepository {
         id: data.id,
         order_id: data.order_id,
         receipt_number: data.receipt_number,
-        receipt_data: data.receipt_data as ReceiptData,
+        receipt_data: data.receipt_data as unknown as ReceiptData,
         printed_at: data.printed_at,
         created_at: data.created_at,
         updated_at: data.updated_at
