@@ -954,6 +954,36 @@ export type Database = {
         }
         Relationships: []
       }
+      receipts: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          printed_at: string | null
+          receipt_data: Json
+          receipt_number: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          printed_at?: string | null
+          receipt_data: Json
+          receipt_number: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          printed_at?: string | null
+          receipt_data?: Json
+          receipt_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reservations: {
         Row: {
           created_at: string
