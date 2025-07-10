@@ -8,6 +8,7 @@ import { useOrders } from "@/hooks/useOrders";
 import { useStaff } from "@/hooks/useStaff";
 import { useTableSessions } from "@/hooks/useTableSessions";
 import { receiptService } from "@/services/receiptService";
+import { useKitchenOrders } from "@/hooks/useKitchenOrders";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import { type CartItem } from "@/hooks/useCart";
 import { type MenuItem } from "@/hooks/useMenuItems";
@@ -40,6 +41,7 @@ export default function POSPaymentHandler({
   const { createOrder, createOrderItems } = useOrders();
   const { staff } = useStaff();
   const { sessions } = useTableSessions();
+  const { createKitchenOrderFromOrder } = useKitchenOrders();
 
   const subtotal = totalAmount;
   const taxRate = 0.10; // 10% tax
@@ -75,7 +77,7 @@ export default function POSPaymentHandler({
         tax_amount: taxAmount,
         total_amount: total,
         payment_method: paymentMethod,
-        status: 'completed',
+        status: 'pending', // Orders start as pending, kitchen will update status
         staff_id: selectedStaffId,
         table_session_id: selectedTableSession,
       };
@@ -106,6 +108,15 @@ export default function POSPaymentHandler({
       }
 
       console.log("Order items created successfully");
+
+      // Create kitchen order for preparation tracking
+      try {
+        const kitchenOrder = await createKitchenOrderFromOrder(order.id);
+        console.log("Kitchen order created:", kitchenOrder);
+      } catch (kitchenError) {
+        console.error("Failed to create kitchen order:", kitchenError);
+        // Don't fail the whole order if kitchen order creation fails
+      }
 
       // Get staff and table information
       const selectedStaff = staff.find(s => s.id === selectedStaffId);
@@ -152,8 +163,8 @@ export default function POSPaymentHandler({
       onCartClear();
 
       toast({
-        title: "Order Completed!",
-        description: `Order #${order.id.slice(0, 8)} has been processed successfully.`,
+        title: "Order Sent to Kitchen!",
+        description: `Order #${order.id.slice(0, 8)} has been sent to kitchen for preparation.`,
       });
 
       console.log("Order processing completed successfully");
@@ -201,9 +212,9 @@ export default function POSPaymentHandler({
         <Button
           onClick={handleCompleteOrder}
           disabled={isProcessing || cart.length === 0 || !selectedStaffId}
-          className="w-full h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+          className="w-full h-16 text-xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
         >
-          {isProcessing ? "Processing..." : `Complete Order - ${paymentMethod.toUpperCase()}`}
+          {isProcessing ? "Processing..." : `Send to Kitchen - ${paymentMethod.toUpperCase()}`}
         </Button>
       </CardContent>
     </Card>
