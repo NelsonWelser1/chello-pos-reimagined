@@ -11,6 +11,15 @@ interface MenuItemCardProps {
 }
 
 export default function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
+  const handleAddToCart = () => {
+    try {
+      console.log('Adding item to cart:', item.name);
+      onAddToCart(item);
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  };
+
   return (
     <Card className="hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-200 bg-gradient-to-br from-white to-slate-50">
       <CardContent className="p-4">
@@ -34,7 +43,7 @@ export default function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
             <span>{item.preparation_time}min</span>
           </div>
           <Button 
-            onClick={() => onAddToCart(item)}
+            onClick={handleAddToCart}
             disabled={item.stock_count <= 0}
             className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold disabled:opacity-50"
           >

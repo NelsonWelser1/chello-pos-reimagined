@@ -25,6 +25,7 @@ export function useTableSessions() {
   const [sessions, setSessions] = useState<TableSession[]>([]);
   const [loading, setLoading] = useState(true);
   const channelRef = useRef<any>(null);
+  const isSubscribedRef = useRef(false);
 
   const fetchSessions = async () => {
     try {
@@ -162,43 +163,56 @@ export function useTableSessions() {
   useEffect(() => {
     fetchSessions();
 
-    // Clean up any existing channel before creating a new one
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-    }
-
-    channelRef.current = supabase
-      .channel('table-sessions-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'table_sessions'
-        },
-        (payload) => {
-          console.log('Real-time table session update:', payload);
-          
-          if (payload.eventType === 'INSERT') {
-            // Refetch to get the joined table data
-            fetchSessions();
-          } else if (payload.eventType === 'UPDATE') {
-            // Refetch to get the updated joined table data
-            fetchSessions();
-          } else if (payload.eventType === 'DELETE') {
-            setSessions(prev => prev.filter(session => session.id !== payload.old.id));
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
+    // Only subscribe if we haven't already
+    if (!isSubscribedRef.current) {
+      // Clean up any existing channel before creating a new one
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
+      }
+
+      const channelName = `table-sessions-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      channelRef.current = supabase
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'table_sessions'
+          },
+          (payload) => {
+            console.log('Real-time table session update:', payload);
+            
+            if (payload.eventType === 'INSERT') {
+              // Refetch to get the joined table data
+              fetchSessions();
+            } else if (payload.eventType === 'UPDATE') {
+              // Refetch to get the updated joined table data
+              fetchSessions();
+            } else if (payload.eventType === 'DELETE') {
+              setSessions(prev => prev.filter(session => session.id !== payload.old.id));
+            }
+          }
+        )
+        .subscribe((status) => {
+          console.log('Table sessions subscription status:', status);
+          if (status === 'SUBSCRIBED') {
+            isSubscribedRef.current = true;
+          } else if (status === 'CLOSED') {
+            isSubscribedRef.current = false;
+          }
+        });
+    }
+
+    return () => {
+      if (channelRef.current && isSubscribedRef.current) {
+        console.log('Cleaning up table sessions subscription');
+        supabase.removeChannel(channelRef.current);
         channelRef.current = null;
+        isSubscribedRef.current = false;
       }
     };
-  }, []);
+  }, []); // Empty dependency array to run only once
 
   return {
     sessions,
