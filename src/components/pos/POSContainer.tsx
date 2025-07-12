@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMenuItems } from "@/hooks/useMenuItems";
 import { useCategories } from "@/hooks/useCategories";
 import { useCart } from "@/hooks/useCart";
+import { useRealTimeSync } from "@/hooks/useRealTimeSync";
 import CategoryFilter from "./CategoryFilter";
 import MenuGrid from "./MenuGrid";
 import CartSummary from "./CartSummary";
@@ -10,14 +11,22 @@ import StaffSelector from "./StaffSelector";
 import TableSelector from "./TableSelector";
 import POSPaymentHandler from "./POSPaymentHandler";
 import KitchenMonitor from "./KitchenMonitor";
+import OrderStatusTracker from "./OrderStatusTracker";
+import StockMonitor from "./StockMonitor";
 
 export default function POSContainer() {
-  const { items: menuItems, loading: menuLoading } = useMenuItems();
+  const { items: menuItems, loading: menuLoading, refetch: refetchMenuItems } = useMenuItems();
   const { categories: categoryObjects, loading: categoriesLoading } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('card');
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [selectedTableSession, setSelectedTableSession] = useState<string | null>(null);
+  
+  // Setup real-time synchronization
+  useRealTimeSync({
+    onMenuUpdate: refetchMenuItems,
+    onStockUpdate: refetchMenuItems,
+  });
   
   const {
     cart,
@@ -54,6 +63,12 @@ export default function POSContainer() {
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Kitchen Monitor Section */}
       <KitchenMonitor />
+      
+      {/* Order & Stock Status Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <OrderStatusTracker />
+        <StockMonitor />
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Menu Section */}
