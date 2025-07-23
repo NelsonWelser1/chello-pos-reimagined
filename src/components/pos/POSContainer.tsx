@@ -22,18 +22,21 @@ export default function POSContainer() {
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [selectedTableSession, setSelectedTableSession] = useState<string | null>(null);
   
-  // Setup comprehensive data synchronization
+  // Setup comprehensive data synchronization with real-time stock updates
   const { isConnected, syncStatus } = useDataSynchronization({
     onMenuUpdate: refetchMenuItems,
     onStockUpdate: refetchMenuItems,
     onOrderUpdate: () => {
-      // Refresh any order-related components
-      console.log('🔄 POS: Order update detected');
+      // Refresh menu items when orders are completed (triggers stock deduction)
+      refetchMenuItems();
+      console.log('🔄 POS: Order update detected - refreshing stock');
     },
     onKitchenUpdate: () => {
-      // Kitchen updates may affect order status
-      console.log('🔄 POS: Kitchen update detected');
+      // Kitchen updates may complete orders and affect stock
+      refetchMenuItems();
+      console.log('🔄 POS: Kitchen update detected - refreshing stock');
     },
+    
   });
   
   const {

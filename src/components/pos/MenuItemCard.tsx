@@ -39,7 +39,10 @@ export default function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
           </div>
           <p className="text-sm text-slate-600">{item.description}</p>
           <div className="flex justify-between items-center text-xs text-slate-500">
-            <span>Stock: {item.stock_count}</span>
+            <span className={item.stock_count <= item.low_stock_alert ? "text-red-500 font-semibold" : ""}>
+              Stock: {item.stock_count}
+              {item.stock_count <= item.low_stock_alert && " ⚠️"}
+            </span>
             <span>{item.preparation_time}min</span>
           </div>
           <Button 

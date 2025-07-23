@@ -70,7 +70,7 @@ const setupGlobalSubscriptions = () => {
     })
     .subscribe();
 
-  // Menu items subscription
+   // Menu items subscription
   const menuChannel = supabase
     .channel('global-menu-sync')
     .on('postgres_changes', {
@@ -81,6 +81,20 @@ const setupGlobalSubscriptions = () => {
       console.log('🍽️ Global: Menu items updated');
       callbackRegistry.onMenuUpdate.forEach(callback => callback());
       callbackRegistry.onStockUpdate.forEach(callback => callback());
+    })
+    .subscribe();
+
+  // Ingredients subscription for stock tracking
+  const ingredientsChannel = supabase
+    .channel('global-ingredients-sync')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'ingredients'
+    }, () => {
+      console.log('🥕 Global: Ingredients updated - refreshing stock');
+      callbackRegistry.onStockUpdate.forEach(callback => callback());
+      callbackRegistry.onMenuUpdate.forEach(callback => callback());
     })
     .subscribe();
 
@@ -124,7 +138,7 @@ const setupGlobalSubscriptions = () => {
     })
     .subscribe();
 
-  globalChannels = [ordersChannel, kitchenChannel, menuChannel, salesChannel, staffChannel, customerChannel];
+  globalChannels = [ordersChannel, kitchenChannel, menuChannel, ingredientsChannel, salesChannel, staffChannel, customerChannel];
   isGloballySubscribed = true;
 };
 
