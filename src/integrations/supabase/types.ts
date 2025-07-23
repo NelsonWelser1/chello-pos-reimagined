@@ -74,6 +74,56 @@ export type Database = {
         }
         Relationships: []
       }
+      data_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          data_type: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_system_template: boolean
+          name: string
+          sample_data: Json | null
+          template_structure: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          data_type: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_system_template?: boolean
+          name: string
+          sample_data?: Json | null
+          template_structure: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          data_type?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_system_template?: boolean
+          name?: string
+          sample_data?: Json | null
+          template_structure?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_types: {
         Row: {
           allow_over_budget: boolean
@@ -233,6 +283,127 @@ export type Database = {
             columns: ["expense_type_id"]
             isOneToOne: false
             referencedRelation: "expense_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      import_export_history: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          data_type: string
+          download_expires_at: string | null
+          download_url: string | null
+          error_details: Json | null
+          file_name: string
+          file_path: string | null
+          file_size: number | null
+          id: string
+          initiated_by: string | null
+          operation_type: string
+          processing_time: number | null
+          records_failed: number | null
+          records_processed: number | null
+          records_successful: number | null
+          records_total: number | null
+          settings: Json | null
+          status: string
+          updated_at: string
+          validation_errors: Json | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          data_type: string
+          download_expires_at?: string | null
+          download_url?: string | null
+          error_details?: Json | null
+          file_name: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          initiated_by?: string | null
+          operation_type: string
+          processing_time?: number | null
+          records_failed?: number | null
+          records_processed?: number | null
+          records_successful?: number | null
+          records_total?: number | null
+          settings?: Json | null
+          status?: string
+          updated_at?: string
+          validation_errors?: Json | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          data_type?: string
+          download_expires_at?: string | null
+          download_url?: string | null
+          error_details?: Json | null
+          file_name?: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          initiated_by?: string | null
+          operation_type?: string
+          processing_time?: number | null
+          records_failed?: number | null
+          records_processed?: number | null
+          records_successful?: number | null
+          records_total?: number | null
+          settings?: Json | null
+          status?: string
+          updated_at?: string
+          validation_errors?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_export_history_initiated_by_fkey"
+            columns: ["initiated_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      import_mappings: {
+        Row: {
+          created_at: string
+          data_transformation: string | null
+          default_value: string | null
+          id: string
+          import_history_id: string
+          is_required: boolean
+          source_field: string
+          target_field: string
+        }
+        Insert: {
+          created_at?: string
+          data_transformation?: string | null
+          default_value?: string | null
+          id?: string
+          import_history_id: string
+          is_required?: boolean
+          source_field: string
+          target_field: string
+        }
+        Update: {
+          created_at?: string
+          data_transformation?: string | null
+          default_value?: string | null
+          id?: string
+          import_history_id?: string
+          is_required?: boolean
+          source_field?: string
+          target_field?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_mappings_import_history_id_fkey"
+            columns: ["import_history_id"]
+            isOneToOne: false
+            referencedRelation: "import_export_history"
             referencedColumns: ["id"]
           },
         ]
