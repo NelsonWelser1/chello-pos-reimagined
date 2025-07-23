@@ -54,12 +54,17 @@ export default function StockMonitor() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Total Items Summary */}
+        <div className="text-center text-sm text-slate-600 mb-4">
+          Monitoring {menuItems.length} menu items
+        </div>
+
         {/* Critical Alerts */}
         {outOfStockItems.length > 0 && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>{outOfStockItems.length} items</strong> are out of stock and unavailable for ordering.
+              <strong>{outOfStockItems.length} items</strong> are completely out of stock and unavailable for ordering.
             </AlertDescription>
           </Alert>
         )}
@@ -68,38 +73,47 @@ export default function StockMonitor() {
           <Alert>
             <TrendingDown className="h-4 w-4" />
             <AlertDescription>
-              <strong>{lowStockItems.length} items</strong> are running low on stock.
+              <strong>{lowStockItems.length} items</strong> are running low and need restocking soon.
             </AlertDescription>
           </Alert>
         )}
 
         {/* Stock Status Summary */}
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-green-50 p-2 rounded">
-            <div className="text-lg font-bold text-green-700">
+          <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+            <div className="text-xl font-bold text-green-700">
               {menuItems.filter(item => item.stock_count > item.low_stock_alert).length}
             </div>
-            <div className="text-xs text-green-600">In Stock</div>
+            <div className="text-xs text-green-600 font-medium">Well Stocked</div>
           </div>
-          <div className="bg-yellow-50 p-2 rounded">
-            <div className="text-lg font-bold text-yellow-700">{lowStockItems.length}</div>
-            <div className="text-xs text-yellow-600">Low Stock</div>
+          <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            <div className="text-xl font-bold text-yellow-700">{lowStockItems.length}</div>
+            <div className="text-xs text-yellow-600 font-medium">Low Stock</div>
           </div>
-          <div className="bg-red-50 p-2 rounded">
-            <div className="text-lg font-bold text-red-700">{outOfStockItems.length}</div>
-            <div className="text-xs text-red-600">Out of Stock</div>
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <div className="text-xl font-bold text-red-700">{outOfStockItems.length}</div>
+            <div className="text-xs text-red-600 font-medium">Out of Stock</div>
           </div>
         </div>
 
-        {/* Detailed Lists */}
+        {/* Detailed Stock Information */}
         {outOfStockItems.length > 0 && (
           <div className="space-y-2">
-            <h4 className="font-semibold text-red-700 text-sm">Out of Stock Items:</h4>
+            <h4 className="font-semibold text-red-700 text-sm flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Critical - Out of Stock:
+            </h4>
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {outOfStockItems.map(item => (
-                <div key={item.id} className="flex items-center justify-between text-xs p-2 bg-red-50 rounded">
-                  <span className="font-medium">{item.name}</span>
-                  <Badge variant="destructive" className="text-xs">0 left</Badge>
+                <div key={item.id} className="flex items-center justify-between text-sm p-2 bg-red-50 rounded border border-red-200">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-red-800">{item.name}</span>
+                    <span className="text-xs text-red-600">{item.category}</span>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="destructive" className="text-xs">0 units</Badge>
+                    <div className="text-xs text-red-600 mt-1">Alert at: {item.low_stock_alert}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -108,23 +122,67 @@ export default function StockMonitor() {
 
         {lowStockItems.length > 0 && (
           <div className="space-y-2">
-            <h4 className="font-semibold text-yellow-700 text-sm">Low Stock Items:</h4>
+            <h4 className="font-semibold text-yellow-700 text-sm flex items-center gap-2">
+              <TrendingDown className="w-4 h-4" />
+              Warning - Low Stock:
+            </h4>
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {lowStockItems.map(item => (
-                <div key={item.id} className="flex items-center justify-between text-xs p-2 bg-yellow-50 rounded">
-                  <span className="font-medium">{item.name}</span>
-                  <Badge variant="outline" className="text-yellow-700 border-yellow-400">
-                    {item.stock_count} left
-                  </Badge>
+                <div key={item.id} className="flex items-center justify-between text-sm p-2 bg-yellow-50 rounded border border-yellow-200">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-yellow-800">{item.name}</span>
+                    <span className="text-xs text-yellow-600">{item.category}</span>
+                  </div>
+                  <div className="text-right">
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${
+                        item.stock_count <= 2 ? 'border-red-400 text-red-700' : 'border-yellow-400 text-yellow-700'
+                      }`}
+                    >
+                      {item.stock_count} units left
+                    </Badge>
+                    <div className="text-xs text-yellow-600 mt-1">Alert at: {item.low_stock_alert}</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
+        {/* Healthy Stock Items Preview */}
+        {menuItems.filter(item => item.stock_count > item.low_stock_alert).length > 0 && totalCriticalItems === 0 && (
+          <div className="space-y-2">
+            <h4 className="font-semibold text-green-700 text-sm flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Well Stocked Items:
+            </h4>
+            <div className="space-y-1 max-h-24 overflow-y-auto">
+              {menuItems
+                .filter(item => item.stock_count > item.low_stock_alert)
+                .slice(0, 3)
+                .map(item => (
+                  <div key={item.id} className="flex items-center justify-between text-sm p-2 bg-green-50 rounded border border-green-200">
+                    <span className="font-medium text-green-800">{item.name}</span>
+                    <Badge variant="outline" className="text-green-700 border-green-400 text-xs">
+                      {item.stock_count} units
+                    </Badge>
+                  </div>
+                ))}
+              {menuItems.filter(item => item.stock_count > item.low_stock_alert).length > 3 && (
+                <div className="text-center text-xs text-green-600 py-1">
+                  ...and {menuItems.filter(item => item.stock_count > item.low_stock_alert).length - 3} more items
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {totalCriticalItems === 0 && (
-          <div className="text-center py-4 text-green-600">
-            All items are well stocked! ✅
+          <div className="text-center py-6 text-green-600 bg-green-50 rounded-lg border border-green-200">
+            <Package className="w-8 h-8 mx-auto mb-2 text-green-500" />
+            <div className="font-semibold">All items are well stocked!</div>
+            <div className="text-sm text-green-500 mt-1">No immediate restocking needed</div>
           </div>
         )}
       </CardContent>
