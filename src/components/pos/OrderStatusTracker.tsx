@@ -46,7 +46,12 @@ export default function OrderStatusTracker() {
     }
   };
 
-  const activeOrders = orders.filter(order => order.status !== 'completed');
+  // Show orders that have kitchen orders or are pending/in-progress
+  const activeOrders = orders.filter(order => {
+    const kitchenOrder = kitchenOrders.find(ko => ko.order_id === order.id);
+    // Show if there's a kitchen order that's not served, or if order is not completed
+    return kitchenOrder ? kitchenOrder.status !== 'served' : order.status !== 'completed';
+  });
 
   return (
     <Card className="shadow-lg">
