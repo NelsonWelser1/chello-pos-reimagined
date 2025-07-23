@@ -1,0 +1,9 @@
+-- Update modifiers table to add any missing constraints and improve performance
+ALTER TABLE public.modifiers 
+ADD CONSTRAINT modifiers_modifier_type_check 
+CHECK (modifier_type IN ('single', 'multiple', 'required'));
+
+-- Create additional indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_modifiers_category ON public.modifiers(category);
+CREATE INDEX IF NOT EXISTS idx_modifiers_active ON public.modifiers(is_active);
+CREATE INDEX IF NOT EXISTS idx_modifiers_sort_order ON public.modifiers(sort_order);
