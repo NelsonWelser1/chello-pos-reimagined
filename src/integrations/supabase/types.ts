@@ -149,6 +149,94 @@ export type Database = {
         }
         Relationships: []
       }
+      expenses: {
+        Row: {
+          amount: number
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
+          attachments: Json | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          expense_date: string
+          expense_type_id: string
+          id: string
+          notes: string | null
+          payment_method: string
+          payment_reference: string | null
+          receipt_number: string | null
+          recurring_expense_id: string | null
+          tags: string[] | null
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          amount?: number
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: Json | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expense_date?: string
+          expense_type_id: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          payment_reference?: string | null
+          receipt_number?: string | null
+          recurring_expense_id?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: Json | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expense_date?: string
+          expense_type_id?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          payment_reference?: string | null
+          receipt_number?: string | null
+          recurring_expense_id?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_expense_type_id_fkey"
+            columns: ["expense_type_id"]
+            isOneToOne: false
+            referencedRelation: "expense_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ingredients: {
         Row: {
           allergens: string[] | null
