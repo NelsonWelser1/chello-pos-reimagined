@@ -1685,6 +1685,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      increment_pickup_point_orders: {
+        Args: { point_id: string; increment_by: number }
+        Returns: undefined
+      }
     }
     Enums: {
       staff_role: "Admin" | "Manager" | "Chef" | "Waiter" | "Cashier"
