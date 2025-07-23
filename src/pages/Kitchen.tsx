@@ -5,17 +5,24 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useKitchenOrders, type KitchenOrder } from "@/hooks/useKitchenOrders";
 import { useKitchenSounds } from "@/hooks/useKitchenSounds";
 import { useToast } from "@/hooks/use-toast";
+import { useDataSynchronization } from "@/hooks/useDataSynchronization";
 import KitchenHeader from "@/components/kitchen/KitchenHeader";
 import KitchenStats from "@/components/kitchen/KitchenStats";
 import OrderManagement from "@/components/kitchen/OrderManagement";
 import { getOrderCounts, filterOrders } from "@/utils/kitchenUtils";
 
 export default function Kitchen() {
-  const { orders, loading, updateOrderStatus } = useKitchenOrders();
+  const { orders, loading, updateOrderStatus, refetch: refetchKitchenOrders } = useKitchenOrders();
   const { soundEnabled, toggleSound, playReadyAlert } = useKitchenSounds();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('all');
   const [previousReadyCount, setPreviousReadyCount] = useState(0);
+
+  // Setup comprehensive data synchronization
+  const { isConnected, syncStatus } = useDataSynchronization({
+    onKitchenUpdate: refetchKitchenOrders,
+    onOrderUpdate: refetchKitchenOrders,
+  });
 
   const orderCounts = getOrderCounts(orders);
   const filteredOrders = filterOrders(orders, activeTab);

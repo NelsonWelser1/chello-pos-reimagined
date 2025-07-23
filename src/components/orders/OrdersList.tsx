@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useOrders } from "@/hooks/useOrders";
 import { useStaff } from "@/hooks/useStaff";
+import { useDataSynchronization } from "@/hooks/useDataSynchronization";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,9 +13,17 @@ import { OrderTransactionLink } from "./OrderTransactionLink";
 import { toast } from "sonner";
 
 export function OrdersList() {
-  const { orders, loading } = useOrders();
-  const { staff } = useStaff();
+  const { orders, loading, refetch: refetchOrders } = useOrders();
+  const { staff, refetch: refetchStaff } = useStaff();
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Setup comprehensive data synchronization
+  const { isConnected, syncStatus } = useDataSynchronization({
+    onOrderUpdate: refetchOrders,
+    onStaffUpdate: refetchStaff,
+    onTransactionUpdate: refetchOrders,
+    onKitchenUpdate: refetchOrders, // Kitchen status affects order display
+  });
   const ordersPerPage = 10;
 
   // Create a map of staff members for quick lookup

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useMenuItems } from "@/hooks/useMenuItems";
 import { useCategories } from "@/hooks/useCategories";
 import { useCart } from "@/hooks/useCart";
-import { useRealTimeSync } from "@/hooks/useRealTimeSync";
+import { useDataSynchronization } from "@/hooks/useDataSynchronization";
 import CategoryFilter from "./CategoryFilter";
 import MenuGrid from "./MenuGrid";
 import CartSummary from "./CartSummary";
@@ -22,10 +22,18 @@ export default function POSContainer() {
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [selectedTableSession, setSelectedTableSession] = useState<string | null>(null);
   
-  // Setup real-time synchronization
-  useRealTimeSync({
+  // Setup comprehensive data synchronization
+  const { isConnected, syncStatus } = useDataSynchronization({
     onMenuUpdate: refetchMenuItems,
     onStockUpdate: refetchMenuItems,
+    onOrderUpdate: () => {
+      // Refresh any order-related components
+      console.log('🔄 POS: Order update detected');
+    },
+    onKitchenUpdate: () => {
+      // Kitchen updates may affect order status
+      console.log('🔄 POS: Kitchen update detected');
+    },
   });
   
   const {

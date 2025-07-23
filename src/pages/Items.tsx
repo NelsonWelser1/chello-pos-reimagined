@@ -1,6 +1,7 @@
 
 import { useState, useMemo } from 'react';
 import { useMenuItems, type MenuItem, type MenuItemFormData } from '@/hooks/useMenuItems';
+import { useDataSynchronization } from '@/hooks/useDataSynchronization';
 import { Toaster } from '@/components/ui/toaster';
 import ItemsHeader from '@/components/items/ItemsHeader';
 import ItemsControls from '@/components/items/ItemsControls';
@@ -10,9 +11,19 @@ import { useCategories } from '@/hooks/useCategories';
 import { type Category } from '@/types/category';
 
 export default function Items() {
-  const { items, loading, createItem, updateItem, deleteItem, toggleAvailability } = useMenuItems();
+  const { items, loading, createItem, updateItem, deleteItem, toggleAvailability, refetch: refetchItems } = useMenuItems();
 
-  const { categories: categoryObjects, loading: categoriesLoading } = useCategories();
+  const { categories: categoryObjects, loading: categoriesLoading, refetch: refetchCategories } = useCategories();
+
+  // Setup comprehensive data synchronization
+  const { isConnected, syncStatus } = useDataSynchronization({
+    onMenuUpdate: refetchItems,
+    onStockUpdate: refetchItems,
+    onOrderUpdate: () => {
+      // Orders may affect stock levels
+      refetchItems();
+    },
+  });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');

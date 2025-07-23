@@ -16,6 +16,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { useState, useEffect } from 'react';
 import { useSalesAnalytics } from "@/hooks/useSalesAnalytics";
+import { useDataSynchronization } from "@/hooks/useDataSynchronization";
 import { salesService } from "@/services/salesService";
 
 export function SalesDashboard() {
@@ -31,31 +32,39 @@ export function SalesDashboard() {
   const [hourlySales, setHourlySales] = useState<Array<{ time: string; amount: number; orders: number }>>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch today's metrics
+      const metricsData = await salesService.getTodaysMetrics();
+      setMetrics(metricsData);
+
+      // Fetch hourly sales data
+      const hourlyData = await salesService.getHourlySalesData();
+      const formattedHourlyData = hourlyData.map(item => ({
+        time: item.hour,
+        amount: item.sales,
+        orders: item.orders
+      }));
+      setHourlySales(formattedHourlyData);
+
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Setup comprehensive data synchronization
+  const { isConnected, syncStatus } = useDataSynchronization({
+    onSalesUpdate: fetchData,
+    onOrderUpdate: fetchData,
+    onTransactionUpdate: fetchData,
+    onKitchenUpdate: fetchData, // Kitchen completion affects sales
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch today's metrics
-        const metricsData = await salesService.getTodaysMetrics();
-        setMetrics(metricsData);
-
-        // Fetch hourly sales data
-        const hourlyData = await salesService.getHourlySalesData();
-        const formattedHourlyData = hourlyData.map(item => ({
-          time: item.hour,
-          amount: item.sales,
-          orders: item.orders
-        }));
-        setHourlySales(formattedHourlyData);
-
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 

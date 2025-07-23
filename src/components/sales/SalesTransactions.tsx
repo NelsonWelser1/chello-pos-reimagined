@@ -18,12 +18,20 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useSalesTransactions } from "@/hooks/useSalesTransactions";
+import { useDataSynchronization } from "@/hooks/useDataSynchronization";
 import { ExportDialog } from "./ExportDialog";
 
 export function SalesTransactions() {
-  const { transactions, loading } = useSalesTransactions();
+  const { transactions, loading, refetch: refetchTransactions } = useSalesTransactions();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // Setup comprehensive data synchronization
+  const { isConnected, syncStatus } = useDataSynchronization({
+    onSalesUpdate: refetchTransactions,
+    onTransactionUpdate: refetchTransactions,
+    onOrderUpdate: refetchTransactions, // New orders create transactions
+  });
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(transaction => {
