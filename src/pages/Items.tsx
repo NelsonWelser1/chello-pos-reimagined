@@ -7,6 +7,8 @@ import ItemsHeader from '@/components/items/ItemsHeader';
 import ItemsControls from '@/components/items/ItemsControls';
 import ItemsDisplay from '@/components/items/ItemsDisplay';
 import ItemForm from '@/components/items/ItemForm';
+import RecipeManager from '@/components/stock/RecipeManager';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useCategories } from '@/hooks/useCategories';
 import { type Category } from '@/types/category';
 
@@ -30,6 +32,8 @@ export default function Items() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [recipeManagerOpen, setRecipeManagerOpen] = useState(false);
+  const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<MenuItem | null>(null);
   const [formData, setFormData] = useState<MenuItemFormData>({
     name: '',
     description: '',
@@ -131,6 +135,11 @@ export default function Items() {
     await toggleAvailability(id);
   };
 
+  const handleManageRecipe = (item: MenuItem) => {
+    setSelectedItemForRecipe(item);
+    setRecipeManagerOpen(true);
+  };
+
   const handleFormClose = () => {
     setIsFormOpen(false);
     setEditingItem(null);
@@ -172,6 +181,7 @@ export default function Items() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onToggleAvailability={handleToggleAvailability}
+          onManageRecipe={handleManageRecipe}
           searchTerm={searchTerm}
           selectedCategory={selectedCategory}
         />
@@ -186,6 +196,19 @@ export default function Items() {
           onSave={handleSave}
           categories={categoryObjects.filter(c => c.is_active).map(c => c.name)}
         />
+
+        {/* Recipe Manager Dialog */}
+        <Dialog open={recipeManagerOpen} onOpenChange={setRecipeManagerOpen}>
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+            {selectedItemForRecipe && (
+              <RecipeManager
+                menuItemId={selectedItemForRecipe.id}
+                menuItemName={selectedItemForRecipe.name}
+                onClose={() => setRecipeManagerOpen(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
       <Toaster />
     </div>

@@ -10,6 +10,7 @@ interface ItemsDisplayProps {
   onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   onToggleAvailability: (id: string) => void;
+  onManageRecipe?: (item: MenuItem) => void;
   searchTerm: string;
   selectedCategory: string;
 }
@@ -20,6 +21,7 @@ export default function ItemsDisplay({
   onEdit,
   onDelete,
   onToggleAvailability,
+  onManageRecipe,
   searchTerm,
   selectedCategory
 }: ItemsDisplayProps) {
@@ -47,6 +49,7 @@ export default function ItemsDisplay({
             onEdit={onEdit}
             onDelete={onDelete}
             onToggleAvailability={onToggleAvailability}
+            onManageRecipe={onManageRecipe}
           />
         ))}
       </div>
@@ -59,6 +62,7 @@ export default function ItemsDisplay({
       onEdit={onEdit}
       onDelete={onDelete}
       onToggleAvailability={onToggleAvailability}
+      onManageRecipe={onManageRecipe}
     />
   );
 }

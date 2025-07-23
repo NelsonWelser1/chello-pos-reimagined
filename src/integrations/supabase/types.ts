@@ -319,6 +319,51 @@ export type Database = {
           },
         ]
       }
+      menu_item_ingredients: {
+        Row: {
+          created_at: string
+          id: string
+          ingredient_id: string
+          menu_item_id: string
+          quantity_required: number
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredient_id: string
+          menu_item_id: string
+          quantity_required?: number
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredient_id?: string
+          menu_item_id?: string
+          quantity_required?: number
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_item_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_item_ingredients_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_items: {
         Row: {
           allergens: string[] | null
@@ -1260,6 +1305,69 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      stock_adjustments: {
+        Row: {
+          adjustment_type: string
+          cost_per_unit: number | null
+          created_at: string
+          id: string
+          ingredient_id: string
+          notes: string | null
+          performed_by_staff_id: string | null
+          quantity_change: number
+          reason: string | null
+          reference_number: string | null
+          supplier: string | null
+          total_cost: number | null
+          updated_at: string
+        }
+        Insert: {
+          adjustment_type: string
+          cost_per_unit?: number | null
+          created_at?: string
+          id?: string
+          ingredient_id: string
+          notes?: string | null
+          performed_by_staff_id?: string | null
+          quantity_change: number
+          reason?: string | null
+          reference_number?: string | null
+          supplier?: string | null
+          total_cost?: number | null
+          updated_at?: string
+        }
+        Update: {
+          adjustment_type?: string
+          cost_per_unit?: number | null
+          created_at?: string
+          id?: string
+          ingredient_id?: string
+          notes?: string | null
+          performed_by_staff_id?: string | null
+          quantity_change?: number
+          reason?: string | null
+          reference_number?: string | null
+          supplier?: string | null
+          total_cost?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_adjustments_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_adjustments_performed_by_staff_id_fkey"
+            columns: ["performed_by_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       table_sessions: {
         Row: {

@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, Package, TrendingDown } from "lucide-react";
+import { AlertTriangle, Package, TrendingDown, Clock, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useMenuItems } from "@/hooks/useMenuItems";
+import { useStockManagement } from "@/hooks/useStockManagement";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import StockAdjustmentForm from "@/components/stock/StockAdjustmentForm";
 
 export default function StockMonitor() {
   const { items: menuItems, loading } = useMenuItems();
+  const { ingredients, alerts, createAdjustment, fetchAlerts } = useStockManagement();
   const [lowStockItems, setLowStockItems] = useState<any[]>([]);
   const [outOfStockItems, setOutOfStockItems] = useState<any[]>([]);
+  const [showAdjustmentForm, setShowAdjustmentForm] = useState(false);
 
   useEffect(() => {
     if (!loading && menuItems.length > 0) {
@@ -21,6 +27,14 @@ export default function StockMonitor() {
       setOutOfStockItems(outOfStock);
     }
   }, [menuItems, loading]);
+
+  const handleAdjustmentSubmit = async (adjustment: any) => {
+    const success = await createAdjustment(adjustment);
+    if (success) {
+      await fetchAlerts();
+    }
+    return success;
+  };
 
   if (loading) {
     return (
@@ -39,41 +53,70 @@ export default function StockMonitor() {
   }
 
   const totalCriticalItems = lowStockItems.length + outOfStockItems.length;
+  const criticalIngredients = ingredients.filter(ing => 
+    ing.currentStock <= ing.minimumStock || ing.currentStock === 0
+  );
+  const totalCriticalAlerts = totalCriticalItems + criticalIngredients.length;
 
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle className="text-lg font-bold flex items-center gap-2">
-          <Package className="w-5 h-5" />
-          Stock Monitor
-          {totalCriticalItems > 0 && (
-            <Badge variant="destructive" className="ml-2">
-              {totalCriticalItems} alerts
-            </Badge>
-          )}
+        <CardTitle className="text-lg font-bold flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Package className="w-5 h-5" />
+            Stock Monitor
+            {totalCriticalAlerts > 0 && (
+              <Badge variant="destructive" className="ml-2">
+                {totalCriticalAlerts} alerts
+              </Badge>
+            )}
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={() => setShowAdjustmentForm(true)}
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Adjust Stock
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Total Items Summary */}
         <div className="text-center text-sm text-slate-600 mb-4">
-          Monitoring {menuItems.length} menu items
+          Monitoring {menuItems.length} menu items & {ingredients.length} ingredients
         </div>
 
         {/* Critical Alerts */}
-        {outOfStockItems.length > 0 && (
+        {(outOfStockItems.length > 0 || criticalIngredients.filter(ing => ing.currentStock === 0).length > 0) && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>{outOfStockItems.length} items</strong> are completely out of stock and unavailable for ordering.
+              <div className="space-y-1">
+                {outOfStockItems.length > 0 && (
+                  <div><strong>{outOfStockItems.length} menu items</strong> are completely out of stock.</div>
+                )}
+                {criticalIngredients.filter(ing => ing.currentStock === 0).length > 0 && (
+                  <div><strong>{criticalIngredients.filter(ing => ing.currentStock === 0).length} ingredients</strong> are out of stock.</div>
+                )}
+              </div>
             </AlertDescription>
           </Alert>
         )}
 
-        {lowStockItems.length > 0 && (
+        {(lowStockItems.length > 0 || criticalIngredients.filter(ing => ing.currentStock > 0 && ing.currentStock <= ing.minimumStock).length > 0) && (
           <Alert>
             <TrendingDown className="h-4 w-4" />
             <AlertDescription>
-              <strong>{lowStockItems.length} items</strong> are running low and need restocking soon.
+              <div className="space-y-1">
+                {lowStockItems.length > 0 && (
+                  <div><strong>{lowStockItems.length} menu items</strong> are running low.</div>
+                )}
+                {criticalIngredients.filter(ing => ing.currentStock > 0 && ing.currentStock <= ing.minimumStock).length > 0 && (
+                  <div><strong>{criticalIngredients.filter(ing => ing.currentStock > 0 && ing.currentStock <= ing.minimumStock).length} ingredients</strong> need restocking.</div>
+                )}
+              </div>
             </AlertDescription>
           </Alert>
         )}
@@ -178,7 +221,41 @@ export default function StockMonitor() {
           </div>
         )}
 
-        {totalCriticalItems === 0 && (
+        {/* Ingredient Stock Alerts */}
+        {criticalIngredients.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="font-semibold text-orange-700 text-sm flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Ingredient Stock Issues:
+            </h4>
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {criticalIngredients.slice(0, 5).map(ingredient => (
+                <div key={ingredient.id} className="flex items-center justify-between text-sm p-2 bg-orange-50 rounded border border-orange-200">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-orange-800">{ingredient.name}</span>
+                    <span className="text-xs text-orange-600">{ingredient.category}</span>
+                  </div>
+                  <div className="text-right">
+                    <Badge 
+                      variant={ingredient.currentStock === 0 ? "destructive" : "outline"}
+                      className="text-xs"
+                    >
+                      {ingredient.currentStock} {ingredient.unit}
+                    </Badge>
+                    <div className="text-xs text-orange-600 mt-1">Min: {ingredient.minimumStock}</div>
+                  </div>
+                </div>
+              ))}
+              {criticalIngredients.length > 5 && (
+                <div className="text-center text-xs text-orange-600 py-1">
+                  ...and {criticalIngredients.length - 5} more ingredients
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {totalCriticalAlerts === 0 && (
           <div className="text-center py-6 text-green-600 bg-green-50 rounded-lg border border-green-200">
             <Package className="w-8 h-8 mx-auto mb-2 text-green-500" />
             <div className="font-semibold">All items are well stocked!</div>
@@ -186,6 +263,16 @@ export default function StockMonitor() {
           </div>
         )}
       </CardContent>
+
+      {/* Stock Adjustment Dialog */}
+      <Dialog open={showAdjustmentForm} onOpenChange={setShowAdjustmentForm}>
+        <DialogContent className="max-w-3xl">
+          <StockAdjustmentForm
+            onSubmit={handleAdjustmentSubmit}
+            onClose={() => setShowAdjustmentForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
