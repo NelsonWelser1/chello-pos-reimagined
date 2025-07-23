@@ -262,19 +262,14 @@ export class PickupPointService {
 
   static async createPickupOrder(pickupOrderData: NewPickupOrder): Promise<PickupOrder | null> {
     try {
-      // Generate unique pickup code
-      const { data: codeData, error: codeError } = await supabase
-        .rpc('generate_pickup_code');
-
-      if (codeError || !codeData) {
-        throw new Error('Failed to generate pickup code');
-      }
+      // Generate unique pickup code using JavaScript instead of DB function
+      const pickupCode = this.generatePickupCode();
 
       const { data, error } = await supabase
         .from('pickup_orders')
         .insert({
           ...pickupOrderData,
-          pickup_code: codeData
+          pickup_code: pickupCode
         })
         .select()
         .single();
@@ -349,17 +344,25 @@ export class PickupPointService {
   // Helper method to update pickup point order count
   private static async updatePickupPointOrderCount(pickupPointId: string, change: number): Promise<void> {
     try {
-      const { error } = await supabase
-        .rpc('increment_pickup_point_orders', {
-          point_id: pickupPointId,
-          increment_by: change
-        });
+      // Use direct update instead of RPC call
+      const { data: currentPoint } = await supabase
+        .from('pickup_points')
+        .select('current_orders')
+        .eq('id', pickupPointId)
+        .single();
 
-      if (error) {
-        console.error('Error updating pickup point order count:', error);
+      if (currentPoint) {
+        const newCount = Math.max(0, currentPoint.current_orders + change);
+        await supabase
+          .from('pickup_points')
+          .update({ 
+            current_orders: newCount,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pickupPointId);
       }
     } catch (error) {
-      console.error('Error in updatePickupPointOrderCount:', error);
+      console.error('Error updating pickup point order count:', error);
     }
   }
 
@@ -490,6 +493,11 @@ export class PickupPointService {
       console.error('Error finding nearby pickup points:', error);
       throw error;
     }
+  }
+
+  // Helper method to generate unique pickup codes
+  private static generatePickupCode(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   // Helper method to calculate distance between two points

@@ -105,7 +105,7 @@ export class ImportExportService {
         throw error;
       }
 
-      return (data || []) as ImportExportHistory[];
+      return (data || []) as unknown as ImportExportHistory[];
     } catch (error) {
       console.error('Error in getImportExportHistory:', error);
       throw error;
@@ -129,7 +129,7 @@ export class ImportExportService {
         return null;
       }
 
-      return data as ImportExportHistory;
+      return data as unknown as ImportExportHistory;
     } catch (error) {
       console.error('Error in getImportExportById:', error);
       return null;
@@ -149,7 +149,7 @@ export class ImportExportService {
         throw error;
       }
 
-      return result as ImportExportHistory;
+      return result as unknown as ImportExportHistory;
     } catch (error) {
       console.error('Error in createImportExportRecord:', error);
       throw error;
@@ -170,7 +170,7 @@ export class ImportExportService {
         throw error;
       }
 
-      return result as ImportExportHistory;
+      return result as unknown as ImportExportHistory;
     } catch (error) {
       console.error('Error in updateImportExportRecord:', error);
       throw error;
