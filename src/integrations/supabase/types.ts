@@ -14,6 +14,202 @@ export type Database = {
   }
   public: {
     Tables: {
+      backup_configurations: {
+        Row: {
+          backup_type: string
+          compression_enabled: boolean
+          created_at: string
+          created_by: string | null
+          description: string | null
+          encryption_enabled: boolean
+          exclude_tables: string[] | null
+          id: string
+          is_active: boolean
+          name: string
+          retention_days: number
+          schedule_day: number | null
+          schedule_time: string | null
+          schedule_type: string
+          storage_config: Json | null
+          storage_location: string
+          tables_included: string[]
+          updated_at: string
+        }
+        Insert: {
+          backup_type: string
+          compression_enabled?: boolean
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          encryption_enabled?: boolean
+          exclude_tables?: string[] | null
+          id?: string
+          is_active?: boolean
+          name: string
+          retention_days?: number
+          schedule_day?: number | null
+          schedule_time?: string | null
+          schedule_type?: string
+          storage_config?: Json | null
+          storage_location?: string
+          tables_included?: string[]
+          updated_at?: string
+        }
+        Update: {
+          backup_type?: string
+          compression_enabled?: boolean
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          encryption_enabled?: boolean
+          exclude_tables?: string[] | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          retention_days?: number
+          schedule_day?: number | null
+          schedule_time?: string | null
+          schedule_type?: string
+          storage_config?: Json | null
+          storage_location?: string
+          tables_included?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backup_history: {
+        Row: {
+          backup_name: string
+          backup_type: string
+          checksum: string | null
+          compression_ratio: number | null
+          configuration_id: string | null
+          created_at: string
+          duration_seconds: number | null
+          end_time: string | null
+          error_message: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          initiated_by: string | null
+          records_count: number | null
+          start_time: string
+          status: string
+          tables_backed_up: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          backup_name: string
+          backup_type: string
+          checksum?: string | null
+          compression_ratio?: number | null
+          configuration_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          initiated_by?: string | null
+          records_count?: number | null
+          start_time?: string
+          status?: string
+          tables_backed_up?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          backup_name?: string
+          backup_type?: string
+          checksum?: string | null
+          compression_ratio?: number | null
+          configuration_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          initiated_by?: string | null
+          records_count?: number | null
+          start_time?: string
+          status?: string
+          tables_backed_up?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_history_configuration_id_fkey"
+            columns: ["configuration_id"]
+            isOneToOne: false
+            referencedRelation: "backup_configurations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "backup_history_initiated_by_fkey"
+            columns: ["initiated_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backup_schedules: {
+        Row: {
+          configuration_id: string
+          created_at: string
+          failure_count: number
+          id: string
+          is_enabled: boolean
+          last_run_status: string | null
+          last_run_time: string | null
+          max_failures: number
+          next_run_time: string
+          updated_at: string
+        }
+        Insert: {
+          configuration_id: string
+          created_at?: string
+          failure_count?: number
+          id?: string
+          is_enabled?: boolean
+          last_run_status?: string | null
+          last_run_time?: string | null
+          max_failures?: number
+          next_run_time: string
+          updated_at?: string
+        }
+        Update: {
+          configuration_id?: string
+          created_at?: string
+          failure_count?: number
+          id?: string
+          is_enabled?: boolean
+          last_run_status?: string | null
+          last_run_time?: string | null
+          max_failures?: number
+          next_run_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_schedules_configuration_id_fkey"
+            columns: ["configuration_id"]
+            isOneToOne: false
+            referencedRelation: "backup_configurations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           color: string
@@ -1465,6 +1661,72 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      restore_history: {
+        Row: {
+          backup_history_id: string
+          created_at: string
+          duration_seconds: number | null
+          end_time: string | null
+          error_message: string | null
+          id: string
+          initiated_by: string | null
+          records_restored: number | null
+          restore_name: string
+          restore_type: string
+          start_time: string
+          status: string
+          tables_restored: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          backup_history_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          initiated_by?: string | null
+          records_restored?: number | null
+          restore_name: string
+          restore_type?: string
+          start_time?: string
+          status?: string
+          tables_restored?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          backup_history_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          initiated_by?: string | null
+          records_restored?: number | null
+          restore_name?: string
+          restore_type?: string
+          start_time?: string
+          status?: string
+          tables_restored?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restore_history_backup_history_id_fkey"
+            columns: ["backup_history_id"]
+            isOneToOne: false
+            referencedRelation: "backup_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restore_history_initiated_by_fkey"
+            columns: ["initiated_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sales_analytics: {
         Row: {
