@@ -1087,6 +1087,136 @@ export type Database = {
         }
         Relationships: []
       }
+      pickup_orders: {
+        Row: {
+          actual_pickup_time: string | null
+          assigned_staff_id: string | null
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          estimated_pickup_time: string | null
+          id: string
+          order_id: string
+          pickup_code: string
+          pickup_point_id: string
+          special_instructions: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_pickup_time?: string | null
+          assigned_staff_id?: string | null
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          estimated_pickup_time?: string | null
+          id?: string
+          order_id: string
+          pickup_code: string
+          pickup_point_id: string
+          special_instructions?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_pickup_time?: string | null
+          assigned_staff_id?: string | null
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          estimated_pickup_time?: string | null
+          id?: string
+          order_id?: string
+          pickup_code?: string
+          pickup_point_id?: string
+          special_instructions?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pickup_orders_assigned_staff_id_fkey"
+            columns: ["assigned_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pickup_orders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pickup_orders_pickup_point_id_fkey"
+            columns: ["pickup_point_id"]
+            isOneToOne: false
+            referencedRelation: "pickup_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pickup_points: {
+        Row: {
+          address: string
+          capacity: number
+          coordinates: Json | null
+          created_at: string
+          current_orders: number
+          delivery_radius: number | null
+          email: string | null
+          facilities: string[] | null
+          id: string
+          is_active: boolean
+          manager_contact: string | null
+          manager_name: string | null
+          name: string
+          opening_hours: Json | null
+          phone: string | null
+          special_instructions: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          capacity?: number
+          coordinates?: Json | null
+          created_at?: string
+          current_orders?: number
+          delivery_radius?: number | null
+          email?: string | null
+          facilities?: string[] | null
+          id?: string
+          is_active?: boolean
+          manager_contact?: string | null
+          manager_name?: string | null
+          name: string
+          opening_hours?: Json | null
+          phone?: string | null
+          special_instructions?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          capacity?: number
+          coordinates?: Json | null
+          created_at?: string
+          current_orders?: number
+          delivery_radius?: number | null
+          email?: string | null
+          facilities?: string[] | null
+          id?: string
+          is_active?: boolean
+          manager_contact?: string | null
+          manager_name?: string | null
+          name?: string
+          opening_hours?: Json | null
+          phone?: string | null
+          special_instructions?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       receipts: {
         Row: {
           created_at: string
@@ -1551,7 +1681,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_pickup_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       staff_role: "Admin" | "Manager" | "Chef" | "Waiter" | "Cashier"
