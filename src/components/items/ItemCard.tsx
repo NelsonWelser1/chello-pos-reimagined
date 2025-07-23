@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Eye, Trash2, ImageIcon } from "lucide-react";
+import { Edit, Eye, Trash2, ImageIcon, ChefHat } from "lucide-react";
 import { type MenuItem } from '@/hooks/useMenuItems';
 
 interface ItemCardProps {
@@ -10,9 +10,10 @@ interface ItemCardProps {
   onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   onToggleAvailability: (id: string) => void;
+  onManageRecipe?: (item: MenuItem) => void;
 }
 
-export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability }: ItemCardProps) {
+export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability, onManageRecipe }: ItemCardProps) {
   return (
     <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200 bg-white/90 backdrop-blur-sm">
       <CardHeader className="pb-4">
@@ -77,6 +78,18 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleAvailability 
             <Edit className="w-4 h-4 mr-1" />
             Edit
           </Button>
+          
+          {onManageRecipe && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onManageRecipe(item)}
+              className="flex-1"
+            >
+              <ChefHat className="w-4 h-4 mr-1" />
+              Recipe
+            </Button>
+          )}
           
           <Button
             size="sm"

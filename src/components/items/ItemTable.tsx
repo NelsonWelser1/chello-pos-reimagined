@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Eye, Trash2, ImageIcon } from "lucide-react";
+import { Edit, Eye, Trash2, ImageIcon, ChefHat } from "lucide-react";
 import { type MenuItem } from '@/hooks/useMenuItems';
 
 interface ItemTableProps {
@@ -11,9 +11,10 @@ interface ItemTableProps {
   onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   onToggleAvailability: (id: string) => void;
+  onManageRecipe?: (item: MenuItem) => void;
 }
 
-export default function ItemTable({ items, onEdit, onDelete, onToggleAvailability }: ItemTableProps) {
+export default function ItemTable({ items, onEdit, onDelete, onToggleAvailability, onManageRecipe }: ItemTableProps) {
   return (
     <Card>
       <Table>
@@ -68,6 +69,11 @@ export default function ItemTable({ items, onEdit, onDelete, onToggleAvailabilit
                   <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
                     <Edit className="w-4 h-4" />
                   </Button>
+                  {onManageRecipe && (
+                    <Button size="sm" variant="outline" onClick={() => onManageRecipe(item)}>
+                      <ChefHat className="w-4 h-4" />
+                    </Button>
+                  )}
                   <Button 
                     size="sm" 
                     variant={item.is_available ? "secondary" : "default"}
