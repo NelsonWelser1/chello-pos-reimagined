@@ -80,26 +80,8 @@ export function useKitchenOrders() {
   useEffect(() => {
     loadKitchenOrders();
 
-    // Set up realtime subscription
-    const channel = supabase
-      .channel('kitchen-orders-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'kitchen_orders'
-        },
-        () => {
-          console.log('Kitchen orders updated, refreshing...');
-          loadKitchenOrders();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Note: Real-time subscription is handled by useDataSynchronization in components
+    // to avoid duplicate subscriptions
   }, []);
 
   return {

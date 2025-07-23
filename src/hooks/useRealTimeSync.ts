@@ -26,11 +26,12 @@ export function useRealTimeSync({
 
   useEffect(() => {
     const channels: any[] = [];
+    const channelId = Math.random().toString(36).substr(2, 9); // Unique ID for this instance
 
     // Orders realtime updates
     if (onOrderUpdate) {
       const ordersChannel = supabase
-        .channel('orders-changes')
+        .channel(`orders-changes-${channelId}`)
         .on(
           'postgres_changes',
           {
@@ -51,7 +52,7 @@ export function useRealTimeSync({
     // Kitchen orders realtime updates
     if (onKitchenUpdate) {
       const kitchenChannel = supabase
-        .channel('kitchen-orders-changes')
+        .channel(`kitchen-orders-changes-${channelId}`)
         .on(
           'postgres_changes',
           {
@@ -72,7 +73,7 @@ export function useRealTimeSync({
     // Menu items realtime updates
     if (onMenuUpdate || onStockUpdate) {
       const menuChannel = supabase
-        .channel('menu-items-changes')
+        .channel(`menu-items-changes-${channelId}`)
         .on(
           'postgres_changes',
           {
@@ -94,7 +95,7 @@ export function useRealTimeSync({
     // Sales transactions realtime updates
     if (onSalesUpdate || onTransactionUpdate) {
       const salesChannel = supabase
-        .channel('sales-transactions-changes')
+        .channel(`sales-transactions-changes-${channelId}`)
         .on(
           'postgres_changes',
           {
@@ -116,7 +117,7 @@ export function useRealTimeSync({
     // Staff realtime updates
     if (onStaffUpdate) {
       const staffChannel = supabase
-        .channel('staff-changes')
+        .channel(`staff-changes-${channelId}`)
         .on(
           'postgres_changes',
           {
@@ -137,7 +138,7 @@ export function useRealTimeSync({
     // Customers realtime updates
     if (onCustomerUpdate) {
       const customerChannel = supabase
-        .channel('customers-changes')
+        .channel(`customers-changes-${channelId}`)
         .on(
           'postgres_changes',
           {
@@ -158,8 +159,13 @@ export function useRealTimeSync({
     channelsRef.current = channels;
 
     return () => {
+      console.log(`🧹 Cleaning up ${channels.length} real-time subscriptions for instance ${channelId}`);
       channels.forEach(channel => {
-        supabase.removeChannel(channel);
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          console.warn('Error removing channel:', error);
+        }
       });
       channelsRef.current = [];
     };
