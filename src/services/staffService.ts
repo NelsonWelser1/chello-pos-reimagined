@@ -6,7 +6,7 @@ export interface Staff {
   name: string;
   email: string;
   phone?: string;
-  role: 'Manager' | 'Waiter' | 'Kitchen' | 'Cashier';
+  role: 'Admin' | 'Manager' | 'Chef' | 'Waiter' | 'Cashier';
   pin_code?: string;
   hourly_rate?: number;
   is_active: boolean;
@@ -50,7 +50,7 @@ export class StaffService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Staff[];
     } catch (error) {
       console.error('Error in getStaff:', error);
       throw error;
@@ -71,7 +71,7 @@ export class StaffService {
         return null;
       }
 
-      return data;
+      return data as Staff;
     } catch (error) {
       console.error('Error in getStaffById:', error);
       return null;
@@ -92,7 +92,7 @@ export class StaffService {
         throw error;
       }
 
-      return data;
+      return data as Staff;
     } catch (error) {
       console.error('Error in createStaff:', error);
       throw error;
@@ -114,7 +114,7 @@ export class StaffService {
         throw error;
       }
 
-      return data;
+      return data as Staff;
     } catch (error) {
       console.error('Error in updateStaff:', error);
       throw error;
@@ -212,7 +212,7 @@ export class StaffService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Staff[];
     } catch (error) {
       console.error('Error in searchStaff:', error);
       throw error;

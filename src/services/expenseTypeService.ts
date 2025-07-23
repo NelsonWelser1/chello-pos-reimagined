@@ -77,7 +77,7 @@ export class ExpenseTypeService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as ExpenseType[];
     } catch (error) {
       console.error('Error in getExpenseTypes:', error);
       throw error;
@@ -98,7 +98,7 @@ export class ExpenseTypeService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as ExpenseType[];
     } catch (error) {
       console.error('Error in getActiveExpenseTypes:', error);
       throw error;
@@ -119,7 +119,7 @@ export class ExpenseTypeService {
         return null;
       }
 
-      return data;
+      return data as ExpenseType;
     } catch (error) {
       console.error('Error in getExpenseTypeById:', error);
       return null;
@@ -140,7 +140,7 @@ export class ExpenseTypeService {
         throw error;
       }
 
-      return data;
+      return data as ExpenseType;
     } catch (error) {
       console.error('Error in createExpenseType:', error);
       throw error;
@@ -162,7 +162,7 @@ export class ExpenseTypeService {
         throw error;
       }
 
-      return data;
+      return data as ExpenseType;
     } catch (error) {
       console.error('Error in updateExpenseType:', error);
       throw error;
@@ -241,7 +241,7 @@ export class ExpenseTypeService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as ExpenseType[];
     } catch (error) {
       console.error('Error in searchExpenseTypes:', error);
       throw error;
@@ -273,7 +273,7 @@ export class ExpenseTypeService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as ExpenseType[];
     } catch (error) {
       console.error('Error in getExpenseTypesByCategory:', error);
       throw error;

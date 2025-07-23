@@ -47,7 +47,7 @@ export class ModifierService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Modifier[];
     } catch (error) {
       console.error('Error in getModifiers:', error);
       throw error;
@@ -69,7 +69,7 @@ export class ModifierService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Modifier[];
     } catch (error) {
       console.error('Error in getModifiersByCategory:', error);
       throw error;
@@ -90,7 +90,7 @@ export class ModifierService {
         return null;
       }
 
-      return data;
+      return data as Modifier;
     } catch (error) {
       console.error('Error in getModifierById:', error);
       return null;
@@ -111,7 +111,7 @@ export class ModifierService {
         throw error;
       }
 
-      return data;
+      return data as Modifier;
     } catch (error) {
       console.error('Error in createModifier:', error);
       throw error;
@@ -133,7 +133,7 @@ export class ModifierService {
         throw error;
       }
 
-      return data;
+      return data as Modifier;
     } catch (error) {
       console.error('Error in updateModifier:', error);
       throw error;
@@ -216,7 +216,7 @@ export class ModifierService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Modifier[];
     } catch (error) {
       console.error('Error in searchModifiers:', error);
       throw error;
@@ -248,7 +248,7 @@ export class ModifierService {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Modifier[];
     } catch (error) {
       console.error('Error in getModifiersForMenuItem:', error);
       throw error;

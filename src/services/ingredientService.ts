@@ -215,18 +215,23 @@ export class IngredientService {
   // Get low stock ingredients
   static async getLowStockIngredients(): Promise<Ingredient[]> {
     try {
-      const { data, error } = await supabase
+      // Get ingredients with low stock using a simpler approach
+      const { data: allIngredients, error } = await supabase
         .from('ingredients')
         .select('*')
-        .lte('current_stock', supabase.raw('minimum_stock'))
         .order('current_stock', { ascending: true });
 
       if (error) {
-        console.error('Error fetching low stock ingredients:', error);
+        console.error('Error fetching ingredients:', error);
         throw error;
       }
 
-      return data || [];
+      // Filter low stock ingredients on the client side
+      const lowStockIngredients = (allIngredients || []).filter(
+        ingredient => ingredient.current_stock <= ingredient.minimum_stock
+      );
+
+      return lowStockIngredients;
     } catch (error) {
       console.error('Error in getLowStockIngredients:', error);
       throw error;
