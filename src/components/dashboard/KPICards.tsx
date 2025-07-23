@@ -24,7 +24,7 @@ export function KPICards() {
         <CardContent>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">$4,247</p>
+              <p className="text-3xl font-bold">UGX 4,247,000</p>
               <p className="text-xs opacity-80 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 +18% from yesterday
@@ -81,7 +81,7 @@ export function KPICards() {
         <CardContent>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">$42</p>
+              <p className="text-3xl font-bold">UGX 42,000</p>
               <p className="text-xs opacity-80 flex items-center gap-1">
                 <ArrowUp className="w-3 h-3" />
                 +8% this week

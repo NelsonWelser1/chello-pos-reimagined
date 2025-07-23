@@ -34,7 +34,7 @@ export default function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
           <div className="flex justify-between items-start">
             <h3 className="font-bold text-lg text-slate-800">{item.name}</h3>
             <Badge variant="secondary" className="bg-green-100 text-green-800 font-bold">
-              ${item.price.toFixed(2)}
+              UGX {Math.round(item.price).toLocaleString('en-UG')}
             </Badge>
           </div>
           <p className="text-sm text-slate-600">{item.description}</p>

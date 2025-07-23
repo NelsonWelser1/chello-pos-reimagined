@@ -3,7 +3,7 @@ import { ReceiptData } from "@/types/receipt";
 
 export class ReceiptFormatter {
   static formatCurrency(amount: number): string {
-    return `$${amount.toFixed(2)}`;
+    return `UGX ${amount.toLocaleString('en-UG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }
 
   static formatDateTime(timestamp: string): string {

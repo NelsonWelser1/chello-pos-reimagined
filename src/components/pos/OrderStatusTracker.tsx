@@ -93,7 +93,7 @@ export default function OrderStatusTracker() {
                     <span className="font-medium">Order #{order.id.slice(0, 8)}</span>
                   </div>
                   <span className="text-sm text-slate-600">
-                    ${order.total_amount.toFixed(2)}
+                    UGX {Math.round(order.total_amount).toLocaleString('en-UG')}
                   </span>
                 </div>
                 

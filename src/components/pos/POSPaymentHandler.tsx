@@ -195,16 +195,16 @@ export default function POSPaymentHandler({
         <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
           <div className="flex justify-between text-lg">
             <span>Subtotal:</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>UGX {Math.round(subtotal).toLocaleString('en-UG')}</span>
           </div>
           <div className="flex justify-between text-lg">
             <span>Tax (10%):</span>
-            <span>${taxAmount.toFixed(2)}</span>
+            <span>UGX {Math.round(taxAmount).toLocaleString('en-UG')}</span>
           </div>
           <div className="flex justify-between text-2xl font-bold border-t pt-2">
             <span>Total:</span>
             <Badge className="bg-green-500 text-white font-bold text-xl px-4 py-2">
-              ${total.toFixed(2)}
+              UGX {Math.round(total).toLocaleString('en-UG')}
             </Badge>
           </div>
         </div>

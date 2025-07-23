@@ -18,7 +18,7 @@ export default function CartItem({ item, onIncrease, onDecrease }: CartItemProps
     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
       <div className="flex-1">
         <h4 className="font-bold text-slate-800">{item.name}</h4>
-        <p className="text-sm text-slate-600">${item.price.toFixed(2)} each</p>
+        <p className="text-sm text-slate-600">UGX {Math.round(item.price).toLocaleString('en-UG')} each</p>
       </div>
       <div className="flex items-center gap-2">
         <Button

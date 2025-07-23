@@ -8,7 +8,7 @@ const liveOrders = [
   {
     id: "#1234",
     table: "Table 8",
-    amount: "$45.99",
+    amount: "UGX 45,990",
     status: "preparing",
     time: "12:34 PM",
     items: ["Margherita Pizza", "Caesar Salad"],
@@ -18,7 +18,7 @@ const liveOrders = [
   {
     id: "#1235",
     table: "Table 3",
-    amount: "$28.50",
+    amount: "UGX 28,500",
     status: "ready",
     time: "12:28 PM",
     items: ["Cappuccino", "Croissant"],
@@ -28,7 +28,7 @@ const liveOrders = [
   {
     id: "#1236",
     table: "Table 12",
-    amount: "$67.25",
+    amount: "UGX 67,250",
     status: "pending",
     time: "12:42 PM",
     items: ["Chocolate Cake", "Espresso"],
@@ -38,7 +38,7 @@ const liveOrders = [
   {
     id: "#1237",
     table: "Table 5",
-    amount: "$32.80",
+    amount: "UGX 32,800",
     status: "urgent",
     time: "12:15 PM",
     items: ["Grilled Chicken", "Fries"],

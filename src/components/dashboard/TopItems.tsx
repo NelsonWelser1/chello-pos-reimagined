@@ -4,11 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Star, TrendingUp } from "lucide-react";
 
 const topItems = [
-  { name: "Margherita Pizza", sales: 45, revenue: "$540", trend: "+12%" },
-  { name: "Caesar Salad", sales: 32, revenue: "$384", trend: "+8%" },
-  { name: "Cappuccino", sales: 67, revenue: "$201", trend: "+15%" },
-  { name: "Grilled Chicken", sales: 28, revenue: "$420", trend: "+5%" },
-  { name: "Chocolate Cake", sales: 19, revenue: "$152", trend: "+3%" },
+  { name: "Margherita Pizza", sales: 45, revenue: "UGX 540,000", trend: "+12%" },
+  { name: "Caesar Salad", sales: 32, revenue: "UGX 384,000", trend: "+8%" },
+  { name: "Cappuccino", sales: 67, revenue: "UGX 201,000", trend: "+15%" },
+  { name: "Grilled Chicken", sales: 28, revenue: "UGX 420,000", trend: "+5%" },
+  { name: "Chocolate Cake", sales: 19, revenue: "UGX 152,000", trend: "+3%" },
 ];
 
 export function TopItems() {

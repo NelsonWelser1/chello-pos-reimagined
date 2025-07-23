@@ -30,17 +30,17 @@ export default function OrderSummaryCard({
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
           <span className="font-medium">Subtotal:</span>
-          <span className="font-bold">${subtotal.toFixed(2)}</span>
+          <span className="font-bold">UGX {Math.round(subtotal).toLocaleString('en-UG')}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium">Tax (10%):</span>
-          <span className="font-bold">${taxAmount.toFixed(2)}</span>
+          <span className="font-bold">UGX {Math.round(taxAmount).toLocaleString('en-UG')}</span>
         </div>
         <div className="border-t pt-4">
           <div className="flex justify-between items-center text-lg">
             <span className="font-black">Total:</span>
             <Badge className="bg-blue-500 text-white font-black text-lg px-4 py-2">
-              ${finalTotal.toFixed(2)}
+              UGX {Math.round(finalTotal).toLocaleString('en-UG')}
             </Badge>
           </div>
         </div>
