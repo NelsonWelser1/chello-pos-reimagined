@@ -209,13 +209,17 @@ export class StockService {
   // Stock Alerts
   static async getStockAlerts(): Promise<any[]> {
     try {
-      // Get ingredients with low stock
-      const { data: lowStockIngredients, error: ingredientsError } = await supabase
+      // Get all ingredients and filter in JavaScript to avoid PostgreSQL comparison issues
+      const { data: allIngredients, error: ingredientsError } = await supabase
         .from('ingredients')
-        .select('*')
-        .or('current_stock.lte.minimum_stock,current_stock.eq.0');
+        .select('*');
 
       if (ingredientsError) throw ingredientsError;
+
+      // Filter low stock ingredients in JavaScript
+      const lowStockIngredients = allIngredients?.filter(ingredient => 
+        ingredient.current_stock <= ingredient.minimum_stock || ingredient.current_stock === 0
+      ) || [];
 
       // Get menu items with low stock
       const { data: lowStockMenuItems, error: menuItemsError } = await supabase

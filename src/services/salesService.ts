@@ -164,5 +164,107 @@ export const salesService = {
       console.error('Error updating target progress:', error);
       return false;
     }
+  },
+
+  // Export sales data
+  async exportSalesData(startDate: string, endDate: string, format: 'csv' | 'json' = 'csv'): Promise<string> {
+    try {
+      const { data: transactions, error } = await supabase
+        .from('sales_transactions')
+        .select(`
+          *,
+          orders (
+            *,
+            order_items (
+              *,
+              menu_items (name, category)
+            ),
+            staff (name),
+            customers (name, email)
+          )
+        `)
+        .gte('transaction_date', startDate)
+        .lte('transaction_date', endDate)
+        .order('transaction_date', { ascending: false });
+
+      if (error) throw error;
+
+      if (format === 'json') {
+        return JSON.stringify(transactions, null, 2);
+      }
+
+      // CSV format
+      const headers = [
+        'Transaction ID',
+        'Date',
+        'Staff',
+        'Customer', 
+        'Payment Method',
+        'Subtotal (UGX)',
+        'Tax (UGX)',
+        'Total (UGX)',
+        'Items',
+        'Status'
+      ];
+
+      const rows = transactions?.map(transaction => [
+        transaction.transaction_id,
+        new Date(transaction.transaction_date).toLocaleDateString(),
+        transaction.orders?.staff?.name || 'N/A',
+        transaction.orders?.customers?.name || 'Walk-in',
+        transaction.orders?.payment_method || 'N/A',
+        Math.round(transaction.subtotal).toLocaleString('en-UG'),
+        Math.round(transaction.tax_amount).toLocaleString('en-UG'), 
+        Math.round(transaction.total_amount).toLocaleString('en-UG'),
+        transaction.orders?.order_items?.map(item => 
+          `${item.menu_items?.name || 'Unknown'} (${item.quantity})`
+        ).join(', ') || 'N/A',
+        transaction.payment_status
+      ]) || [];
+
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(cell => `"${cell}"`).join(','))
+        .join('\n');
+
+      return csvContent;
+    } catch (error) {
+      console.error('Error exporting sales data:', error);
+      throw error;
+    }
+  },
+
+  // Get sales targets
+  async getSalesTargets(): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('sales_targets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching sales targets:', error);
+      return [];
+    }
+  },
+
+  // Create sales target
+  async createSalesTarget(target: any): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('sales_targets')
+        .insert([{
+          ...target,
+          current_amount: 0,
+          achieved: false
+        }]);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error creating sales target:', error);
+      return false;
+    }
   }
 };
