@@ -9,9 +9,10 @@ import { getStatusColor, getPriorityColor, getElapsedTime } from "@/utils/kitche
 interface KitchenOrderCardProps {
   order: KitchenOrder;
   onUpdateStatus: (orderId: string, status: KitchenOrder['status']) => void;
+  compact?: boolean;
 }
 
-export default function KitchenOrderCard({ order, onUpdateStatus }: KitchenOrderCardProps) {
+export default function KitchenOrderCard({ order, onUpdateStatus, compact = false }: KitchenOrderCardProps) {
   return (
     <Card className={`shadow-lg border-2 ${getPriorityColor(order.priority)} hover:shadow-xl transition-all duration-300`}>
       <CardHeader className="pb-3">
@@ -38,66 +39,70 @@ export default function KitchenOrderCard({ order, onUpdateStatus }: KitchenOrder
         {/* Order Items */}
         <div className="space-y-2">
           {order.items.map(item => (
-            <div key={item.id} className="bg-slate-50 p-3 rounded-lg">
+            <div key={item.id} className={`bg-slate-50 rounded-lg ${compact ? 'p-2' : 'p-3'}`}>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <p className="font-bold text-slate-800">
-                    {item.quantity}x {item.name}
+                  <p className={`font-bold text-slate-800 ${compact ? 'text-sm' : ''}`}>
+                    {item.quantity}x {compact ? item.name.slice(0, 20) + (item.name.length > 20 ? '...' : '') : item.name}
                   </p>
-                  {item.special_instructions && (
+                  {!compact && item.special_instructions && (
                     <p className="text-sm text-red-600 font-medium mt-1">
                       Note: {item.special_instructions}
                     </p>
                   )}
                 </div>
-                <Badge variant="secondary" className="font-bold">
-                  {item.prep_time}m
-                </Badge>
+                {!compact && (
+                  <Badge variant="secondary" className="font-bold">
+                    {item.prep_time}m
+                  </Badge>
+                )}
               </div>
             </div>
           ))}
         </div>
 
         {/* Timing Info */}
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-slate-500" />
-            <span className="font-medium">
-              Elapsed: {getElapsedTime(order.created_at)}m
-            </span>
+        {!compact && (
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-slate-500" />
+              <span className="font-medium">
+                Elapsed: {getElapsedTime(order.created_at)}m
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Timer className="w-4 h-4 text-slate-500" />
+              <span className="font-medium">
+                Est: {order.estimated_time}m
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Timer className="w-4 h-4 text-slate-500" />
-            <span className="font-medium">
-              Est: {order.estimated_time}m
-            </span>
-          </div>
-        </div>
+        )}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
+        <div className={`flex gap-2 pt-2 ${compact ? 'flex-col' : ''}`}>
           {order.status === 'pending' && (
             <Button
               onClick={() => onUpdateStatus(order.id, 'preparing')}
-              className="flex-1 bg-blue-500 hover:bg-blue-600 font-bold"
+              className={`${compact ? 'w-full text-xs py-1' : 'flex-1'} bg-blue-500 hover:bg-blue-600 font-bold`}
             >
-              Start Preparing
+              {compact ? 'Start' : 'Start Preparing'}
             </Button>
           )}
           {order.status === 'preparing' && (
             <Button
               onClick={() => onUpdateStatus(order.id, 'ready')}
-              className="flex-1 bg-green-500 hover:bg-green-600 font-bold"
+              className={`${compact ? 'w-full text-xs py-1' : 'flex-1'} bg-green-500 hover:bg-green-600 font-bold`}
             >
-              Mark Ready
+              {compact ? 'Ready' : 'Mark Ready'}
             </Button>
           )}
           {order.status === 'ready' && (
             <Button
               onClick={() => onUpdateStatus(order.id, 'served')}
-              className="flex-1 bg-gray-500 hover:bg-gray-600 font-bold"
+              className={`${compact ? 'w-full text-xs py-1' : 'flex-1'} bg-gray-500 hover:bg-gray-600 font-bold`}
             >
-              Mark Served
+              {compact ? 'Served' : 'Mark Served'}
             </Button>
           )}
         </div>

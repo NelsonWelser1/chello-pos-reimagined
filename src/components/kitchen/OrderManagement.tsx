@@ -1,7 +1,9 @@
 
-import { ChefHat } from "lucide-react";
+import { useState } from "react";
+import { ChefHat, Grid3X3, Grid2X2, LayoutGrid } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { KitchenOrder } from "@/types/kitchen";
 import KitchenOrderCard from "./KitchenOrderCard";
 
@@ -20,6 +22,8 @@ interface OrderManagementProps {
   onUpdateOrderStatus: (orderId: string, status: KitchenOrder['status']) => void;
 }
 
+type DisplayMode = 'compact' | 'standard' | 'large';
+
 export default function OrderManagement({ 
   activeTab, 
   onTabChange, 
@@ -27,10 +31,42 @@ export default function OrderManagement({
   filteredOrders, 
   onUpdateOrderStatus 
 }: OrderManagementProps) {
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('standard');
+
+  const getGridClasses = () => {
+    switch (displayMode) {
+      case 'compact':
+        return 'grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4';
+      case 'standard':
+        return 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6';
+      case 'large':
+        return 'grid grid-cols-1 lg:grid-cols-2 gap-8';
+      default:
+        return 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6';
+    }
+  };
   return (
     <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-black text-slate-800">Order Queue Management</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-2xl font-black text-slate-800">Order Queue Management</CardTitle>
+          <ToggleGroup 
+            type="single" 
+            value={displayMode} 
+            onValueChange={(value: DisplayMode) => value && setDisplayMode(value)}
+            className="border rounded-lg p-1"
+          >
+            <ToggleGroupItem value="compact" aria-label="Compact view" size="sm">
+              <Grid3X3 className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="standard" aria-label="Standard view" size="sm">
+              <Grid2X2 className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="large" aria-label="Large view" size="sm">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={onTabChange}>
@@ -50,12 +86,13 @@ export default function OrderManagement({
           </TabsList>
 
           <TabsContent value={activeTab}>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className={getGridClasses()}>
               {filteredOrders.map(order => (
                 <KitchenOrderCard
                   key={order.id}
                   order={order}
                   onUpdateStatus={onUpdateOrderStatus}
+                  compact={displayMode === 'compact'}
                 />
               ))}
             </div>
