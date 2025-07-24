@@ -90,7 +90,7 @@ export function ExportDialog({ transactions, trigger }: ExportDialogProps) {
             </div>
             <div className="text-sm text-blue-700">
               <p>{exportSummary.totalTransactions} transactions available</p>
-              <p>Total value: ${exportSummary.totalAmount.toFixed(2)}</p>
+              <p>Total value: UGX {Math.round(exportSummary.totalAmount).toLocaleString('en-UG')}</p>
               {exportSummary.dateRange && (
                 <p>Date range: {exportSummary.dateRange.from} - {exportSummary.dateRange.to}</p>
               )}

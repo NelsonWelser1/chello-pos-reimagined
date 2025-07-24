@@ -71,7 +71,7 @@ export function SalesDashboard() {
   const kpiData = [
     {
       title: "Today's Revenue",
-      value: `$${metrics.todayRevenue.toFixed(2)}`,
+      value: `UGX ${Math.round(metrics.todayRevenue).toLocaleString('en-UG')}`,
       change: `${metrics.dailyGrowth > 0 ? '+' : ''}${metrics.dailyGrowth.toFixed(1)}%`,
       trend: metrics.dailyGrowth >= 0 ? "up" : "down",
       icon: DollarSign,
@@ -87,7 +87,7 @@ export function SalesDashboard() {
     },
     {
       title: "Average Order",
-      value: `$${metrics.averageOrderValue.toFixed(2)}`,
+      value: `UGX ${Math.round(metrics.averageOrderValue).toLocaleString('en-UG')}`,
       change: `${metrics.weeklyGrowth > 0 ? '+' : ''}${metrics.weeklyGrowth.toFixed(1)}%`,
       trend: metrics.weeklyGrowth >= 0 ? "up" : "down",
       icon: Target,

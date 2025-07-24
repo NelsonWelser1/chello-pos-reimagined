@@ -176,7 +176,7 @@ export function SalesTransactions() {
                   </TableCell>
                   <TableCell>
                     <span className="text-xl font-black text-green-600">
-                      ${transaction.total_amount.toFixed(2)}
+                      UGX {Math.round(transaction.total_amount).toLocaleString('en-UG')}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -211,7 +211,7 @@ export function SalesTransactions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 font-semibold">Total Sales</p>
-                <p className="text-3xl font-black">${summaryMetrics.totalSales.toFixed(2)}</p>
+                <p className="text-3xl font-black">UGX {Math.round(summaryMetrics.totalSales).toLocaleString('en-UG')}</p>
               </div>
               <CheckCircle className="w-10 h-10 text-green-200" />
             </div>
@@ -247,7 +247,7 @@ export function SalesTransactions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 font-semibold">Avg. Order</p>
-                <p className="text-3xl font-black">${summaryMetrics.averageOrder.toFixed(2)}</p>
+                <p className="text-3xl font-black">UGX {Math.round(summaryMetrics.averageOrder).toLocaleString('en-UG')}</p>
               </div>
               <DollarSign className="w-10 h-10 text-purple-200" />
             </div>

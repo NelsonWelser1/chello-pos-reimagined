@@ -30,17 +30,17 @@ export default function PaymentSection({
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center text-lg">
           <span className="font-bold">Subtotal:</span>
-          <span className="font-black">${totalAmount.toFixed(2)}</span>
+          <span className="font-black">UGX {Math.round(totalAmount).toLocaleString('en-UG')}</span>
         </div>
         <div className="flex justify-between items-center text-lg">
           <span className="font-bold">Tax (8.5%):</span>
-          <span className="font-black">${taxAmount.toFixed(2)}</span>
+          <span className="font-black">UGX {Math.round(taxAmount).toLocaleString('en-UG')}</span>
         </div>
         <Separator />
         <div className="flex justify-between items-center text-xl">
           <span className="font-black">Total:</span>
           <span className="font-black text-2xl text-green-600">
-            ${finalTotal.toFixed(2)}
+            UGX {Math.round(finalTotal).toLocaleString('en-UG')}
           </span>
         </div>
 

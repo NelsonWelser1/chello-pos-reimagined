@@ -113,7 +113,7 @@ export function SalesReports() {
       title: "Daily Sales Summary",
       description: "Complete breakdown of today's sales performance",
       period: "Today",
-      revenue: `$${reportMetrics.dailyRevenue.toFixed(2)}`,
+      revenue: `UGX ${Math.round(reportMetrics.dailyRevenue).toLocaleString('en-UG')}`,
       orders: Math.floor(reportMetrics.totalOrders / 30), // Approximate daily orders
       icon: DollarSign,
       gradient: "from-green-500 to-emerald-600"
@@ -122,7 +122,7 @@ export function SalesReports() {
       title: "Weekly Performance",
       description: "7-day sales trends and customer analytics",
       period: "This Week",
-      revenue: `$${reportMetrics.weeklyRevenue.toFixed(2)}`,
+      revenue: `UGX ${Math.round(reportMetrics.weeklyRevenue).toLocaleString('en-UG')}`,
       orders: Math.floor(reportMetrics.totalOrders / 4), // Approximate weekly orders
       icon: TrendingUp,
       gradient: "from-blue-500 to-cyan-600"
@@ -131,7 +131,7 @@ export function SalesReports() {
       title: "Monthly Analysis",
       description: "Comprehensive monthly sales and inventory report",
       period: "This Month",
-      revenue: `$${reportMetrics.monthlyRevenue.toFixed(2)}`,
+      revenue: `UGX ${Math.round(reportMetrics.monthlyRevenue).toLocaleString('en-UG')}`,
       orders: reportMetrics.totalOrders,
       icon: CalendarIcon,
       gradient: "from-purple-500 to-violet-600"
