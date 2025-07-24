@@ -17,7 +17,7 @@ const initialFormData: NewModifier = {
   category: 'Add-ons',
   isActive: true,
   applicableItems: [],
-  modifierType: 'addon',
+  modifierType: 'single',
   maxQuantity: 1,
   isRequired: false,
   sortOrder: 0

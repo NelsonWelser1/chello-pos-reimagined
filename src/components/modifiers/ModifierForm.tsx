@@ -105,12 +105,10 @@ export default function ModifierForm({
               <select
                 id="modifierType"
                 value={formData.modifierType}
-                onChange={(e) => setFormData(prev => ({ ...prev, modifierType: e.target.value as 'addon' | 'substitute' | 'removal' }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, modifierType: 'single' }))}
                 className="mt-1 w-full h-10 px-3 rounded-md border border-input bg-background"
               >
-                <option value="addon">Add-on</option>
-                <option value="substitute">Substitute</option>
-                <option value="removal">Removal</option>
+                <option value="single">Single Modifier</option>
               </select>
             </div>
             

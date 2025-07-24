@@ -14,7 +14,7 @@ export interface Modifier {
     category: string;
     isActive: boolean;
     applicableItems: string[];
-    modifierType: 'addon' | 'substitute' | 'removal';
+    modifierType: 'single';
     maxQuantity: number;
     isRequired: boolean;
     sortOrder: number;
@@ -33,7 +33,7 @@ const mapDbToAppModifier = (dbModifier: DbModifier): Modifier => ({
     category: dbModifier.category,
     isActive: dbModifier.is_active ?? true,
     applicableItems: dbModifier.applicable_items ?? [],
-    modifierType: dbModifier.modifier_type as 'addon' | 'substitute' | 'removal',
+    modifierType: 'single',
     maxQuantity: dbModifier.max_quantity ?? 1,
     isRequired: dbModifier.is_required ?? false,
     sortOrder: dbModifier.sort_order ?? 0,
