@@ -28,6 +28,8 @@ import {
   Calendar,
   Target
 } from "lucide-react";
+import { toast } from "sonner";
+import { SalesTargetManager } from "./SalesTargetManager";
 
 const weeklyData = [
   { day: 'Mon', sales: 4200, orders: 95, customers: 78 },
@@ -271,19 +273,32 @@ export function SalesAnalytics() {
         </Card>
       </div>
 
+      {/* Sales Targets Section */}
+      <SalesTargetManager />
+
       {/* Action Buttons */}
       <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4">
-            <Button className="flex-1 h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-lg font-bold">
-              <Target className="w-6 h-6 mr-3" />
-              Set Sales Targets
-            </Button>
-            <Button className="flex-1 h-16 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-lg font-bold">
+            <Button 
+              className="flex-1 h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-lg font-bold"
+              onClick={() => {
+                const element = document.querySelector('[role="tablist"] button[value="reports"]') as HTMLElement;
+                if (element) element.click();
+                toast.info("Navigate to Reports tab for forecasting analysis");
+              }}
+            >
               <TrendingUp className="w-6 h-6 mr-3" />
               Forecast Analysis
             </Button>
-            <Button className="flex-1 h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-lg font-bold">
+            <Button 
+              className="flex-1 h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-lg font-bold"
+              onClick={() => {
+                const element = document.querySelector('[role="tablist"] button[value="reports"]') as HTMLElement;
+                if (element) element.click();
+                toast.info("Navigate to Reports tab for custom reports");
+              }}
+            >
               <BarChart3 className="w-6 h-6 mr-3" />
               Custom Reports
             </Button>

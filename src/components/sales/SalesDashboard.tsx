@@ -246,15 +246,27 @@ export function SalesDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button className="h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-lg font-bold">
+            <Button 
+              className="h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-lg font-bold"
+              onClick={() => window.open('/orders', '_blank')}
+            >
               <Eye className="w-6 h-6 mr-3" />
               View Live Orders
             </Button>
-            <Button className="h-16 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-lg font-bold">
+            <Button 
+              className="h-16 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-lg font-bold"
+              onClick={() => window.open('/pos', '_blank')}
+            >
               <DollarSign className="w-6 h-6 mr-3" />
               Process Payment
             </Button>
-            <Button className="h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-lg font-bold">
+            <Button 
+              className="h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-lg font-bold"
+              onClick={() => {
+                const element = document.querySelector('[role="tablist"] button[value="reports"]') as HTMLElement;
+                if (element) element.click();
+              }}
+            >
               <TrendingUp className="w-6 h-6 mr-3" />
               Generate Report
             </Button>
