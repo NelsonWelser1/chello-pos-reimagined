@@ -135,10 +135,10 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
               
               <TableCell>
                 {member.hourly_rate ? (
-                  <div className="flex items-center gap-2 text-slate-700 font-medium">
-                    <DollarSign className="w-4 h-4 text-green-500" />
-                    ${member.hourly_rate}/hr
-                  </div>
+                <div className="flex items-center gap-2 text-slate-700 font-medium">
+                  <DollarSign className="w-4 h-4 text-green-500" />
+                  UGX {member.hourly_rate}/hr
+                </div>
                 ) : (
                   <span className="text-slate-400">Not set</span>
                 )}
