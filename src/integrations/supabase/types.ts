@@ -1584,6 +1584,33 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       receipts: {
         Row: {
           created_at: string
@@ -2115,6 +2142,10 @@ export type Database = {
     }
     Functions: {
       generate_pickup_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Items from "./pages/Items";
 import Categories from "./pages/Categories";
@@ -25,6 +26,7 @@ import ServiceTables from "./pages/ServiceTables";
 import PickupPoints from "./pages/PickupPoints";
 import Backup from "./pages/Backup";
 import ImportsExports from "./pages/ImportsExports";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,27 +38,28 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/items" element={<Items />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/ingredients" element={<Ingredients />} />
-          <Route path="/modifiers" element={<Modifiers />} />
-          <Route path="/staff" element={<Staff />} />
-          <Route path="/customers" element={<Customers />} />
-          <Route path="/pos" element={<POS />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/kitchen" element={<Kitchen />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/expense-types" element={<ExpenseTypes />} />
-          <Route path="/expenses" element={<Expenses />} />
-          <Route path="/tax-reports" element={<TaxReports />} />
-          <Route path="/overall-reports" element={<OverallReports />} />
-          <Route path="/stock-alert" element={<StockAlert />} />
-          <Route path="/payment-methods" element={<PaymentMethods />} />
-          <Route path="/service-tables" element={<ServiceTables />} />
-          <Route path="/pickup-points" element={<PickupPoints />} />
-          <Route path="/backup" element={<Backup />} />
-          <Route path="/imports-exports" element={<ImportsExports />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/items" element={<ProtectedRoute><Items /></ProtectedRoute>} />
+          <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
+          <Route path="/ingredients" element={<ProtectedRoute><Ingredients /></ProtectedRoute>} />
+          <Route path="/modifiers" element={<ProtectedRoute><Modifiers /></ProtectedRoute>} />
+          <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
+          <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
+          <Route path="/pos" element={<ProtectedRoute><POS /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/kitchen" element={<ProtectedRoute><Kitchen /></ProtectedRoute>} />
+          <Route path="/sales" element={<ProtectedRoute><Sales /></ProtectedRoute>} />
+          <Route path="/expense-types" element={<ProtectedRoute><ExpenseTypes /></ProtectedRoute>} />
+          <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+          <Route path="/tax-reports" element={<ProtectedRoute><TaxReports /></ProtectedRoute>} />
+          <Route path="/overall-reports" element={<ProtectedRoute><OverallReports /></ProtectedRoute>} />
+          <Route path="/stock-alert" element={<ProtectedRoute><StockAlert /></ProtectedRoute>} />
+          <Route path="/payment-methods" element={<ProtectedRoute><PaymentMethods /></ProtectedRoute>} />
+          <Route path="/service-tables" element={<ProtectedRoute><ServiceTables /></ProtectedRoute>} />
+          <Route path="/pickup-points" element={<ProtectedRoute><PickupPoints /></ProtectedRoute>} />
+          <Route path="/backup" element={<ProtectedRoute><Backup /></ProtectedRoute>} />
+          <Route path="/imports-exports" element={<ProtectedRoute><ImportsExports /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
