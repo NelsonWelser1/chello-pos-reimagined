@@ -83,7 +83,7 @@ export default function BillingHandler({ order, onBillGenerated }: BillingHandle
         });
 
         setIsBillGenerated(true);
-        onBillGenerated();
+        setTimeout(() => onBillGenerated(), 100); // Small delay to ensure state update
       } else {
         throw new Error('Failed to generate receipt');
       }
