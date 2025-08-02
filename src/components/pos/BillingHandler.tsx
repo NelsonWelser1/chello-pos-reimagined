@@ -42,10 +42,10 @@ export default function BillingHandler({ order, onBillGenerated }: BillingHandle
         throw new Error('Failed to fetch order details');
       }
 
-      // Update order status to completed now that it's being billed
+      // Update order status to served now that it's being billed
       const { error: updateError } = await supabase
         .from('orders')
-        .update({ status: 'completed' })
+        .update({ status: 'served' })
         .eq('id', order.order_id);
 
       if (updateError) {
