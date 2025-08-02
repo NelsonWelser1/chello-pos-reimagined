@@ -9,7 +9,7 @@ import MenuGrid from "./MenuGrid";
 import CartSummary from "./CartSummary";
 import StaffSelector from "./StaffSelector";
 import TableSelector from "./TableSelector";
-import POSPaymentHandler from "./POSPaymentHandler";
+import OrderHandler from "./OrderHandler";
 import KitchenMonitor from "./KitchenMonitor";
 import OrderStatusTracker from "./OrderStatusTracker";
 import StockMonitor from "./StockMonitor";
@@ -18,7 +18,7 @@ export default function POSContainer() {
   const { items: menuItems, loading: menuLoading, refetch: refetchMenuItems } = useMenuItems();
   const { categories: categoryObjects, loading: categoriesLoading } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('card');
+  
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [selectedTableSession, setSelectedTableSession] = useState<string | null>(null);
   
@@ -114,18 +114,17 @@ export default function POSContainer() {
             onItemDecrease={handleItemDecrease}
           />
 
-          {/* Payment Section */}
+          {/* Order Section */}
           {cart.length > 0 && (
-            <POSPaymentHandler
+            <OrderHandler
               cart={cart}
               menuItems={menuItems}
               totalAmount={getTotalAmount()}
-              paymentMethod={paymentMethod}
               selectedStaffId={selectedStaffId}
               selectedTableSession={selectedTableSession}
-              onPaymentMethodChange={setPaymentMethod}
-              onClearCart={clearCart}
-              onCartClear={() => setCart([])}
+              onItemIncrease={(id) => handleItemIncrease(id, menuItems)}
+              onItemDecrease={handleItemDecrease}
+              onNewOrder={() => setCart([])}
             />
           )}
         </div>
