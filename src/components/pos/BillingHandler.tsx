@@ -16,6 +16,7 @@ interface BillingHandlerProps {
 
 export default function BillingHandler({ order, onBillGenerated }: BillingHandlerProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isBillGenerated, setIsBillGenerated] = useState(false);
   const { toast } = useToast();
 
   const handleGenerateBill = async () => {
@@ -81,6 +82,7 @@ export default function BillingHandler({ order, onBillGenerated }: BillingHandle
           description: `Final bill for ${order.order_number} has been generated${printed ? ' and printed' : ''}.`,
         });
 
+        setIsBillGenerated(true);
         onBillGenerated();
       } else {
         throw new Error('Failed to generate receipt');
@@ -97,6 +99,10 @@ export default function BillingHandler({ order, onBillGenerated }: BillingHandle
       setIsProcessing(false);
     }
   };
+
+  if (isBillGenerated) {
+    return null;
+  }
 
   return (
     <Card className="bg-green-50 border-green-200">
