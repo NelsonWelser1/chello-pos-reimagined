@@ -1,8 +1,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStaff } from "@/hooks/useStaff";
+import { useAuth } from "@/hooks/useAuth";
 import { User } from "lucide-react";
+import { useEffect } from "react";
 
 interface StaffSelectorProps {
   selectedStaffId: string | null;
@@ -11,21 +12,19 @@ interface StaffSelectorProps {
 
 export default function StaffSelector({ selectedStaffId, onStaffSelect }: StaffSelectorProps) {
   const { staff } = useStaff();
+  const { user } = useAuth();
 
-  const handleStaffSelect = (staffId: string) => {
-    if (staffId === "none") {
-      onStaffSelect(null);
-    } else {
-      onStaffSelect(staffId);
+  // Auto-assign logged-in user as staff member
+  useEffect(() => {
+    if (user && staff.length > 0) {
+      const currentStaff = staff.find(s => s.email === user.email);
+      if (currentStaff && (!selectedStaffId || selectedStaffId !== currentStaff.id)) {
+        onStaffSelect(currentStaff.id);
+      }
     }
-  };
+  }, [user, staff, selectedStaffId, onStaffSelect]);
 
-  const getDisplayValue = () => {
-    if (!selectedStaffId) return "";
-    
-    const selectedStaff = staff.find(s => s.id === selectedStaffId);
-    return selectedStaff ? `${selectedStaff.name} (${selectedStaff.role})` : "";
-  };
+  const currentStaff = selectedStaffId ? staff.find(s => s.id === selectedStaffId) : null;
 
   return (
     <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-purple-50">
@@ -36,45 +35,19 @@ export default function StaffSelector({ selectedStaffId, onStaffSelect }: StaffS
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Select 
-          value={selectedStaffId || "none"} 
-          onValueChange={handleStaffSelect}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select staff member">
-              {getDisplayValue() || "Select staff member"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                No Staff Selected
-              </div>
-            </SelectItem>
-            {staff
-              .filter(member => member && member.id && member.name && member.is_active) // Filter out invalid staff
-              .map((member) => (
-                <SelectItem key={member.id} value={member.id}>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    <span>{member.name} ({member.role})</span>
-                  </div>
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-        
-        {selectedStaffId && (
-          <div className="mt-3 p-2 bg-purple-50 rounded-lg">
-            <div className="text-sm text-purple-800">
-              {(() => {
-                const member = staff.find(s => s.id === selectedStaffId);
-                return member ? `Selected: ${member.name} (${member.role})` : 'Staff member selected';
-              })()}
-            </div>
+        <div className="w-full p-3 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4 text-purple-600" />
+            <span className="font-medium">
+              {currentStaff ? `${currentStaff.name} (${currentStaff.role})` : 'Loading...'}
+            </span>
           </div>
-        )}
+          {user && (
+            <div className="mt-1 text-xs text-gray-500">
+              Auto-assigned from logged-in account
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
