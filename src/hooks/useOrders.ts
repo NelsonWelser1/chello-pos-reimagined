@@ -110,6 +110,52 @@ export function useOrders() {
     }
   };
 
+  const updateOrder = async (orderId: string, updates: Partial<Order>): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from('orders' as any)
+        .update(updates)
+        .eq('id', orderId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating order:', error);
+        return false;
+      }
+
+      if (data) {
+        const updatedOrder = data as unknown as Order;
+        setOrders(prev => prev.map(order => order.id === orderId ? updatedOrder : order));
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error updating order:', error);
+      return false;
+    }
+  };
+
+  const fetchOrderItems = async (orderId: string): Promise<OrderItem[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('order_items' as any)
+        .select('*')
+        .eq('order_id', orderId);
+
+      if (error) {
+        console.error('Error fetching order items:', error);
+        return [];
+      }
+
+      return (data as unknown as OrderItem[]) || [];
+    } catch (error) {
+      console.error('Error fetching order items:', error);
+      return [];
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -119,6 +165,8 @@ export function useOrders() {
     loading,
     createOrder,
     createOrderItems,
+    updateOrder,
+    fetchOrderItems,
     refetch: fetchOrders
   };
 }

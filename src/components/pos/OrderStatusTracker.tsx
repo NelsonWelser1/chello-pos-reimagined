@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useOrders } from "@/hooks/useOrders";
 import { useKitchenOrders } from "@/hooks/useKitchenOrders";
 import { useToast } from "@/hooks/use-toast";
+import OrderManagement from "./OrderManagement";
 
 export default function OrderStatusTracker() {
   const { orders, refetch: refetchOrders } = useOrders();
@@ -97,20 +98,29 @@ export default function OrderStatusTracker() {
                   </span>
                 </div>
                 
-                <div className="text-sm text-slate-600 mb-2">
+                <div className="text-sm text-slate-600 mb-3">
                   Payment: {order.payment_method.toUpperCase()} • Table: {order.table_number || 'N/A'}
                 </div>
                 
-                {status === 'ready' && kitchenOrder && (
-                  <Button
-                    onClick={() => handleMarkAsServed(kitchenOrder)}
-                    size="sm"
-                    className="w-full bg-green-600 hover:bg-green-700"
-                  >
-                    <Truck className="w-4 h-4 mr-2" />
-                    Mark as Served
-                  </Button>
-                )}
+                {/* Order Management Actions */}
+                <div className="space-y-2">
+                  <OrderManagement 
+                    order={order} 
+                    kitchenStatus={status}
+                    onOrderUpdated={refetchOrders}
+                  />
+                  
+                  {status === 'ready' && kitchenOrder && (
+                    <Button
+                      onClick={() => handleMarkAsServed(kitchenOrder)}
+                      size="sm"
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      <Truck className="w-4 h-4 mr-2" />
+                      Mark as Served
+                    </Button>
+                  )}
+                </div>
               </div>
             );
           })
