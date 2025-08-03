@@ -72,15 +72,7 @@ export default function POSContainer() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Kitchen Monitor Section */}
-      <KitchenMonitor />
-      
-      {/* Order & Stock Status Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <OrderStatusTracker />
-        <StockMonitor />
-      </div>
-      
+      {/* Main POS Interface - Menu and Cart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Menu Section */}
         <div className="lg:col-span-2 space-y-6">
@@ -128,6 +120,15 @@ export default function POSContainer() {
             />
           )}
         </div>
+      </div>
+      
+      {/* Kitchen Monitor Section */}
+      <KitchenMonitor />
+      
+      {/* Order & Stock Status Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <OrderStatusTracker />
+        <StockMonitor />
       </div>
     </div>
   );
