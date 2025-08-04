@@ -1,11 +1,11 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Phone, Mail, DollarSign, Shield, User } from "lucide-react";
+import { Edit, Trash2, Phone, Mail, DollarSign, Shield, User, UserX, Crown, ChefHat } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { toast } from "sonner";
 
 interface StaffTableProps {
@@ -17,21 +17,28 @@ interface StaffTableProps {
 
 export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { deleteUser, isDeletingUser, permissions } = useUserPermissions();
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this staff member?")) return;
+  const handleDelete = async (staffMember: any) => {
+    if (!confirm(`Are you sure you want to delete ${staffMember.name}? This will also delete their user account and cannot be undone.`)) return;
     
-    setDeletingId(id);
+    setDeletingId(staffMember.id);
     try {
-      const { error } = await supabase
-        .from('staff')
-        .delete()
-        .eq('id', id);
+      if (staffMember.auth_user_id) {
+        // Delete auth user (cascades to staff and permissions)
+        deleteUser(staffMember.auth_user_id);
+      } else {
+        // Delete only staff record if no auth user
+        const { error } = await supabase
+          .from('staff')
+          .delete()
+          .eq('id', staffMember.id);
 
-      if (error) throw error;
-      
-      toast.success("Staff member deleted successfully");
-      onRefresh();
+        if (error) throw error;
+        
+        toast.success("Staff member deleted successfully");
+        onRefresh();
+      }
     } catch (error) {
       console.error('Error deleting staff:', error);
       toast.error("Failed to delete staff member");
@@ -42,8 +49,9 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'Admin': return <Shield className="w-4 h-4" />;
-      case 'Manager': return <User className="w-4 h-4" />;
+      case 'Admin': return <Crown className="w-4 h-4" />;
+      case 'Manager': return <Shield className="w-4 h-4" />;
+      case 'Chef': return <ChefHat className="w-4 h-4" />;
       default: return <User className="w-4 h-4" />;
     }
   };
@@ -57,6 +65,30 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
       case 'Cashier': return 'bg-purple-100 text-purple-700 border-purple-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
+  };
+
+  const getPermissionsBadge = (staffMember: any) => {
+    const userPermission = permissions.find(p => p.staff_id === staffMember.id);
+    if (!userPermission) return (
+      <Badge variant="outline" className="text-xs">
+        No Permissions
+      </Badge>
+    );
+
+    const accessLevel = userPermission.can_manage_permissions ? 'Full Admin' :
+                       userPermission.can_create_users ? 'User Manager' :
+                       userPermission.system_access ? 'System Access' : 'Limited Access';
+
+    const variant = userPermission.can_manage_permissions ? 'destructive' :
+                   userPermission.can_create_users ? 'default' :
+                   userPermission.system_access ? 'secondary' : 'outline';
+
+    return (
+      <Badge variant={variant} className="flex items-center gap-1 text-xs">
+        <Shield className="w-3 h-3" />
+        {accessLevel}
+      </Badge>
+    );
   };
 
   if (isLoading) {
@@ -90,6 +122,7 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
           <TableRow className="bg-slate-50">
             <TableHead className="font-bold text-slate-700 py-4">Staff Member</TableHead>
             <TableHead className="font-bold text-slate-700">Role</TableHead>
+            <TableHead className="font-bold text-slate-700">Permissions</TableHead>
             <TableHead className="font-bold text-slate-700">Contact</TableHead>
             <TableHead className="font-bold text-slate-700">Rate</TableHead>
             <TableHead className="font-bold text-slate-700">Status</TableHead>
@@ -107,6 +140,12 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
                   <div>
                     <div className="font-bold text-slate-800">{member.name}</div>
                     <div className="text-sm text-slate-500">{member.email}</div>
+                    {member.auth_user_id && (
+                      <Badge variant="outline" className="text-xs mt-1">
+                        <User className="w-3 h-3 mr-1" />
+                        User Account
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </TableCell>
@@ -116,6 +155,10 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
                   {getRoleIcon(member.role)}
                   {member.role}
                 </Badge>
+              </TableCell>
+
+              <TableCell>
+                {getPermissionsBadge(member)}
               </TableCell>
               
               <TableCell>
@@ -166,11 +209,11 @@ export function StaffTable({ staff, isLoading, onEdit, onRefresh }: StaffTablePr
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(member.id)}
-                    disabled={deletingId === member.id}
+                    onClick={() => handleDelete(member)}
+                    disabled={deletingId === member.id || isDeletingUser}
                     className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    {member.auth_user_id ? <UserX className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
                   </Button>
                 </div>
               </TableCell>

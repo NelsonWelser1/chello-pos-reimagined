@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
@@ -1947,6 +1947,7 @@ export type Database = {
       }
       staff: {
         Row: {
+          auth_user_id: string | null
           created_at: string
           email: string
           hourly_rate: number | null
@@ -1959,6 +1960,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auth_user_id?: string | null
           created_at?: string
           email: string
           hourly_rate?: number | null
@@ -1971,6 +1973,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auth_user_id?: string | null
           created_at?: string
           email?: string
           hourly_rate?: number | null
@@ -2136,6 +2139,53 @@ export type Database = {
         }
         Relationships: []
       }
+      user_permissions: {
+        Row: {
+          can_create_users: boolean
+          can_delete_users: boolean
+          can_manage_permissions: boolean
+          created_at: string
+          id: string
+          module_access: Json
+          staff_id: string | null
+          system_access: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_create_users?: boolean
+          can_delete_users?: boolean
+          can_manage_permissions?: boolean
+          created_at?: string
+          id?: string
+          module_access?: Json
+          staff_id?: string | null
+          system_access?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_create_users?: boolean
+          can_delete_users?: boolean
+          can_manage_permissions?: boolean
+          created_at?: string
+          id?: string
+          module_access?: Json
+          staff_id?: string | null
+          system_access?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2145,9 +2195,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_user_permissions: {
+        Args: { user_uuid?: string }
+        Returns: Json
+      }
       get_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      has_module_access: {
+        Args: { module_name: string; user_uuid?: string }
+        Returns: boolean
       }
       increment_pickup_point_orders: {
         Args: { point_id: string; increment_by: number }
