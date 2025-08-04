@@ -18,12 +18,10 @@ import Kitchen from "./pages/Kitchen";
 import Sales from "./pages/Sales";
 import ExpenseTypes from "./pages/ExpenseTypes";
 import Expenses from "./pages/Expenses";
-import TaxReports from "./pages/TaxReports";
-import OverallReports from "./pages/OverallReports";
 import StockAlert from "./pages/StockAlert";
 import PaymentMethods from "./pages/PaymentMethods";
 import ServiceTables from "./pages/ServiceTables";
-import PickupPoints from "./pages/PickupPoints";
+
 import Backup from "./pages/Backup";
 import ImportsExports from "./pages/ImportsExports";
 import Auth from "./pages/Auth";
@@ -52,12 +50,10 @@ const App = () => (
           <Route path="/sales" element={<ProtectedRoute><Sales /></ProtectedRoute>} />
           <Route path="/expense-types" element={<ProtectedRoute><ExpenseTypes /></ProtectedRoute>} />
           <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-          <Route path="/tax-reports" element={<ProtectedRoute><TaxReports /></ProtectedRoute>} />
-          <Route path="/overall-reports" element={<ProtectedRoute><OverallReports /></ProtectedRoute>} />
           <Route path="/stock-alert" element={<ProtectedRoute><StockAlert /></ProtectedRoute>} />
           <Route path="/payment-methods" element={<ProtectedRoute><PaymentMethods /></ProtectedRoute>} />
           <Route path="/service-tables" element={<ProtectedRoute><ServiceTables /></ProtectedRoute>} />
-          <Route path="/pickup-points" element={<ProtectedRoute><PickupPoints /></ProtectedRoute>} />
+          
           <Route path="/backup" element={<ProtectedRoute><Backup /></ProtectedRoute>} />
           <Route path="/imports-exports" element={<ProtectedRoute><ImportsExports /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />

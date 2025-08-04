@@ -27,10 +27,9 @@ export const menuItems = [
 ];
 
 export const portalsItems = [
-  { icon: ShoppingCart, title: "Sales", url: "/sales" },
+  { icon: ShoppingCart, title: "Cashier", url: "/sales" },
   { icon: Table, title: "Service Tables", url: "/service-tables" },
   { icon: CreditCard, title: "Payment Methods", url: "/payment-methods" },
-  { icon: MapPin, title: "Pickup Points", url: "/pickup-points" },
 ];
 
 export const foodsItems = [
@@ -51,8 +50,6 @@ export const peopleItems = [
 ];
 
 export const reportsItems = [
-  { icon: FileText, title: "Tax Reports", url: "/tax-reports" },
-  { icon: BarChart3, title: "Overall Reports", url: "/overall-reports" },
 ];
 
 export const advanceItems = [
